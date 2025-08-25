@@ -7,113 +7,1695 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Property {
-  id            String   @id @default(cuid())
-  title         String
-  description   String?
-  price         Float
-  operationType String
-  propertyType  String
-  district      String
-  address       String
-  latitude      Float?
-  longitude     Float?
-  bedrooms      Int?
-  bathrooms     Int?
-  totalArea     Float?
-  builtArea     Float?
-  parking       Int?
-  phone         String?
-  email         String?
-  status        String   @default("active")
-  featured      Boolean  @default(false)
-  images        String[]
-  amenities     String[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+model b_070101_manzanas {
+  objectid     Int                      @id @default(autoincrement())
+  codmzna      String?                  @db.VarChar(5)
+  id_manzana   String?                  @db.VarChar(15)
+  id_sect      String?                  @db.VarChar(10)
+  d_curb       String?                  @db.VarChar(12)
+  idccpp_07    String?                  @db.VarChar(40)
+  nombccpp     String?                  @db.VarChar(80)
+  nom_hab      String?                  @db.VarChar(100)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  fte_mzna     String?                  @db.VarChar(45)
+  area_m2      Float?
+  observ       String?                  @db.VarChar(250)
+  idmznar      String?                  @db.VarChar(18)
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
 
-  clientId      String?
-  client        Client?  @relation(fields: [clientId], references: [id])
-  leads         Lead[]
-  activities    Activity[]
-
-  @@map("properties")
+  @@index([shape], map: "b_070101_manzanas_shape_geom_idx", type: Gist)
 }
 
-model Client {
-  id         String   @id @default(cuid())
-  name       String
-  email      String   @unique
-  phone      String?
-  address    String?
-  dni        String?
-  clientType String
-  status     String   @default("active")
-  notes      String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+model b_1501_acuifero {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  cod_acui     String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  subtipo      String?                  @db.VarChar(15)
+  nom_ccpp     String?                  @db.VarChar(45)
+  est_acui     String?                  @db.VarChar(25)
+  observ       String?                  @db.VarChar(60)
+  area_has     Float?
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
 
-  properties Property[]
-  leads      Lead[]
-  activities Activity[]
-
-  @@map("clients")
+  @@index([shape], map: "b_1501_acuifero_shape_geom_idx", type: Gist)
 }
 
-model Lead {
-  id         String   @id @default(cuid())
-  name       String
-  email      String
-  phone      String?
-  source     String
-  status     String
-  priority   String   @default("medium")
-  budget     Float?
-  notes      String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+model b_1501_aeropuerto {
+  objectid     Int                      @id @default(autoincrement())
+  id           Int?
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
 
-  propertyId String?
-  property   Property? @relation(fields: [propertyId], references: [id])
-  clientId   String?
-  client     Client?   @relation(fields: [clientId], references: [id])
-  activities Activity[]
-
-  @@map("leads")
+  @@index([shape], map: "b_1501_aeropuerto_shape_geom_idx", type: Gist)
 }
 
-model Activity {
-  id          String   @id @default(cuid())
-  type        String
-  title       String
-  description String?
-  status      String   @default("pending")
-  dueDate     DateTime?
-  completedAt DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model b_1501_aeropuerto_aerodromo {
+  objectid     Int                      @id @default(autoincrement())
+  id           Int?
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
 
-  propertyId  String?
-  property    Property? @relation(fields: [propertyId], references: [id])
-  clientId    String?
-  client      Client?   @relation(fields: [clientId], references: [id])
-  leadId      String?
-  lead        Lead?     @relation(fields: [leadId], references: [id])
-
-  @@map("activities")
+  @@index([shape], map: "b_1501_aeropuerto_aerodromo_shape_geom_idx", type: Gist)
 }
 
-model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      String   @default("agent")
-  avatar    String?
-  phone     String?
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model b_1501_aeropuerto_p {
+  objectid Int                      @id @default(autoincrement())
+  cod_aero String?                  @db.VarChar(10)
+  tipo     String?                  @db.VarChar(20)
+  nom_aero String?                  @db.VarChar(80)
+  fte_aero String?                  @db.VarChar(45)
+  nombprov String?                  @db.VarChar(45)
+  nombdep  String?                  @db.VarChar(45)
+  shape    Unsupported("geometry")?
 
-  @@map("users")
+  @@index([shape], map: "b_1501_aeropuerto_p_shape_geom_idx", type: Gist)
+}
+
+model b_1501_area_urbana {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  cod_au       String?                  @db.VarChar(10)
+  nom_au       String?                  @db.VarChar(40)
+  fpol_ccpp    String?                  @db.VarChar(30)
+  iddist       String?                  @db.VarChar(6)
+  area_has     Float?
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+
+  @@index([shape], map: "b_1501_area_urbana_shape_geom_idx", type: Gist)
+}
+
+model b_1501_calles_urbanas {
+  objectid_1   Int                      @id @default(autoincrement())
+  objectid     Int?
+  ubigeo       String?                  @db.VarChar(6)
+  idccpp       String?                  @db.VarChar(10)
+  cat_via      String?                  @db.VarChar(5)
+  nombre_via   String?                  @db.VarChar(55)
+  codccpp      String?                  @db.VarChar(4)
+  nom_cat      String?                  @db.VarChar(15)
+  observ       String?                  @db.VarChar(100)
+  nom_via      String?                  @db.VarChar(100)
+  id_via       String?                  @db.VarChar(10)
+  sup_via      String?                  @db.VarChar(20)
+  long_m       Float?
+  fte_via      String?                  @db.VarChar(45)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  nom_ccpp     String?                  @db.VarChar(80)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_calles_urbanas_shape_geom_idx", type: Gist)
+}
+
+model b_1501_canal {
+  objectid     Int                      @id @default(autoincrement())
+  nombre       String?                  @db.VarChar(50)
+  tipo_canal   String?                  @db.VarChar(50)
+  tipo         String?                  @db.VarChar(100)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_canal_shape_geom_idx", type: Gist)
+}
+
+model b_1501_cap_departamental {
+  objectid Int                      @id @default(autoincrement())
+  shape    Unsupported("geometry")?
+  iddep    String?                  @db.VarChar(2)
+  capdep   String?                  @db.VarChar(60)
+  nombdep  String?                  @db.VarChar(45)
+
+  @@index([shape], map: "b_1501_cap_departamental_shape_geom_idx", type: Gist)
+}
+
+model b_1501_cap_distrital {
+  objectid Int                      @id @default(autoincrement())
+  iddist   String?                  @db.VarChar(6)
+  capdist  String?                  @db.VarChar(60)
+  nombdist String?                  @db.VarChar(45)
+  nombprov String?                  @db.VarChar(45)
+  nombdep  String?                  @db.VarChar(45)
+  shape    Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_cap_distrital_shape_geom_idx", type: Gist)
+}
+
+model b_1501_cap_distrital_lima_ext {
+  objectid_12 Int                      @id @default(autoincrement())
+  objectid_1  Int?
+  objectid    Int?
+  categoria   String?                  @db.VarChar(25)
+  nombre      String?                  @db.VarChar(50)
+  distrito    String?                  @db.VarChar(50)
+  departa     String?                  @db.VarChar(20)
+  proy        String?                  @db.VarChar(25)
+  n           Float?
+  e           Float?
+  zona        String?                  @db.VarChar(35)
+  tipo        String?                  @db.VarChar(25)
+  proy_sigut  String?                  @db.VarChar(25)
+  prio_mv17   String?                  @db.VarChar(254)
+  shape       Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_cap_distrital_lima_ext_shape_geom_idx", type: Gist)
+}
+
+model b_1501_cap_provincial {
+  objectid Int                      @id @default(autoincrement())
+  idprov   String?                  @db.VarChar(4)
+  capprov  String?                  @db.VarChar(60)
+  nombdep  String?                  @db.VarChar(45)
+  nombprov String?                  @db.VarChar(45)
+  shape    Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_cap_provincial_shape_geom_idx", type: Gist)
+}
+
+model b_1501_centros_poblados {
+  objectid   Int                      @id @default(autoincrement())
+  shape      Unsupported("geometry")?
+  ubigeo     String?                  @db.VarChar(6)
+  idccpp_07  String?                  @db.VarChar(10)
+  nombccpp07 String?                  @db.VarChar(60)
+  idccpp_17  String?                  @db.VarChar(10)
+  nombccpp17 String?                  @db.VarChar(60)
+  tipo_ccpp  String?                  @db.VarChar(6)
+  fpol_ccpp  String?                  @db.VarChar(30)
+  nom_surb   String?                  @db.VarChar(35)
+  nom_ssurb  String?                  @db.VarChar(35)
+  cat_ccpp   String?                  @db.VarChar(40)
+  tot_pob17  Int?
+  viv_tot17  Int?
+  label_ccpp String?                  @db.VarChar(65)
+  nombdist   String?                  @db.VarChar(45)
+  nombprov   String?                  @db.VarChar(45)
+  nombdep    String?                  @db.VarChar(45)
+
+  @@index([shape], map: "b_1501_centros_poblados_shape_geom_idx", type: Gist)
+}
+
+model b_1501_centros_poblados_lima {
+  objectid_1 Int                      @id @default(autoincrement())
+  objectid   Int?
+  nombccpp   String?                  @db.VarChar(50)
+  area       Int?
+  departamen String?                  @db.VarChar(35)
+  provincia  String?                  @db.VarChar(40)
+  distrito   String?                  @db.VarChar(50)
+  ubigeo     String?                  @db.VarChar(6)
+  idccpp     String?                  @db.VarChar(10)
+  codccpp    String?                  @db.VarChar(4)
+  x_coor     Float?
+  y_coor     Float?
+  shape      Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_centros_poblados_lima_shape_geom_idx", type: Gist)
+}
+
+model b_1501_com_campesinas {
+  objectid     Int                      @id @default(autoincrement())
+  cod_cc       String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(25)
+  est_cc       String?                  @db.VarChar(25)
+  nom_cc       String?                  @db.VarChar(150)
+  displeg_cc   String?                  @db.VarChar(15)
+  fecdisp_cc   String?                  @db.VarChar(15)
+  aleg_has     String?                  @db.VarChar(15)
+  area_has     Float?
+  fte_cc       String?                  @db.VarChar(45)
+  observ       String?                  @db.VarChar(250)
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_com_campesinas_shape_geom_idx", type: Gist)
+}
+
+model b_1501_conglomerado_urbano_ref {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  cod_curb     String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(20)
+  nom_curb     String?                  @db.VarChar(80)
+  nom_ciudad   String?                  @db.VarChar(100)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+
+  @@index([shape], map: "b_1501_conglomerado_urbano_ref_shape_geom_idx", type: Gist)
+}
+
+model b_1501_cotas {
+  objectid Int                      @id @default(autoincrement())
+  tipo     String?                  @db.VarChar(15)
+  z        Float?
+  fte_cota String?                  @db.VarChar(45)
+  shape    Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_cotas_shape_geom_idx", type: Gist)
+}
+
+model b_1501_cuenca_hidrografica {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  cod_uh       String?                  @db.VarChar(12)
+  reg_uh       String?                  @db.VarChar(10)
+  niv_uh       String?                  @db.VarChar(12)
+  nom_uh       String?                  @db.VarChar(50)
+  area_km2     Float?
+  fte_cca      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+
+  @@index([shape], map: "b_1501_cuenca_hidrografica_shape_geom_idx", type: Gist)
+}
+
+model b_1501_cuerpos_agua {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  cod_cag      String?                  @db.VarChar(20)
+  ori_cag      String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  subtipo      String?                  @db.VarChar(15)
+  nom_cag      String?                  @db.VarChar(50)
+  area_has     Float?
+  nom_uh       String?                  @db.VarChar(50)
+  label_cag    String?                  @db.VarChar(50)
+  fte_cag      String?                  @db.VarChar(45)
+  nombdist     String?                  @db.VarChar(45)
+  nomprov      String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  observ       String?                  @db.VarChar(250)
+  shape_length Float?
+  shape_area   Float?
+
+  @@index([shape], map: "b_1501_cuerpos_agua_shape_geom_idx", type: Gist)
+}
+
+model b_1501_cuerpos_de_agua {
+  objectid_1   Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  objectid     Int?
+  cod_facc     String?                  @db.VarChar(8)
+  cod_ign      String?                  @db.VarChar(8)
+  rasgo_prin   String?                  @db.VarChar(10)
+  rasgo_secu   String?                  @db.VarChar(15)
+  nombre       String?                  @db.VarChar(40)
+  provincia    String?                  @db.VarChar(20)
+  departa      String?                  @db.VarChar(20)
+  are          Float?
+  shape_leng   Float?
+  shape_length Float?
+  shape_area   Float?
+
+  @@index([shape], map: "b_1501_cuerpos_de_agua_shape_geom_idx", type: Gist)
+}
+
+model b_1501_curvas_batimetricas {
+  objectid     Int                      @id @default(autoincrement())
+  tipo         String?                  @db.VarChar(20)
+  subtipo      String?                  @db.VarChar(15)
+  z            Float?
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_curvas_batimetricas_shape_geom_idx", type: Gist)
+}
+
+model b_1501_curvas_nivel {
+  objectid     Int                      @id @default(autoincrement())
+  tipo         String?                  @db.VarChar(20)
+  subtipo      String?                  @db.VarChar(15)
+  z            Float?
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_curvas_nivel_shape_geom_idx", type: Gist)
+}
+
+model b_1501_curvas_nivel_100k {
+  objectid     Int                      @id @default(autoincrement())
+  tipo         String?                  @db.VarChar(25)
+  subtipo      String?                  @db.VarChar(50)
+  altitud      Int?
+  shape_stle   Float?
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_curvas_nivel_100k_shape_geom_idx", type: Gist)
+}
+
+model b_1501_curvas_nivel_100k_ai {
+  objectid     Int                      @id @default(autoincrement())
+  tipo         String?                  @db.VarChar(25)
+  subtipo      String?                  @db.VarChar(50)
+  altitud      Int?
+  shape_stle   Float?
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_curvas_nivel_100k_ai_shape_geom_idx", type: Gist)
+}
+
+model b_1501_departamento {
+  objectid     Int                      @id @default(autoincrement())
+  coddep       String?                  @db.VarChar(2)
+  nombdep      String?                  @db.VarChar(45)
+  capdep       String?                  @db.VarChar(60)
+  area_km2     Float?
+  tot_prov     Int?                     @db.SmallInt
+  tot_dist     Int?                     @db.SmallInt
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_departamento_shape_geom_idx", type: Gist)
+}
+
+model b_1501_distrito_imp {
+  objectid     Int                      @id @default(autoincrement())
+  ubigeo       String?                  @db.VarChar(6)
+  iddist       String?                  @db.VarChar(6)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  capdist      String?                  @db.VarChar(45)
+  acreadist    String?                  @db.VarChar(4)
+  area_km2     Float?
+  tot_ccpp17   Int?
+  tot_pob17    Int?
+  tot_viv17    Int?
+  nom_aim      String?                  @db.VarChar(80)
+  area_has     Float?
+  observ       String?                  @db.VarChar(100)
+  fuente       String?                  @db.VarChar(150)
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_distrito_imp_shape_geom_idx", type: Gist)
+}
+
+model b_1501_distrito_planmet {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  ubigeo       String?                  @db.VarChar(6)
+  iddist       String?                  @db.VarChar(6)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  capdist      String?                  @db.VarChar(45)
+  acreadist    String?                  @db.VarChar(4)
+  area_km2     Float?
+  tot_ccpp17   Int?
+  tot_pob17    Int?
+  tot_viv17    Int?
+  nro          Int?
+  sector       String?                  @db.VarChar(10)
+  shape_length Float?
+  shape_area   Float?
+
+  @@index([shape], map: "b_1501_distrito_planmet_shape_geom_idx", type: Gist)
+}
+
+model b_1501_distritoanno2 {
+  objectid            Int                      @id @default(autoincrement())
+  shape               Unsupported("geometry")?
+  featureid           Int?
+  zorder              Int?
+  annotationclassid   Int?
+  element             Bytes?
+  symbolid            Int?
+  status              Int?                     @default(0) @db.SmallInt
+  textstring          String?                  @db.VarChar(255)
+  fontname            String?                  @db.VarChar(255)
+  fontsize            Float?
+  bold                Int?                     @db.SmallInt
+  italic              Int?                     @db.SmallInt
+  underline           Int?                     @db.SmallInt
+  verticalalignment   Int?                     @db.SmallInt
+  horizontalalignment Int?                     @db.SmallInt
+  xoffset             Float?
+  yoffset             Float?
+  angle               Float?
+  fontleading         Float?
+  wordspacing         Float?
+  characterwidth      Float?
+  characterspacing    Float?
+  flipangle           Float?
+  override            Int?
+  shape_length        Float?
+  shape_area          Float?
+
+  @@index([shape], map: "b_1501_distritoanno2_shape_geom_idx", type: Gist)
+}
+
+model b_1501_distritos_eclm {
+  objectid     Int                      @id @default(autoincrement())
+  iddist       String?                  @db.VarChar(6)
+  capdist      String?                  @db.VarChar(60)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_distritos_eclm_shape_geom_idx", type: Gist)
+}
+
+model b_1501_hidrografia {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  cod_rio      String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  subtipo      String?                  @db.VarChar(15)
+  nom_rio      String?                  @db.VarChar(50)
+  nom_uh       String?                  @db.VarChar(50)
+  area_km2     Float?
+  area_has     Float?
+  label_rio    String?                  @db.VarChar(50)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+
+  @@index([shape], map: "b_1501_hidrografia_shape_geom_idx", type: Gist)
+}
+
+model b_1501_hidrografia_l {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  cod_rio      String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  subtipo      String?                  @db.VarChar(15)
+  nom_rio      String?                  @db.VarChar(50)
+  nom_uh       String?                  @db.VarChar(50)
+  long_km      Float?
+  long_m       Float?
+  label_rio    String?                  @db.VarChar(50)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+
+  @@index([shape], map: "b_1501_hidrografia_l_shape_geom_idx", type: Gist)
+}
+
+model b_1501_hidrografia_p_clipanno {
+  objectid            Int                      @id @default(autoincrement())
+  shape               Unsupported("geometry")?
+  featureid           Int?
+  zorder              Int?
+  annotationclassid   Int?
+  element             Bytes?
+  symbolid            Int?
+  status              Int?                     @default(0) @db.SmallInt
+  textstring          String?                  @db.VarChar(255)
+  fontname            String?                  @db.VarChar(255)
+  fontsize            Float?
+  bold                Int?                     @db.SmallInt
+  italic              Int?                     @db.SmallInt
+  underline           Int?                     @db.SmallInt
+  verticalalignment   Int?                     @db.SmallInt
+  horizontalalignment Int?                     @db.SmallInt
+  xoffset             Float?
+  yoffset             Float?
+  angle               Float?
+  fontleading         Float?
+  wordspacing         Float?
+  characterwidth      Float?
+  characterspacing    Float?
+  flipangle           Float?
+  override            Int?
+  shape_length        Float?
+  shape_area          Float?
+
+  @@index([shape], map: "b_1501_hidrografia_p_clipanno_shape_geom_idx", type: Gist)
+}
+
+model b_1501_humedal_p {
+  objectid Int                      @id @default(autoincrement())
+  cod_cie  String?                  @db.VarChar(10)
+  tipo     String?                  @db.VarChar(15)
+  subtipo  String?                  @db.VarChar(15)
+  nom_cie  String?                  @db.VarChar(45)
+  nom_uh   String?                  @db.VarChar(60)
+  nombdist String?                  @db.VarChar(45)
+  nombprov String?                  @db.VarChar(45)
+  nombdep  String?                  @db.VarChar(45)
+  fte_cie  String?                  @db.VarChar(80)
+  shape    Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_humedal_p_shape_geom_idx", type: Gist)
+}
+
+model b_1501_islas {
+  objectid     Int                      @id @default(autoincrement())
+  cod_isla     String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  nom_isla     String?                  @db.VarChar(25)
+  observ       String?                  @db.VarChar(60)
+  area_has     Float?
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  orig_fid     Int?
+  shape_length Float?
+  shape_area   Float?
+  label_isla   String?                  @db.VarChar(100)
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_islas_shape_geom_idx", type: Gist)
+}
+
+model b_1501_lam {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  cod_lam      String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  subtipo      String?                  @db.VarChar(15)
+  long_km      Float?
+  fte_lam      String?                  @db.VarChar(45)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  shape_length Float?
+
+  @@index([shape], map: "b_1501_lam_shape_geom_idx", type: Gist)
+}
+
+model b_1501_lim_dep {
+  objectid     Int                      @id @default(autoincrement())
+  cod_lr       String?                  @db.VarChar(10)
+  ubigeo       String?                  @db.VarChar(10)
+  nombdep      String?                  @db.VarChar(80)
+  niv_lim      String?                  @db.VarChar(10)
+  long_km      Float?
+  fte_dep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_lim_dep_shape_geom_idx", type: Gist)
+}
+
+model b_1501_lim_dist_imp {
+  objectid     Int                      @id @default(autoincrement())
+  cod_ld       String?                  @db.VarChar(10)
+  ubigeo       String?                  @db.VarChar(20)
+  nombdist     String?                  @db.VarChar(80)
+  niv_lim      String?                  @db.VarChar(2)
+  long_km      Float?
+  niv_sanea    String?                  @db.VarChar(45)
+  fte_dist     String?                  @db.VarChar(45)
+  observ       String?                  @db.VarChar(250)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_lim_dist_imp_shape_geom_idx", type: Gist)
+}
+
+model b_1501_lim_dist_orig_planmet {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  cod_ld       String?                  @db.VarChar(10)
+  ubigeo       String?                  @db.VarChar(20)
+  nombdist     String?                  @db.VarChar(80)
+  niv_lim      String?                  @db.VarChar(2)
+  long_km      Float?
+  niv_sanea    String?                  @db.VarChar(15)
+  fte_dist     String?                  @db.VarChar(45)
+  observ       String?                  @db.VarChar(250)
+  shape_length Float?
+
+  @@index([shape], map: "b_1501_lim_dist_orig_planmet_shape_geom_idx", type: Gist)
+}
+
+model b_1501_lim_prov {
+  objectid_1   Int                      @id @default(autoincrement())
+  objectid     Int?
+  cod_lp       String?                  @db.VarChar(10)
+  ubigeo       String?                  @db.VarChar(15)
+  nombprov     String?                  @db.VarChar(80)
+  niv_lim      String?                  @db.VarChar(10)
+  niv_sanea    String?                  @db.VarChar(15)
+  long_km      Float?
+  fte_prov     String?                  @db.VarChar(45)
+  shape_leng   Float?
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_lim_prov_shape_geom_idx", type: Gist)
+}
+
+model b_1501_lim_prov_imp {
+  objectid_1   Int                      @id @default(autoincrement())
+  cod_lp       String?                  @db.VarChar(10)
+  ubigeo       String?                  @db.VarChar(15)
+  nombprov     String?                  @db.VarChar(80)
+  niv_lim      String?                  @db.VarChar(10)
+  niv_sanea    String?                  @db.VarChar(15)
+  long_km      Float?
+  fte_prov     String?                  @db.VarChar(45)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_lim_prov_imp_shape_geom_idx", type: Gist)
+}
+
+model b_1501_lim_prov_planmet {
+  objectid     Int                      @id @default(autoincrement())
+  cod_lp       String?                  @db.VarChar(10)
+  ubigeo       String?                  @db.VarChar(15)
+  nombprov     String?                  @db.VarChar(80)
+  niv_lim      String?                  @db.VarChar(10)
+  niv_sanea    String?                  @db.VarChar(15)
+  long_km      Float?
+  fte_prov     String?                  @db.VarChar(45)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_lim_prov_planmet_shape_geom_idx", type: Gist)
+}
+
+model b_1501_limites_internacionales {
+  objectid     Int                      @id @default(autoincrement())
+  cod_lint     String?                  @db.VarChar(10)
+  nombpais     String?                  @db.VarChar(80)
+  niv_lim      String?                  @db.VarChar(15)
+  fte_lint     String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+  area_km2     Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_limites_internacionales_shape_geom_idx", type: Gist)
+}
+
+model b_1501_limites_internacionales_planmet {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  cod_lint     String?                  @db.VarChar(10)
+  nombpais     String?                  @db.VarChar(80)
+  niv_lim      String?                  @db.VarChar(15)
+  long_km      Float?
+  fte_lint     String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+
+  @@index([shape], map: "b_1501_limites_internacionales_planmet_shape_geom_idx", type: Gist)
+}
+
+model b_1501_litoral {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  tipo         String?                  @db.VarChar(15)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  long_km      Float?
+  fte_lit      String?                  @db.VarChar(45)
+  shape_length Float?
+
+  @@index([shape], map: "b_1501_litoral_shape_geom_idx", type: Gist)
+}
+
+model b_1501_litoral_lm {
+  objectid     Int                      @id @default(autoincrement())
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_litoral_lm_shape_geom_idx", type: Gist)
+}
+
+model b_1501_manzanas_l {
+  objectid     Int                      @id @default(autoincrement())
+  fid_         Int?
+  entity       String?                  @db.VarChar(16)
+  layer        String?                  @db.VarChar(254)
+  color        Int?
+  linetype     String?                  @db.VarChar(254)
+  elevation    Float?
+  linewt       Int?
+  refname      String?                  @db.VarChar(254)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_manzanas_l_shape_geom_idx", type: Gist)
+}
+
+model b_1501_oceano {
+  objectid     Int                      @id @default(autoincrement())
+  tipo         String?                  @db.VarChar(45)
+  nom_mar      String?                  @db.VarChar(80)
+  observ       String?                  @db.VarChar(150)
+  label_mar    String?                  @db.VarChar(100)
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_oceano_shape_geom_idx", type: Gist)
+}
+
+model b_1501_oceano_planmet {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  tipo         String?                  @db.VarChar(15)
+  nom_mar      String?                  @db.VarChar(60)
+  observ       String?                  @db.VarChar(60)
+  shape_length Float?
+  shape_area   Float?
+
+  @@index([shape], map: "b_1501_oceano_planmet_shape_geom_idx", type: Gist)
+}
+
+model b_1501_pantanos {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  cod_cie      String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  subtipo      String?                  @db.VarChar(15)
+  nom_cie      String?                  @db.VarChar(45)
+  nom_uh       String?                  @db.VarChar(60)
+  area_has     Float?
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+  fte_cie      String?                  @db.VarChar(80)
+
+  @@index([shape], map: "b_1501_pantanos_shape_geom_idx", type: Gist)
+}
+
+model b_1501_pendiente {
+  objectid     Int                      @id @default(autoincrement())
+  tipo         String?                  @db.VarChar(10)
+  niv_pend     String?                  @db.VarChar(45)
+  porc_pend    String?                  @db.VarChar(15)
+  desc_pend    String?                  @db.VarChar(60)
+  area_has     Float?
+  fte_pend     String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_pendiente_shape_geom_idx", type: Gist)
+}
+
+model b_1501_provincia {
+  objectid     Int                      @id @default(autoincrement())
+  idprov       String?                  @db.VarChar(4)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  capprov      String?                  @db.VarChar(60)
+  acreaprov    String?                  @db.VarChar(4)
+  area_km2     Float?
+  tot_dist     Int?                     @db.SmallInt
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_provincia_shape_geom_idx", type: Gist)
+}
+
+model b_1501_provincia_ext {
+  objectid_1   Int                      @id @default(autoincrement())
+  objectid     Int?
+  idprov       String?                  @db.VarChar(4)
+  iddpto       String?                  @db.VarChar(2)
+  tipo         String?                  @db.VarChar(15)
+  pob1981      Int?
+  pob1993      Int?
+  pob2007      Int?
+  nomprov      String?                  @db.VarChar(45)
+  nomdep       String?                  @db.VarChar(40)
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_provincia_ext_shape_geom_idx", type: Gist)
+}
+
+model b_1501_provincia_imp {
+  objectid     Int                      @id @default(autoincrement())
+  idprov       String?                  @db.VarChar(4)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  capprov      String?                  @db.VarChar(60)
+  acreaprov    String?                  @db.VarChar(4)
+  area_km2     Float?
+  tot_dist     Int?
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_provincia_imp_shape_geom_idx", type: Gist)
+}
+
+model b_1501_provincia_lima_imp {
+  objectid_1   Int                      @id @default(autoincrement())
+  objectid     Int?
+  idprov       String?                  @db.VarChar(4)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  capprov      String?                  @db.VarChar(60)
+  acreaprov    String?                  @db.VarChar(4)
+  area_km2     Float?
+  tot_dist     Int?
+  shape_leng   Float?
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_provincia_lima_imp_shape_geom_idx", type: Gist)
+}
+
+model b_1501_provincia_planmet {
+  objectid     Int                      @id @default(autoincrement())
+  idprov       String?                  @db.VarChar(4)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  capprov      String?                  @db.VarChar(60)
+  acreaprov    String?                  @db.VarChar(4)
+  area_km2     Float?
+  tot_dist     Int?                     @db.SmallInt
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_provincia_planmet_shape_geom_idx", type: Gist)
+}
+
+model b_1501_provinciaanno2 {
+  objectid            Int                      @id @default(autoincrement())
+  shape               Unsupported("geometry")?
+  featureid           Int?
+  zorder              Int?
+  annotationclassid   Int?
+  element             Bytes?
+  symbolid            Int?
+  status              Int?                     @default(0) @db.SmallInt
+  textstring          String?                  @db.VarChar(255)
+  fontname            String?                  @db.VarChar(255)
+  fontsize            Float?
+  bold                Int?                     @db.SmallInt
+  italic              Int?                     @db.SmallInt
+  underline           Int?                     @db.SmallInt
+  verticalalignment   Int?                     @db.SmallInt
+  horizontalalignment Int?                     @db.SmallInt
+  xoffset             Float?
+  yoffset             Float?
+  angle               Float?
+  fontleading         Float?
+  wordspacing         Float?
+  characterwidth      Float?
+  characterspacing    Float?
+  flipangle           Float?
+  override            Int?
+  shape_length        Float?
+  shape_area          Float?
+
+  @@index([shape], map: "b_1501_provinciaanno2_shape_geom_idx", type: Gist)
+}
+
+model b_1501_pueblos_importantes {
+  objectid Int                      @id @default(autoincrement())
+  nom_aahh String?                  @db.VarChar(200)
+  shape    Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_pueblos_importantes_shape_geom_idx", type: Gist)
+}
+
+model b_1501_puente_p {
+  objectid Int                      @id @default(autoincrement())
+  shape    Unsupported("geometry")?
+  cod_pte  String?                  @db.VarChar(10)
+  tipo     String?                  @db.VarChar(10)
+  subtipo  String?                  @db.VarChar(8)
+  nom_pte  String?                  @db.VarChar(60)
+  fte_pte  String?                  @db.VarChar(45)
+  nombdist String?                  @db.VarChar(45)
+  nombprov String?                  @db.VarChar(45)
+  nombdep  String?                  @db.VarChar(45)
+
+  @@index([shape], map: "b_1501_puente_p_shape_geom_idx", type: Gist)
+}
+
+model b_1501_puerto {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  cod_pto      String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  subtipo      String?                  @db.VarChar(15)
+  nom_pto      String?                  @db.VarChar(45)
+  area_has     Float?
+  fte_pto      String?                  @db.VarChar(45)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+
+  @@index([shape], map: "b_1501_puerto_shape_geom_idx", type: Gist)
+}
+
+model b_1501_puerto_p {
+  objectid Int                      @id @default(autoincrement())
+  cod_pto  String?                  @db.VarChar(10)
+  tipo     String?                  @db.VarChar(15)
+  subtipo  String?                  @db.VarChar(15)
+  nom_pto  String?                  @db.VarChar(45)
+  fte_pto  String?                  @db.VarChar(45)
+  nombdist String?                  @db.VarChar(45)
+  nombprov String?                  @db.VarChar(45)
+  nombdep  String?                  @db.VarChar(45)
+  shape    Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_puerto_p_shape_geom_idx", type: Gist)
+}
+
+model b_1501_red_ferroviaria {
+  objectid     Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  id_via       String?                  @db.VarChar(10)
+  ubigeo       String?                  @db.VarChar(6)
+  clas_ferr    String?                  @db.VarChar(15)
+  nom_ferr     String?                  @db.VarChar(100)
+  tramo_ferr   String?                  @db.VarChar(200)
+  long_km      Float?
+  est_ferr     String?                  @db.VarChar(80)
+  adm_ferr     String?                  @db.VarChar(60)
+  fte_ferr     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+
+  @@index([shape], map: "b_1501_red_ferroviaria_shape_geom_idx", type: Gist)
+}
+
+model b_1501_rios_quebradas {
+  objectid_1   Int                      @id @default(autoincrement())
+  shape        Unsupported("geometry")?
+  objectid     Int?
+  cod_facc     String?                  @db.VarChar(8)
+  cod_ign      String?                  @db.VarChar(8)
+  rasgo_prin   String?                  @db.VarChar(15)
+  rasgo_secu   String?                  @db.VarChar(15)
+  nombre       String?                  @db.VarChar(40)
+  shape_leng   Float?
+  shape_length Float?
+
+  @@index([shape], map: "b_1501_rios_quebradas_shape_geom_idx", type: Gist)
+}
+
+model b_1501_toponimia_l {
+  objectid     Int                      @id @default(autoincrement())
+  cod_topo     String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  nom_topo     String?                  @db.VarChar(120)
+  label_topo   String?                  @db.VarChar(120)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "b_1501_toponimia_l_shape_geom_idx", type: Gist)
+}
+
+model b_1501_toponimia_p {
+  objectid   Int                      @id @default(autoincrement())
+  shape      Unsupported("geometry")?
+  cod_topo   String?                  @db.VarChar(10)
+  tipo       String?                  @db.VarChar(10)
+  nom_topo   String?                  @db.VarChar(60)
+  label_topo String?                  @db.VarChar(120)
+  nombdist   String?                  @db.VarChar(45)
+  nombprov   String?                  @db.VarChar(45)
+  nombdep    String?                  @db.VarChar(45)
+
+  @@index([shape], map: "b_1501_toponimia_p_shape_geom_idx", type: Gist)
+}
+
+model b_15_centros_poblados {
+  objectid_12 Int                      @id @default(autoincrement())
+  objectid_1  Int?
+  objectid    Int?
+  idccpp_07   String?                  @db.VarChar(10)
+  nombccpp07  String?                  @db.VarChar(50)
+  iddist07    String?                  @db.VarChar(6)
+  nombdist    String?                  @db.VarChar(50)
+  nombprov    String?                  @db.VarChar(40)
+  nombdep     String?                  @db.VarChar(25)
+  idccpp_m15  String?                  @db.VarChar(10)
+  nombccpp15  String?                  @db.VarChar(50)
+  codccpp15   String?                  @db.VarChar(4)
+  area_15     Int?
+  iddist15    String?                  @db.VarChar(6)
+  nombdist15  String?                  @db.VarChar(50)
+  nombprov15  String?                  @db.VarChar(40)
+  nombdpto15  String?                  @db.VarChar(35)
+  observ      String?                  @db.VarChar(25)
+  idccpp_078  String?                  @db.VarChar(254)
+  cod_dist    String?                  @db.VarChar(254)
+  distrito    String?                  @db.VarChar(254)
+  cod_prov    String?                  @db.VarChar(254)
+  provincia   String?                  @db.VarChar(254)
+  cod_dep     String?                  @db.VarChar(254)
+  departamen  String?                  @db.VarChar(254)
+  pob_t       Int?
+  pob_h       Int?
+  pob_m       Int?
+  pjh_otro    Int?
+  pjh_jefe_a  Int?
+  pjh_espoco  Int?
+  pjh_hjhjst  Int?
+  pjh_yernue  Int?
+  pjh_nieto   Int?
+  pjh_padrsg  Int?
+  pjh_oparin  Int?
+  pjh_tbjr    Int?
+  pjh_pensi   Int?
+  pcv_mr12    Int?
+  pcv_12_17   Int?
+  pcv_18_29   Int?
+  pcv_30_59   Int?
+  pcv_my60    Int?
+  pv_mr12     Int?
+  pv_my65     Int?
+  partnac_si  Int?
+  partnac_no  Int?
+  vivedis_si  Int?
+  vivedis_no  Int?
+  afil_sis    Int?
+  afil_essal  Int?
+  afil_otros  Int?
+  afil_ningu  Int?
+  i_quechua   Int?
+  i_aymara    Int?
+  i_ashanink  Int?
+  i_otro      Int?
+  i_castell   Int?
+  i_extranj   Int?
+  i_sordomud  Int?
+  leeescb_si  Int?
+  leeescb_no  Int?
+  ne_sinnive  Int?
+  ne_inicial  Int?
+  ne_primar   Int?
+  ne_secund   Int?
+  ne_snui     Int?
+  ne_snuc     Int?
+  ne_sui      Int?
+  ne_suc      Int?
+  apr_prim    Int?
+  apr_segu    Int?
+  apr_terc    Int?
+  apr_cuar    Int?
+  apr_quin    Int?
+  apr_sex     Int?
+  asisciu_si  Int?
+  asisciu_no  Int?
+  tbj_1hr_si  Int?
+  tbj_1hr_no  Int?
+  rntbj_ntnt  Int?
+  rntbj_negc  Int?
+  rntbj_cach  Int?
+  rntbj_sinp  Int?
+  rntbj_ntbj  Int?
+  nt_bustbj   Int?
+  nt_bustbj1  Int?
+  nt_estud    Int?
+  nt_juvilac  Int?
+  nt_rentas   Int?
+  nt_cdohoga  Int?
+  nt_otra     Int?
+  nt_poredad  Int?
+  nt_viaje    Int?
+  nt_dscpda   Int?
+  nt_militar  Int?
+  d_emplead   Int?
+  d_obrero    Int?
+  d_independ  Int?
+  d_empledor  Int?
+  d_tbjfamil  Int?
+  d_tbjhogar  Int?
+  ct_1_5      Int?
+  ct_6_10     Int?
+  ct_11_50    Int?
+  ct_51_mas   Int?
+  religi_cat  Int?
+  religi_evn  Int?
+  religi_otr  Int?
+  religi_nin  Int?
+  ec_convivi  Int?
+  ec_separad  Int?
+  ec_casado   Int?
+  ec_viudo    Int?
+  ec_divocia  Int?
+  ec_soltero  Int?
+  dni_si      Int?
+  dni_no      Int?
+  t_hogares   Int?
+  h_vivipart  Int?
+  h_persause  Int?
+  h_perspres  Int?
+  t_viviend   Int?
+  v_part_tot  Int?
+  v_ocppresn  Int?
+  v_ocpausen  Int?
+  tv_indepen  Int?
+  tv_depedif  Int?
+  tv_quinta   Int?
+  tv_vecinda  Int?
+  tv_chozaca  Int?
+  tv_improvi  Int?
+  tv_nodesti  Int?
+  tv_otrpart  Int?
+  tv_hothosp  Int?
+  tv_casapen  Int?
+  tv_hospita  Int?
+  tv_carcel   Int?
+  tv_asilo    Int?
+  tv_aldeinf  Int?
+  tv_otrcole  Int?
+  tv_calle    Int?
+  cov_opp     Int?
+  cov_opa     Int?
+  cov_uocaci  Int?
+  cov_desalq  Int?
+  cov_descos  Int?
+  cov_abando  Int?
+  cob_otrcau  Int?
+  mc_ladrill  Int?
+  mc_tapia    Int?
+  mc_madera   Int?
+  mc_quincha  Int?
+  mc_estera   Int?
+  mc_piedrab  Int?
+  mc_piedrac  Int?
+  mc_otros    Int?
+  mp_tierra   Int?
+  mp_cemento  Int?
+  mp_losetas  Int?
+  mp_parquet  Int?
+  mp_madera   Int?
+  mp_lamasfa  Int?
+  mp_otros    Int?
+  a_redpub    Int?
+  a_redpubaf  Int?
+  a_redpilon  Int?
+  a_cisterna  Int?
+  a_pozo      Int?
+  a_rio_aceq  Int?
+  a_vecino    Int?
+  a_otros     Int?
+  a_tdia_si   Int?
+  a_tdia_no   Int?
+  sh_redp     Int?
+  sh_redpfuv  Int?
+  sh_pozosep  Int?
+  sh_pozocg   Int?
+  sh_rioaceq  Int?
+  sh_notiene  Int?
+  aelectr_si  Int?
+  aelectr_no  Int?
+  nhbitcn1    Int?
+  nhbitcn2    Int?
+  nhbitcn3    Int?
+  nhbitcn4    Int?
+  nhbitcn5    Int?
+  nhbitcn6    Int?
+  nhbitcn7    Int?
+  nhbitcn8    Int?
+  nhbitcn9    Int?
+  nhbitcn10   Int?
+  nhbitcn11   Int?
+  nhbitcn12   Int?
+  nhbitcn13   Int?
+  nhbitcn14   Int?
+  nhbitcn15   Int?
+  tdv_alquil  Int?
+  tdv_proinv  Int?
+  tdv_proppz  Int?
+  tdv_propag  Int?
+  tdv_cedtbj  Int?
+  tdv_otros   Int?
+  b_radio     Int?
+  b_tvcolor   Int?
+  b_equipos   Int?
+  b_lavadora  Int?
+  b_refriger  Int?
+  b_computad  Int?
+  b_ninguno   Int?
+  s_telffijo  Int?
+  s_telfcel   Int?
+  s_internet  Int?
+  s_cable     Int?
+  s_ninguno   Int?
+  ecna_ectre  Int?
+  ecna_gas    Int?
+  ecna_kero   Int?
+  ecna_carb   Int?
+  ecna_le_a   Int?                     @map("ecna_leÑa")
+  ecna_boste  Int?
+  ecna_otro   Int?
+  ecn_nocna   Int?
+  cnachim_si  Int?
+  cnachim_no  Int?
+  discda_ver  Int?
+  discda_oir  Int?
+  discda_hab  Int?
+  discda_bra  Int?
+  discda_otr  Int?
+  discda_nin  Int?
+  pob_tipo    String?                  @db.VarChar(50)
+  ccpp_rvnac  Float?
+  ccpp_rvdep  Float?
+  ccpp_rvvec  Float?
+  idccpp      String?                  @db.VarChar(254)
+  conglomera  String?                  @db.VarChar(254)
+  centro_pob  String?                  @db.VarChar(254)
+  viv         Float?
+  pob         Float?
+  mr_mvcs     String?                  @db.VarChar(50)
+  niv_pol     String?                  @db.VarChar(100)
+  shape       Unsupported("geometry")?
+
+  @@index([shape], map: "b_15_centros_poblados_shape_geom_idx", type: Gist)
+}
+
+model carreteras {
+  objectid     Int                      @id @default(autoincrement())
+  cod_via      String?                  @db.VarChar(45)
+  id_via       String?                  @db.VarChar(25)
+  ubigeo       String?                  @db.VarChar(6)
+  clas_via     String?                  @db.VarChar(15)
+  sup_via      String?                  @db.VarChar(20)
+  rod_via      String?                  @db.VarChar(20)
+  cod_ruta     String?                  @db.VarChar(10)
+  nom_via      String?                  @db.VarChar(100)
+  est_via      String?                  @db.VarChar(45)
+  senti_via    String?                  @db.VarChar(20)
+  tramo_via    String?                  @db.VarChar(200)
+  long_km      Float?
+  fte_via      String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "carreteras_shape_geom_idx", type: Gist)
+}
+
+model curvas_de_nivel {
+  objectid     Int                      @id @default(autoincrement())
+  fid_         Int?
+  entity       String?                  @db.VarChar(16)
+  layer        String?                  @db.VarChar(254)
+  color        Int?
+  linetype     String?                  @db.VarChar(254)
+  elevation    Float?
+  linewt       Int?
+  refname      String?                  @db.VarChar(254)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "curvas_de_nivel_shape_geom_idx", type: Gist)
+}
+
+model islasanno {
+  objectid            Int                      @id @default(autoincrement())
+  featureid           Int?
+  zorder              Int?
+  annotationclassid   Int?
+  element             Bytes?
+  symbolid            Int?
+  status              Int?                     @default(0) @db.SmallInt
+  textstring          String?                  @db.VarChar(255)
+  fontname            String?                  @db.VarChar(255)
+  fontsize            Float?
+  bold                Int?                     @db.SmallInt
+  italic              Int?                     @db.SmallInt
+  underline           Int?                     @db.SmallInt
+  verticalalignment   Int?                     @db.SmallInt
+  horizontalalignment Int?                     @db.SmallInt
+  xoffset             Float?
+  yoffset             Float?
+  angle               Float?
+  fontleading         Float?
+  wordspacing         Float?
+  characterwidth      Float?
+  characterspacing    Float?
+  flipangle           Float?
+  override            Int?
+  shape_length        Float?
+  shape_area          Float?
+  shape               Unsupported("geometry")?
+
+  @@index([shape], map: "islasanno_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_area_urbana {
+  objectid     Int                      @id @default(autoincrement())
+  cod_au       String?                  @db.VarChar(10)
+  nom_au       String?                  @db.VarChar(40)
+  fpol_ccpp    String?                  @db.VarChar(30)
+  iddist       String?                  @db.VarChar(6)
+  area_has     Float?
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_area_urbana_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_cap_departamental {
+  objectid Int                      @id @default(autoincrement())
+  iddep    String?                  @db.VarChar(2)
+  capdep   String?                  @db.VarChar(60)
+  nombdep  String?                  @db.VarChar(45)
+  shape    Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_cap_departamental_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_centros_poblados {
+  objectid   Int                      @id @default(autoincrement())
+  ubigeo     String?                  @db.VarChar(6)
+  idccpp_07  String?                  @db.VarChar(10)
+  nombccpp07 String?                  @db.VarChar(60)
+  idccpp_17  String?                  @db.VarChar(10)
+  nombccpp17 String?                  @db.VarChar(60)
+  tipo_ccpp  String?                  @db.VarChar(6)
+  fpol_ccpp  String?                  @db.VarChar(30)
+  nom_surb   String?                  @db.VarChar(35)
+  nom_ssurb  String?                  @db.VarChar(35)
+  cat_ccpp   String?                  @db.VarChar(40)
+  tot_pob17  Int?
+  viv_tot17  Int?
+  label_ccpp String?                  @db.VarChar(65)
+  nombdist   String?                  @db.VarChar(45)
+  nombprov   String?                  @db.VarChar(45)
+  nombdep    String?                  @db.VarChar(45)
+  shape      Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_centros_poblados_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_cotas {
+  objectid Int                      @id @default(autoincrement())
+  tipo     String?                  @db.VarChar(15)
+  z        Float?
+  fte_cota String?                  @db.VarChar(45)
+  shape    Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_cotas_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_cuenca_hidrografica {
+  objectid     Int                      @id @default(autoincrement())
+  cod_uh       String?                  @db.VarChar(12)
+  reg_uh       String?                  @db.VarChar(10)
+  niv_uh       String?                  @db.VarChar(12)
+  nom_uh       String?                  @db.VarChar(50)
+  area_km2     Float?
+  fte_cca      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_cuenca_hidrografica_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_cuerpos_agua {
+  objectid     Int                      @id @default(autoincrement())
+  cod_cag      String?                  @db.VarChar(20)
+  ori_cag      String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  subtipo      String?                  @db.VarChar(15)
+  nom_cag      String?                  @db.VarChar(50)
+  area_has     Float?
+  nom_uh       String?                  @db.VarChar(50)
+  label_cag    String?                  @db.VarChar(50)
+  fte_cag      String?                  @db.VarChar(45)
+  nombdist     String?                  @db.VarChar(45)
+  nomprov      String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  observ       String?                  @db.VarChar(250)
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_cuerpos_agua_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_distrito {
+  objectid     Int                      @id @default(autoincrement())
+  ubigeo       String?                  @db.VarChar(6)
+  iddist       String?                  @db.VarChar(6)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  capdist      String?                  @db.VarChar(45)
+  acreadist    String?                  @db.VarChar(4)
+  area_km2     Float?
+  tot_ccpp17   Int?
+  tot_pob17    Int?
+  tot_viv17    Int?
+  shape_length Float?
+  shape_area   Float?
+  area_has     Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_distrito_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_hidrografia {
+  objectid     Int                      @id @default(autoincrement())
+  cod_rio      String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  subtipo      String?                  @db.VarChar(15)
+  nom_rio      String?                  @db.VarChar(50)
+  nom_uh       String?                  @db.VarChar(50)
+  area_km2     Float?
+  area_has     Float?
+  label_rio    String?                  @db.VarChar(50)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_hidrografia_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_hidrografia_l {
+  objectid     Int                      @id @default(autoincrement())
+  cod_rio      String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  subtipo      String?                  @db.VarChar(15)
+  nom_rio      String?                  @db.VarChar(50)
+  nom_uh       String?                  @db.VarChar(50)
+  long_km      Float?
+  long_m       Float?
+  label_rio    String?                  @db.VarChar(50)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_hidrografia_l_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_islas {
+  objectid     Int                      @id @default(autoincrement())
+  cod_isla     String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  nom_isla     String?                  @db.VarChar(25)
+  observ       String?                  @db.VarChar(60)
+  area_has     Float?
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+  label_isla   String?                  @db.VarChar(60)
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_islas_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_lam {
+  objectid     Int                      @id @default(autoincrement())
+  cod_lam      String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  subtipo      String?                  @db.VarChar(15)
+  long_km      Float?
+  fte_lam      String?                  @db.VarChar(45)
+  nombdist     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_lam_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_lim_dist {
+  objectid     Int                      @id @default(autoincrement())
+  cod_ld       String?                  @db.VarChar(10)
+  ubigeo       String?                  @db.VarChar(20)
+  nombdist     String?                  @db.VarChar(80)
+  niv_lim      String?                  @db.VarChar(2)
+  long_km      Float?
+  niv_sanea    String?                  @db.VarChar(15)
+  fte_dist     String?                  @db.VarChar(45)
+  observ       String?                  @db.VarChar(250)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_lim_dist_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_limites_internacionales {
+  objectid     Int                      @id @default(autoincrement())
+  cod_lint     String?                  @db.VarChar(10)
+  nombpais     String?                  @db.VarChar(80)
+  niv_lim      String?                  @db.VarChar(15)
+  fte_lint     String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+  area_km2     Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_limites_internacionales_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_oceano {
+  objectid     Int                      @id @default(autoincrement())
+  tipo         String?                  @db.VarChar(15)
+  nom_mar      String?                  @db.VarChar(60)
+  observ       String?                  @db.VarChar(60)
+  shape_length Float?
+  shape_area   Float?
+  label_mar    String?                  @db.VarChar(60)
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_oceano_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_pantanos {
+  objectid     Int                      @id @default(autoincrement())
+  cod_cie      String?                  @db.VarChar(10)
+  tipo         String?                  @db.VarChar(15)
+  subtipo      String?                  @db.VarChar(15)
+  nom_cie      String?                  @db.VarChar(45)
+  nom_uh       String?                  @db.VarChar(60)
+  area_has     Float?
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+  fte_cie      String?                  @db.VarChar(80)
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_pantanos_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_pendiente {
+  objectid     Int                      @id @default(autoincrement())
+  tipo         String?                  @db.VarChar(10)
+  niv_pend     String?                  @db.VarChar(45)
+  porc_pend    String?                  @db.VarChar(15)
+  desc_pend    String?                  @db.VarChar(60)
+  area_has     Float?
+  fte_pend     String?                  @db.VarChar(45)
+  shape_length Float?
+  shape_area   Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_pendiente_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_red_ferroviaria {
+  objectid     Int                      @id @default(autoincrement())
+  id_via       String?                  @db.VarChar(10)
+  ubigeo       String?                  @db.VarChar(6)
+  clas_ferr    String?                  @db.VarChar(15)
+  nom_ferr     String?                  @db.VarChar(100)
+  tramo_ferr   String?                  @db.VarChar(200)
+  long_km      Float?
+  est_ferr     String?                  @db.VarChar(80)
+  adm_ferr     String?                  @db.VarChar(60)
+  fte_ferr     String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_red_ferroviaria_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_red_vial {
+  objectid     Int                      @id @default(autoincrement())
+  cod_via      String?                  @db.VarChar(45)
+  id_via       String?                  @db.VarChar(25)
+  ubigeo       String?                  @db.VarChar(6)
+  clas_via     String?                  @db.VarChar(15)
+  sup_via      String?                  @db.VarChar(20)
+  rod_via      String?                  @db.VarChar(20)
+  cod_ruta     String?                  @db.VarChar(10)
+  nom_via      String?                  @db.VarChar(100)
+  est_via      String?                  @db.VarChar(45)
+  senti_via    String?                  @db.VarChar(20)
+  tramo_via    String?                  @db.VarChar(200)
+  long_km      Float?
+  fte_via      String?                  @db.VarChar(45)
+  nombprov     String?                  @db.VarChar(45)
+  nombdep      String?                  @db.VarChar(45)
+  shape_length Float?
+  shape        Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_red_vial_shape_geom_idx", type: Gist)
+}
+
+model org_b_1501_toponimia_p {
+  objectid   Int                      @id @default(autoincrement())
+  cod_topo   String?                  @db.VarChar(10)
+  tipo       String?                  @db.VarChar(10)
+  nom_topo   String?                  @db.VarChar(60)
+  label_topo String?                  @db.VarChar(120)
+  nombdist   String?                  @db.VarChar(45)
+  nombprov   String?                  @db.VarChar(45)
+  nombdep    String?                  @db.VarChar(45)
+  shape      Unsupported("geometry")?
+
+  @@index([shape], map: "org_b_1501_toponimia_p_shape_geom_idx", type: Gist)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
 }
