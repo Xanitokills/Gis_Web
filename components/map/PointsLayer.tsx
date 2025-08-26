@@ -1,39 +1,38 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  LayerGroup,
-  CircleMarker,
-  Popup,
-  useMap,
-} from "react-leaflet";
+import { LayerGroup, Marker, Popup, useMap } from "react-leaflet";
 import * as L from "leaflet";
 
 type Field = { key: string; label?: string };
 
 type Feature = {
   id?: string | number;
-  geometry: { type: "Point"; coordinates: [number, number] }; // [lon, lat]
+  geometry: { type: "Point"; coordinates: [number, number] };
   properties: Record<string, any>;
 };
 
 type FC = { type: "FeatureCollection"; features: Feature[] };
 
+// 👉 Definir el ícono personalizado
+const orangeIcon = new L.Icon({
+  iconUrl: "/icons/marker-orange.png", // coloca aquí tu imagen (ej: en public/icons/)
+  iconSize: [32, 32], // tamaño
+  iconAnchor: [16, 32], // el “pico” del pin
+  popupAnchor: [0, -32], // donde abre el popup
+});
+
 export default function PointsLayer({
   url,
   popupFields = [],
-  color = "#16a34a",
-  radius = 8,
 }: {
   url: string;
   popupFields?: Field[];
-  color?: string;
-  radius?: number;
 }) {
   const map = useMap();
   const [fc, setFc] = useState<FC>({ type: "FeatureCollection", features: [] });
 
-  // Trae GeoJSON
+  // fetch
   useEffect(() => {
     (async () => {
       try {
@@ -48,7 +47,7 @@ export default function PointsLayer({
     })();
   }, [url]);
 
-  // Ajusta el mapa a los puntos
+  // fitBounds
   useEffect(() => {
     if (!fc?.features?.length) return;
     const latlngs = fc.features
@@ -60,15 +59,12 @@ export default function PointsLayer({
   }, [fc, map]);
 
   const items = useMemo(() => {
-    const feats = (fc?.features || []).filter(
-      (f) => f?.geometry?.type === "Point" && Array.isArray(f.geometry.coordinates)
-    );
-    return feats.map((f, i) => {
-      const [x, y] = f.geometry.coordinates; // [lon, lat]
-      const center: [number, number] = [y, x];
-      const props = f.properties || {};
-      const html =
-        popupFields.length > 0
+    return (fc?.features || [])
+      .filter((f) => f?.geometry?.type === "Point" && Array.isArray(f.geometry.coordinates))
+      .map((f, i) => {
+        const [x, y] = f.geometry.coordinates; // [lon,lat]
+        const props = f.properties || {};
+        const html = popupFields.length
           ? popupFields
               .map(({ key, label }) => {
                 const v = props[key];
@@ -81,20 +77,15 @@ export default function PointsLayer({
               .join("")
           : `<div><b>${props.titulo ?? "Propiedad"}</b></div>`;
 
-      return (
-        <CircleMarker
-          key={String(f.id ?? i)}
-          center={center}
-          pathOptions={{ color, weight: 2, fillOpacity: 0.9 }}
-          radius={radius}
-        >
-          <Popup maxWidth={360}>
-            <div dangerouslySetInnerHTML={{ __html: html }} />
-          </Popup>
-        </CircleMarker>
-      );
-    });
-  }, [fc, popupFields, color, radius]);
+        return (
+          <Marker key={i} position={[y, x]} icon={orangeIcon}>
+            <Popup maxWidth={360}>
+              <div dangerouslySetInnerHTML={{ __html: html }} />
+            </Popup>
+          </Marker>
+        );
+      });
+  }, [fc, popupFields]);
 
   if (!items.length) return null;
   return <LayerGroup>{items}</LayerGroup>;

@@ -9,7 +9,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <title>Lima CRM</title>
       </head>
       <body className="min-h-dvh bg-neutral-50 text-neutral-900 antialiased">
-        <div className="mx-auto max-w-7xl p-4">{children}</div>
+        <div className="mx-auto max-w-10xl p-4">{children}</div>
       </body>
     </html>
   );

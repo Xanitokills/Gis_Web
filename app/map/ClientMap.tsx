@@ -13,8 +13,6 @@ export default function ClientMap() {
         <LayersControl.Overlay name="Urbania" checked>
           <PointsLayer
             url="/api/map/urbania?limit=2000"
-            color="#16a34a"
-            radius={6}
             popupFields={[
               { key: "titulo", label: "Título" },
               { key: "precio", label: "Precio" },
