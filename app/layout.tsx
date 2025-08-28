@@ -1,16 +1,17 @@
-import "./globals.css";
+// app/layout.tsx
+import 'leaflet/dist/leaflet.css';
+import './globals.css';
+import React from 'react';
+
+export const metadata = {
+  title: 'SmartCore BI - Mapa',
+  description: 'Mapa Inteligente con Leaflet + Next.js',
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Lima CRM</title>
-      </head>
-      <body className="min-h-dvh bg-neutral-50 text-neutral-900 antialiased">
-        <div className="mx-auto max-w-10xl p-4">{children}</div>
-      </body>
+      <body className="h-screen">{children}</body>
     </html>
   );
 }
