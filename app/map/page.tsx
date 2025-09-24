@@ -375,7 +375,9 @@ function SidebarContent({
             <MapPin className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-900">SmartCore BI</h1>
+            <h1 className="text-xl font-bold text-gray-900">
+              <a href="http://localhost:3008/" className="text-inherit">SmartCore BI</a>
+            </h1>
             <p className="text-xs text-gray-600">Mapa Inteligente</p>
           </div>
         </div>
