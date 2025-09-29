@@ -10,7 +10,19 @@ import {
   Activity, Shield, Car
 } from "lucide-react";
 
-// Importar dinámicamente (ssr off) nuestros componentes de mapa
+// Impo                    popupContent={(props) => `
+                      <div class="space-y-2">
+                        <h3 class="font-semibold text-green-800">Viviendas</h3>
+                        <div><strong>Distrito:</strong> ${props.nombdist || 'N/A'}</div>
+                        <div><strong>Sector:</strong> ${props.nom_sect || 'N/A'}</div>
+                        <div><strong>Total Viviendas:</strong> ${props.sum_tot_vi || 'N/A'}</div>
+                        <div><strong>Tipo Proyecto:</strong> ${props.tip_proyec || 'N/A'}</div>
+                        <div><strong>Oferta Viv:</strong> ${props.ofert_viv_ || 'N/A'}</div>
+                        <div><strong>Fuente:</strong> ${props.fuente_of_ || 'N/A'}</div>
+                        <div><strong>Fecha:</strong> ${props.fecha_of_v || 'N/A'}</div>
+                        <div><strong>Ubigeo:</strong> ${props.ubigeo || 'N/A'}</div>
+                      </div>
+                    `} (ssr off) de nuestros componentes de mapa
 const Map = dynamic(() => import("../../components/map/Map"), { ssr: false });
 const GeoLayer = dynamic(() => import("../../components/map/GeoLayer"), { ssr: false });
 const PointsLayer = dynamic(() => import("../../components/map/PointsLayer"), { ssr: false });

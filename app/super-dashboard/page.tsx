@@ -1,23 +1,63 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
 // Import dinámico del mapa
 const Map = dynamic(() => import("../../components/map/Map"), { ssr: false });
 const GeoLayer = dynamic(() => import("../../components/map/GeoLayer"), { ssr: false });
 
+type DashboardMetrics = {
+  totalProperties: number;
+  averagePrice: number;
+  activeLeads: number;
+  roiPercentage: number;
+  newPropertiesThisMonth: number;
+};
+
 export default function SuperDashboardPage() {
   const [activeTab, setActiveTab] = useState('ecosystem');
+  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const ecosystemMetrics = {
-    totalUsers: 15420,
-    activeTransactions: 89,
-    totalServicesActivated: 1247,
-    monthlyRevenue: 287000,
-    smartMarketIndex: 1.23,
-    certifiedProperties: 2341,
-    avgPrice: 385000
+  // Fetch datos reales
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const response = await fetch('/api/dashboard/stats');
+        if (response.ok) {
+          const data = await response.json();
+          setMetrics(data.metrics);
+        }
+      } catch (error) {
+        console.error('Error al obtener métricas:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMetrics();
+    // Actualizar cada 5 minutos
+    const interval = setInterval(fetchMetrics, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const ecosystemMetrics = metrics ? {
+    totalUsers: 15420, // Este se mantiene como simulado
+    activeTransactions: metrics.activeLeads,
+    totalServicesActivated: 1247, // Este se mantiene como simulado
+    monthlyRevenue: 287000, // Este se mantiene como simulado
+    smartMarketIndex: (metrics.roiPercentage / 100).toFixed(2),
+    certifiedProperties: metrics.totalProperties,
+    avgPrice: metrics.averagePrice
+  } : {
+    totalUsers: 0,
+    activeTransactions: 0,
+    totalServicesActivated: 0,
+    monthlyRevenue: 0,
+    smartMarketIndex: '0.00',
+    certifiedProperties: 0,
+    avgPrice: 0
   };
 
   const integrations = [
@@ -108,7 +148,13 @@ export default function SuperDashboardPage() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Usuarios Totales</p>
-                    <p className="text-2xl font-bold text-gray-900">{ecosystemMetrics.totalUsers.toLocaleString()}</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {loading ? (
+                        <span className="animate-pulse bg-gray-300 h-8 w-20 block rounded"></span>
+                      ) : (
+                        ecosystemMetrics.totalUsers.toLocaleString()
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -119,8 +165,14 @@ export default function SuperDashboardPage() {
                     <span className="text-green-600 text-2xl">💰</span>
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Ingresos Mensuales</p>
-                    <p className="text-2xl font-bold text-gray-900">S/ {ecosystemMetrics.monthlyRevenue.toLocaleString('es-PE')}</p>
+                    <p className="text-sm font-medium text-gray-600">Precio Promedio</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {loading ? (
+                        <span className="animate-pulse bg-gray-300 h-8 w-32 block rounded"></span>
+                      ) : (
+                        `S/ ${ecosystemMetrics.avgPrice.toLocaleString('es-PE')}`
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -132,7 +184,13 @@ export default function SuperDashboardPage() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Servicios Activados</p>
-                    <p className="text-2xl font-bold text-gray-900">{ecosystemMetrics.totalServicesActivated}</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {loading ? (
+                        <span className="animate-pulse bg-gray-300 h-8 w-16 block rounded"></span>
+                      ) : (
+                        ecosystemMetrics.totalServicesActivated
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -144,7 +202,13 @@ export default function SuperDashboardPage() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">SmartMarket Index™</p>
-                    <p className="text-2xl font-bold text-gray-900">{ecosystemMetrics.smartMarketIndex}</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {loading ? (
+                        <span className="animate-pulse bg-gray-300 h-8 w-12 block rounded"></span>
+                      ) : (
+                        ecosystemMetrics.smartMarketIndex
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -156,7 +220,13 @@ export default function SuperDashboardPage() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Propiedades Certificadas</p>
-                    <p className="text-2xl font-bold text-gray-900">{ecosystemMetrics.certifiedProperties}</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {loading ? (
+                        <span className="animate-pulse bg-gray-300 h-8 w-20 block rounded"></span>
+                      ) : (
+                        ecosystemMetrics.certifiedProperties.toLocaleString()
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -167,8 +237,14 @@ export default function SuperDashboardPage() {
                     <span className="text-red-600 text-2xl">⚡</span>
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Transacciones Activas</p>
-                    <p className="text-2xl font-bold text-gray-900">{ecosystemMetrics.activeTransactions}</p>
+                    <p className="text-sm font-medium text-gray-600">Leads Activos</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {loading ? (
+                        <span className="animate-pulse bg-gray-300 h-8 w-16 block rounded"></span>
+                      ) : (
+                        ecosystemMetrics.activeTransactions
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>

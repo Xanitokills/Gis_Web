@@ -1,4 +1,4 @@
-import { pg } from "../../../../lib/pg";
+import { pg } from "../../../../../lib/pg";
 
 // convierte string->number con default
 const num = (v: any, d: number) => (isNaN(Number(v)) ? d : Number(v));

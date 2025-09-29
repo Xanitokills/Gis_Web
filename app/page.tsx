@@ -25,41 +25,41 @@ export default function HomePage() {
       <nav className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-orange-500 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-slate-700 to-slate-800 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">S</span>
             </div>
             <span className="text-xl font-bold text-gray-900">SMARTCORE BI</span>
           </div>
           
-          <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-full font-medium transition-colors">
+          <button className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-2 rounded-full font-medium transition-colors">
             Solicitar Demo
           </button>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-orange-50 via-white to-orange-100 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-slate-50 via-white to-slate-100 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="text-center mb-12">
-            <span className="inline-block px-4 py-2 bg-orange-100 text-orange-800 rounded-full text-sm font-medium mb-4">
+           {/*  <span className="inline-block px-4 py-2 bg-slate-100 text-slate-800 rounded-full text-sm font-medium mb-4">
               La Realización de la Visión de Franklin Vásquez
-            </span>
+            </span> */}
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
               <span className="block">SMARTCORE BI</span>
-              <span className="block text-orange-600 text-3xl md:text-4xl mt-2">
+              <span className="block text-slate-700 text-3xl md:text-4xl mt-2">
                 El Ecosistema Inmobiliario Integral
               </span>
             </h1>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-8 leading-relaxed">
               Hace más de cinco años, Franklin Vásquez soñó con una herramienta que no solo ayudara a vender casas... 
-              sino que sanara la desconfianza en el mercado inmobiliario peruano. Hoy, SMARTCORE BI no solo cumple ese sueño. 
+              sino que sanera la desconfianza en el mercado inmobiliario peruano. Hoy, SMARTCORE BI no solo cumple ese sueño. 
               Lo expande.
             </p>
-            <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl max-w-2xl mx-auto shadow-lg border border-orange-200">
+            <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl max-w-2xl mx-auto shadow-lg border border-slate-200">
               <p className="text-lg text-gray-800 font-medium">
                 No es un software. Es un ecosistema donde el cliente, el agente, el banco, el tasador, 
                 la mudanza y el Estado trabajan juntos bajo una misma regla: 
-                <span className="text-orange-600 font-bold"> transparencia, datos reales y experiencia humana.</span>
+                <span className="text-slate-700 font-bold"> transparencia, datos reales y experiencia humana.</span>
               </p>
             </div>
           </div>
@@ -101,7 +101,7 @@ export default function HomePage() {
                   <div className="text-4xl mb-4">{service.icon}</div>
                   <h3 className="text-lg font-bold text-gray-900 mb-2">{service.title}</h3>
                   <p className="text-gray-600 mb-4">{service.desc}</p>
-                  <button className="w-full py-2 px-4 rounded-lg font-semibold transition-colors bg-orange-500 hover:bg-orange-600 text-white">
+                  <button className="w-full py-2 px-4 rounded-lg font-semibold transition-colors bg-slate-700 hover:bg-slate-800 text-white">
                     Solicitar
                   </button>
                 </div>
@@ -121,19 +121,19 @@ export default function HomePage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-4xl font-bold text-orange-600 mb-2">280,000+</div>
+              <div className="text-4xl font-bold text-slate-700 mb-2">280,000+</div>
               <div className="text-gray-600">Agentes en Perú</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-green-600 mb-2">85%</div>
+              <div className="text-4xl font-bold text-slate-600 mb-2">85%</div>
               <div className="text-gray-600">Margen de Rentabilidad</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">90 días</div>
+              <div className="text-4xl font-bold text-slate-800 mb-2">90 días</div>
               <div className="text-gray-600">Lanzamiento MVP</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-purple-600 mb-2">$2.95M</div>
+              <div className="text-4xl font-bold text-slate-700 mb-2">$2.95M</div>
               <div className="text-gray-600">ARR Proyectado</div>
             </div>
           </div>
@@ -141,20 +141,20 @@ export default function HomePage() {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-gradient-to-r from-orange-500 to-orange-600 py-16">
+      <div className="bg-gradient-to-r from-slate-700 to-slate-800 py-16">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             Únete al Futuro del Mercado Inmobiliario
           </h2>
-          <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-slate-200 mb-8 max-w-2xl mx-auto">
             SMARTCORE BI: Donde la visión de Franklin Vásquez se hace realidad para transformar 
             la industria inmobiliaria peruana
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/search" className="bg-white text-orange-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-50 transition-colors shadow-lg">
+            <Link href="/search" className="bg-white text-slate-700 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-50 transition-colors shadow-lg">
               Buscar Propiedades
             </Link>
-            <Link href="/agent-dashboard" className="bg-orange-700 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-orange-800 transition-colors shadow-lg border-2 border-orange-300">
+            <Link href="/agent-dashboard" className="bg-slate-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-slate-500 transition-colors shadow-lg border-2 border-slate-400">
               Soy Agente
             </Link>
           </div>
@@ -167,7 +167,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-orange-500 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-slate-600 to-slate-700 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold">S</span>
                 </div>
                 <span className="text-lg font-bold">SMARTCORE BI</span>
