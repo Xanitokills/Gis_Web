@@ -496,6 +496,40 @@ export default function ClientMapPage() {
         .district-layer:hover {
           filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
         }
+        
+        /* Estilos mejorados para tooltips de precios */
+        .price-tooltip {
+          background: rgba(15, 58, 141, 0.9) !important; /* azul marino intermedio */
+          border: none !important;
+          border-radius: 8px !important;
+          box-shadow: 0 4px 12px rgba(15, 58, 141, 0.4) !important;
+          padding: 8px 12px !important;
+          font-weight: 600 !important;
+          font-size: 13px !important;
+          color: white !important;
+          backdrop-filter: blur(10px) !important;
+          margin: 0 !important;
+        }
+        
+        .price-tooltip::before {
+          border-top-color: rgba(15, 58, 141, 0.9) !important;
+        }
+        
+        .leaflet-tooltip-top.price-tooltip::before {
+          border-top-color: rgba(15, 58, 141, 0.9) !important;
+        }
+        
+        .leaflet-tooltip-bottom.price-tooltip::before {
+          border-bottom-color: rgba(15, 58, 141, 0.9) !important;
+        }
+        
+        .leaflet-tooltip-left.price-tooltip::before {
+          border-left-color: rgba(15, 58, 141, 0.9) !important;
+        }
+        
+        .leaflet-tooltip-right.price-tooltip::before {
+          border-right-color: rgba(15, 58, 141, 0.9) !important;
+        }
       `}</style>
     </div>
   );

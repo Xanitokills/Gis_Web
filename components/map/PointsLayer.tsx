@@ -194,12 +194,12 @@ export default function PointsLayer({
     }
   };
 
-  // Obtener el tamaño del marcador según el zoom
+  // Obtener el tamaño del marcador según el zoom - aumentado para mejor visibilidad
   const getMarkerSize = () => {
-    if (currentZoom < 12) return 3;
-    if (currentZoom < 14) return 4;
-    if (currentZoom < 16) return 5;
-    return 6;
+    if (currentZoom < 12) return 6;  // aumentado de 3 a 6
+    if (currentZoom < 14) return 8;  // aumentado de 4 a 8
+    if (currentZoom < 16) return 10; // aumentado de 5 a 10
+    return 12; // aumentado de 6 a 12
   };
 
   // Fetch con AbortController y no-store
