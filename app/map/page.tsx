@@ -32,6 +32,7 @@ export default function ClientMapPage() {
 
   // Estado para datos reales
   const [dashboardStats, setDashboardStats] = useState<any>(null);
+  const [filteredStats, setFilteredStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [districtsList, setDistrictsList] = useState<Array<{name: string, count: number}>>([]);
   const [filteredCount, setFilteredCount] = useState<number | null>(null);
@@ -50,7 +51,7 @@ export default function ClientMapPage() {
         const response = await fetch('/api/dashboard/stats');
         if (response.ok) {
           const data = await response.json();
-          setDashboardStats(data.metrics);
+          setDashboardStats(data);
         }
       } catch (error) {
         console.error('Error al obtener estadísticas del dashboard:', error);
@@ -91,13 +92,38 @@ export default function ClientMapPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Estadísticas con datos reales
-  const mapStats = dashboardStats ? {
-    totalProperties: dashboardStats.totalProperties,
-    avgPrice: dashboardStats.averagePrice,
-    activeLeads: dashboardStats.activeLeads,
+  // Sincronizar conteo filtrado con total cuando no hay filtros activos
+  useEffect(() => {
+    const hasActiveFilters = searchTerm || 
+                           selectedDistrict !== 'Todos' || 
+                           priceRange.min || 
+                           priceRange.max || 
+                           selectedSource !== 'Todos' || 
+                           selectedOperationType !== 'Todos' || 
+                           selectedPropertyType !== 'Todos';
+    
+    if (!hasActiveFilters && dashboardStats?.metrics?.totalProperties && filteredCount === null) {
+      setFilteredCount(dashboardStats.metrics.totalProperties);
+    }
+  }, [dashboardStats, searchTerm, selectedDistrict, priceRange, selectedSource, selectedOperationType, selectedPropertyType, filteredCount]);
+
+  // Determinar si hay filtros activos
+  const hasActiveFilters = searchTerm || 
+                         selectedDistrict !== 'Todos' || 
+                         priceRange.min || 
+                         priceRange.max || 
+                         selectedSource !== 'Todos' || 
+                         selectedOperationType !== 'Todos' || 
+                         selectedPropertyType !== 'Todos';
+
+  // Estadísticas con datos reales (usar filtradas si hay filtros activos)
+  const currentStats = hasActiveFilters ? filteredStats : dashboardStats;
+  const mapStats = currentStats?.metrics ? {
+    totalProperties: currentStats.metrics.totalProperties || 0,
+    avgPrice: currentStats.metrics.averagePrice || 0,
+    activeLeads: currentStats.metrics.activeLeads || 0,
     closedDeals: 12, // Este se mantiene simulado
-    avgROI: dashboardStats.roiPercentage
+    avgROI: currentStats.metrics.roiPercentage || 0
   } : {
     totalProperties: 0,
     avgPrice: 0,
@@ -113,7 +139,7 @@ export default function ClientMapPage() {
 
   // Construye query de puntos (Urbania) según filtros
   const propertyFilters = useMemo(() => {
-    let url = "/api/map/urbania?limit=1000"; // Reducir a 1000 para mejor performance
+    let url = "/api/map/urbania?limit=2000"; // Límite para visualización
     const params = new URLSearchParams();
     
     if (searchTerm && searchTerm.trim()) {
@@ -149,26 +175,124 @@ export default function ClientMapPage() {
     return qs ? `${url}&${qs}` : url;
   }, [searchTerm, selectedDistrict, priceRange, selectedSource, selectedOperationType, selectedPropertyType]);
 
-  // Obtener conteo de propiedades filtradas
+  // Crear URL para conteo total (sin límite)
+  const countFilters = useMemo(() => {
+    let url = "/api/properties-count";
+    const params = new URLSearchParams();
+    
+    if (searchTerm && searchTerm.trim()) {
+      params.append("q", searchTerm.trim());
+    }
+    
+    if (selectedDistrict && selectedDistrict !== "Todos") {
+      params.append("district", selectedDistrict);
+    }
+    
+    if (priceRange.min && priceRange.min > 0) {
+      params.append("min_price", String(priceRange.min));
+    }
+    
+    if (priceRange.max && priceRange.max > 0) {
+      params.append("max_price", String(priceRange.max));
+    }
+    
+    if (selectedSource && selectedSource !== "Todos") {
+      params.append("source", selectedSource);
+    }
+    
+    if (selectedOperationType && selectedOperationType !== "Todos") {
+      params.append("operation_type", selectedOperationType);
+    }
+    
+    if (selectedPropertyType && selectedPropertyType !== "Todos") {
+      params.append("property_type", selectedPropertyType);
+    }
+    
+    const qs = params.toString();
+    return qs ? `${url}?${qs}` : url;
+  }, [searchTerm, selectedDistrict, priceRange, selectedSource, selectedOperationType, selectedPropertyType]);
+
+  // Crear URL para estadísticas filtradas
+  const filteredStatsUrl = useMemo(() => {
+    let url = "/api/dashboard/filtered-stats";
+    const params = new URLSearchParams();
+    
+    if (searchTerm && searchTerm.trim()) {
+      params.append("q", searchTerm.trim());
+    }
+    
+    if (selectedDistrict && selectedDistrict !== "Todos") {
+      params.append("district", selectedDistrict);
+    }
+    
+    if (priceRange.min && priceRange.min > 0) {
+      params.append("min_price", String(priceRange.min));
+    }
+    
+    if (priceRange.max && priceRange.max > 0) {
+      params.append("max_price", String(priceRange.max));
+    }
+    
+    if (selectedSource && selectedSource !== "Todos") {
+      params.append("source", selectedSource);
+    }
+    
+    if (selectedOperationType && selectedOperationType !== "Todos") {
+      params.append("operation_type", selectedOperationType);
+    }
+    
+    if (selectedPropertyType && selectedPropertyType !== "Todos") {
+      params.append("property_type", selectedPropertyType);
+    }
+    
+    const qs = params.toString();
+    return qs ? `${url}?${qs}` : url;
+  }, [searchTerm, selectedDistrict, priceRange, selectedSource, selectedOperationType, selectedPropertyType]);
+
+  // Obtener estadísticas filtradas
   useEffect(() => {
-    const fetchFilteredCount = async () => {
+    const fetchFilteredStats = async () => {
       try {
-        // Crear URL similar pero solo para contar
-        const countUrl = propertyFilters.replace('limit=2000', 'count=true');
-        const response = await fetch(countUrl);
+        const response = await fetch(filteredStatsUrl);
         if (response.ok) {
           const data = await response.json();
-          setFilteredCount(data.features?.length || 0);
+          setFilteredStats(data);
+          setFilteredCount(data.metrics?.totalProperties || 0);
+          // Actualizar lista de distritos con datos filtrados
+          if (data.topDistricts) {
+            setDistrictsList(data.topDistricts);
+          }
         }
       } catch (error) {
-        console.error('Error al obtener conteo filtrado:', error);
+        console.error('Error al obtener estadísticas filtradas:', error);
       }
     };
 
     // Debounce el fetch para evitar demasiadas llamadas
-    const timeoutId = setTimeout(fetchFilteredCount, 300);
+    const timeoutId = setTimeout(fetchFilteredStats, 300);
     return () => clearTimeout(timeoutId);
-  }, [propertyFilters]);
+  }, [filteredStatsUrl]);
+
+  // Obtener conteo total de propiedades filtradas (backup)
+  useEffect(() => {
+    if (filteredCount === null) {
+      const fetchFilteredCount = async () => {
+        try {
+          const response = await fetch(countFilters);
+          if (response.ok) {
+            const data = await response.json();
+            setFilteredCount(data.count || 0);
+          }
+        } catch (error) {
+          console.error('Error al obtener conteo filtrado:', error);
+        }
+      };
+
+      // Debounce el fetch para evitar demasiadas llamadas
+      const timeoutId = setTimeout(fetchFilteredCount, 300);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [countFilters, filteredCount]);
 
   return (
     <div className="h-screen bg-gray-50 flex relative overflow-hidden">

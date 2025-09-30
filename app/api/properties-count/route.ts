@@ -1,4 +1,4 @@
-import { pg } from "../../../../lib/pg";
+import { pg } from "../../../lib/pg";
 
 const num = (v: any, d: number) => (isNaN(Number(v)) ? d : Number(v));
 
@@ -8,14 +8,13 @@ export async function GET(req: Request) {
   const district = (searchParams.get("district") || "").trim();
   const min = num(searchParams.get("min_price"), 0);
   const max = num(searchParams.get("max_price"), 0);
-  const limit = num(searchParams.get("limit"), 2000); // Aumentar límite cuando no hay filtros específicos
-  const source = searchParams.get("source") || ""; // Nuevo filtro por fuente
-  const operationType = searchParams.get("operation_type") || ""; // Nuevo filtro
-  const propertyType = searchParams.get("property_type") || ""; // Nuevo filtro
+  const source = searchParams.get("source") || "";
+  const operationType = searchParams.get("operation_type") || "";
+  const propertyType = searchParams.get("property_type") || "";
   const bboxArr = (searchParams.get("bbox") || "").split(",").map(Number);
   const hasBbox = bboxArr.length === 4 && bboxArr.every((n) => !isNaN(n));
 
-  const where: string[] = ["geo IS NOT NULL"]; // 👈 importante
+  const where: string[] = ["geo IS NOT NULL"];
   const params: any[] = [];
 
   if (q) {
@@ -48,6 +47,7 @@ export async function GET(req: Request) {
     params.push(`%${propertyType.toLowerCase()}%`);
     where.push(`lower(tipo_propiedad) LIKE $${params.length}`);
   }
+
   if (hasBbox) {
     const [minX, minY, maxX, maxY] = bboxArr;
     params.push(minX, minY, maxX, maxY);
@@ -60,58 +60,47 @@ export async function GET(req: Request) {
   }
 
   const whereSQL = `WHERE ${where.join(" AND ")}`;
-  const limitSQL = limit > 0 ? `LIMIT ${limit}` : "LIMIT 1000"; // Siempre tener un límite para performance
 
   const sql = `
-    WITH base AS (
-      SELECT
-        id, titulo, precio, moneda, ubicacion, distrito,
-        tipo_operacion, tipo_propiedad, fuente,
-        area_total_m2, area_construida_m2,
-        habitaciones, banos, cocheras, antiguedad,
-        latitud, longitud,
-        url_original, 
-        created_at,
-        ST_SetSRID(geo::geometry, 4326) AS g4326
-      FROM public.property_urbania
-      ${whereSQL}
-      ORDER BY precio DESC -- Ordenar para mostrar propiedades más caras primero
-      ${limitSQL}
-    )
-    SELECT jsonb_build_object(
-      'type','FeatureCollection',
-      'features', COALESCE(jsonb_agg(
-        jsonb_build_object(
-          'type','Feature',
-          'id', id,
-          'geometry', ST_AsGeoJSON(g4326)::jsonb,
-          'properties', to_jsonb(base) - 'g4326'
-        )
-      ) FILTER (WHERE g4326 IS NOT NULL), '[]'::jsonb)
-    ) AS fc
-    FROM base;
+    SELECT COUNT(*) as total_count
+    FROM public.property_urbania
+    ${whereSQL}
   `;
 
   try {
     const { rows } = await pg.query(sql, params);
-    const fc = rows?.[0]?.fc ?? { type: "FeatureCollection", features: [] };
+    const totalCount = parseInt(rows[0]?.total_count) || 0;
     
     // Agregar información de debug en desarrollo
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[Urbania API] Filtros aplicados:`, {
+      console.log(`[Count API] Filtros aplicados:`, {
         query: q,
         district,
         min_price: min,
         max_price: max,
-        limit,
+        source,
+        operationType,
+        propertyType,
         bbox: hasBbox ? bboxArr : null
       });
-      console.log(`[Urbania API] Total features devueltas: ${fc.features?.length || 0}`);
+      console.log(`[Count API] Total count: ${totalCount}`);
     }
     
-    return Response.json(fc);
+    return Response.json({ 
+      count: totalCount,
+      filters: {
+        query: q || null,
+        district: district || null,
+        min_price: min > 0 ? min : null,
+        max_price: max > 0 ? max : null,
+        source: source || null,
+        operation_type: operationType || null,
+        property_type: propertyType || null,
+        bbox: hasBbox ? bboxArr : null
+      }
+    });
   } catch (e: any) {
-    console.error(e);
-    return new Response(e.message || "Error al generar GeoJSON de Urbania", { status: 500 });
+    console.error('Error al obtener conteo:', e);
+    return new Response(e.message || "Error al obtener conteo de propiedades", { status: 500 });
   }
 }

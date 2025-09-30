@@ -6,10 +6,9 @@ export async function GET(req: Request) {
     const propertyStats = await pg.query(`
       SELECT 
         COUNT(*) as total_properties,
-        AVG(precio) as avg_price,
+        AVG(precio) FILTER (WHERE precio > 0) as avg_price,
         COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '30 days') as new_properties_month
       FROM public.property_urbania 
-      WHERE precio > 0
     `);
 
     // Obtener estadísticas de leads (simulamos con actividad reciente)
@@ -22,9 +21,8 @@ export async function GET(req: Request) {
     // Calcular ROI promedio (simulado basado en propiedades)
     const roiStats = await pg.query(`
       SELECT 
-        (COUNT(*) FILTER (WHERE precio BETWEEN 200000 AND 500000) * 100.0 / COUNT(*)) as roi_percentage
+        (COUNT(*) FILTER (WHERE precio BETWEEN 200000 AND 500000) * 100.0 / NULLIF(COUNT(*) FILTER (WHERE precio > 0), 0)) as roi_percentage
       FROM public.property_urbania 
-      WHERE precio > 0
     `);
 
     // Obtener distribución por distritos (top 10)
