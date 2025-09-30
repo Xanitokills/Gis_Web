@@ -33,6 +33,8 @@ type Props = {
   circleStyle?: L.CircleMarkerOptions;
   /** Campo para segmentación por color */
   colorBy?: 'fuente' | 'tipo_operacion' | 'tipo_propiedad';
+  /** Callback para reportar metadatos del mapa */
+  onMetadataUpdate?: (metadata: any) => void;
 };
 
 const DEFAULT_ICON_URL = "/icons/marker-orange.png";
@@ -136,7 +138,8 @@ export default function PointsLayer({
   maxZoomOnFit = 15,
   padding = [20, 20],
   circleStyle,
-  colorBy = 'fuente' // Por defecto segmentar por fuente
+  colorBy = 'fuente', // Por defecto segmentar por fuente
+  onMetadataUpdate
 }: Props) {
   const map = useMap();
   const [features, setFeatures] = useState<Feature[]>([]);
@@ -196,10 +199,10 @@ export default function PointsLayer({
 
   // Obtener el tamaño del marcador según el zoom - aumentado para mejor visibilidad
   const getMarkerSize = () => {
-    if (currentZoom < 12) return 6;  // aumentado de 3 a 6
-    if (currentZoom < 14) return 8;  // aumentado de 4 a 8
-    if (currentZoom < 16) return 10; // aumentado de 5 a 10
-    return 12; // aumentado de 6 a 12
+    if (currentZoom < 12) return 8;  // aumentado más para mejor visibilidad
+    if (currentZoom < 14) return 12; // aumentado más
+    if (currentZoom < 16) return 16; // aumentado más  
+    return 20; // aumentado más
   };
 
   // Fetch con AbortController y no-store
@@ -211,13 +214,27 @@ export default function PointsLayer({
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
         const feats = toFeatures(json);
-        // console.log("[PointsLayer] cargados:", feats.length);
+        console.log("📍 PointsLayer - Features loaded:", feats.length);
+        console.log("📍 PointsLayer - Feature coordinates:", feats.map(f => ({
+          id: f.id,
+          coords: f.geometry.coordinates,
+          title: f.properties.titulo?.substring(0, 50)
+        })));
         setFeatures(feats);
+        
+        // Reportar metadatos si está disponible
+        if (onMetadataUpdate && json.metadata) {
+          console.log("📊 PointsLayer - Metadata from API:", json.metadata);
+          onMetadataUpdate(json.metadata);
+        }
       } catch (e: any) {
         if (e?.name !== "AbortError") {
           console.warn("PointsLayer fetch error:", e?.message || e);
         }
         setFeatures([]);
+        if (onMetadataUpdate) {
+          onMetadataUpdate({ totalFeatures: 0, error: e?.message || "Error cargando datos" });
+        }
       }
     })();
     return () => ctrl.abort();
@@ -274,9 +291,9 @@ export default function PointsLayer({
             center={[lat, lng]}
             radius={markerSize}
             pathOptions={{
-              weight: 1.5,
-              fillOpacity: 0.8,
-              color: dynamicColor,
+              weight: 3, // Borde más grueso
+              fillOpacity: 0.9, // Más opaco
+              color: '#ffffff', // Borde blanco para contraste
               fillColor: dynamicColor,
               // Permitir override con circleStyle
               ...(circleStyle || {}),

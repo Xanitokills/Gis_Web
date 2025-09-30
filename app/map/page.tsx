@@ -36,12 +36,16 @@ export default function ClientMapPage() {
   const [loading, setLoading] = useState(true);
   const [districtsList, setDistrictsList] = useState<Array<{name: string, count: number}>>([]);
   const [filteredCount, setFilteredCount] = useState<number | null>(null);
+  const [mapMetadata, setMapMetadata] = useState<any>(null);
+  const [showDataTable, setShowDataTable] = useState(false);
+  const [propertiesData, setPropertiesData] = useState<any[]>([]);
   const [filterOptions, setFilterOptions] = useState<any>(null);
   
   // Filtros de segmentación
   const [selectedSource, setSelectedSource] = useState("Todos");
   const [selectedOperationType, setSelectedOperationType] = useState("Todos");
   const [selectedPropertyType, setSelectedPropertyType] = useState("Todos");
+  const [includeNoGeo, setIncludeNoGeo] = useState(false);
   const [colorBy, setColorBy] = useState<'fuente' | 'tipo_operacion' | 'tipo_propiedad'>('fuente');
 
   // Fetch datos reales del dashboard
@@ -171,9 +175,13 @@ export default function ClientMapPage() {
       params.append("property_type", selectedPropertyType);
     }
     
+    if (includeNoGeo) {
+      params.append("include_no_geo", "true");
+    }
+    
     const qs = params.toString();
     return qs ? `${url}&${qs}` : url;
-  }, [searchTerm, selectedDistrict, priceRange, selectedSource, selectedOperationType, selectedPropertyType]);
+  }, [searchTerm, selectedDistrict, priceRange, selectedSource, selectedOperationType, selectedPropertyType, includeNoGeo]);
 
   // Crear URL para conteo total (sin límite)
   const countFilters = useMemo(() => {
@@ -249,6 +257,41 @@ export default function ClientMapPage() {
     return qs ? `${url}?${qs}` : url;
   }, [searchTerm, selectedDistrict, priceRange, selectedSource, selectedOperationType, selectedPropertyType]);
 
+  // Obtener datos de propiedades para la tabla
+  useEffect(() => {
+    if (showDataTable) {
+      const fetchPropertiesData = async () => {
+        try {
+          const response = await fetch(propertyFilters);
+          if (response.ok) {
+            const data = await response.json();
+            const properties = data.features?.map((feature: any) => ({
+              id: feature.id,
+              titulo: feature.properties.titulo || 'Sin título',
+              precio: feature.properties.precio || 0,
+              moneda: feature.properties.moneda || 'USD',
+              distrito: feature.properties.distrito || 'N/A',
+              tipo_operacion: feature.properties.tipo_operacion || 'N/A',
+              tipo_propiedad: feature.properties.tipo_propiedad || 'N/A',
+              fuente: feature.properties.fuente || 'N/A',
+              area_total_m2: feature.properties.area_total_m2 || 0,
+              habitaciones: feature.properties.habitaciones || 0,
+              banos: feature.properties.banos || 0,
+              latitud: feature.geometry?.coordinates?.[1] || feature.properties.latitud,
+              longitud: feature.geometry?.coordinates?.[0] || feature.properties.longitud,
+              url_original: feature.properties.url_original
+            })) || [];
+            setPropertiesData(properties);
+          }
+        } catch (error) {
+          console.error('Error al obtener datos de propiedades:', error);
+        }
+      };
+
+      fetchPropertiesData();
+    }
+  }, [showDataTable, propertyFilters]);
+
   // Obtener estadísticas filtradas
   useEffect(() => {
     const fetchFilteredStats = async () => {
@@ -315,6 +358,8 @@ export default function ClientMapPage() {
           setSelectedOperationType={setSelectedOperationType}
           selectedPropertyType={selectedPropertyType}
           setSelectedPropertyType={setSelectedPropertyType}
+          includeNoGeo={includeNoGeo}
+          setIncludeNoGeo={setIncludeNoGeo}
           colorBy={colorBy}
           setColorBy={setColorBy}
         />
@@ -376,6 +421,8 @@ export default function ClientMapPage() {
                   setSelectedOperationType={setSelectedOperationType}
                   selectedPropertyType={selectedPropertyType}
                   setSelectedPropertyType={setSelectedPropertyType}
+                  includeNoGeo={includeNoGeo}
+                  setIncludeNoGeo={setIncludeNoGeo}
                   colorBy={colorBy}
                   setColorBy={setColorBy}
                 />
@@ -388,7 +435,7 @@ export default function ClientMapPage() {
         <div className="h-full w-full p-3">
           {/* Indicador de filtros activos */}
           {(searchTerm || selectedDistrict !== 'Todos' || priceRange.min || priceRange.max || selectedSource !== 'Todos' || selectedOperationType !== 'Todos' || selectedPropertyType !== 'Todos') && (
-            <div className="absolute top-6 left-6 z-[1000] bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg px-4 py-2 shadow-lg max-w-sm">
+            <div className="absolute top-36 left-4 z-[1000] bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg px-4 py-2 shadow-lg max-w-sm">
               <div className="text-sm font-medium text-gray-800 flex items-center space-x-2">
                 <Filter className="w-4 h-4 text-orange-600" />
                 <span>Filtros aplicados</span>
@@ -398,6 +445,12 @@ export default function ClientMapPage() {
                   </span>
                 )}
               </div>
+              {mapMetadata && (
+                <div className="text-xs text-blue-600 mt-1">
+                  <span>Mostrando {mapMetadata.featuresShown?.toLocaleString() || 0} de {mapMetadata.totalMatching?.toLocaleString() || 0} en el mapa</span>
+                  {mapMetadata.hasMoreResults && <span className="text-amber-600"> (hay más resultados)</span>}
+                </div>
+              )}
               <div className="text-xs text-gray-600 mt-1">
                 <div className="flex items-center space-x-1 mb-1">
                   <span>Coloreado por:</span>
@@ -420,7 +473,11 @@ export default function ClientMapPage() {
           <div className="h-full">
             {isMounted && (
               <Map center={[-12.05, -77.05]} zoom={10} className="h-full">
-                <MapLayers propertyFilters={propertyFilters} colorBy={colorBy} />
+                <MapLayers 
+                  propertyFilters={propertyFilters} 
+                  colorBy={colorBy} 
+                  onMetadataUpdate={setMapMetadata}
+                />
               </Map>
             )}
           </div>
@@ -435,6 +492,35 @@ export default function ClientMapPage() {
               selectedPropertyType={selectedPropertyType}
               filteredCount={filteredCount}
             />
+          </div>
+
+          {/* Botón para mostrar/ocultar tabla de datos */}
+          <div className="absolute bottom-6 right-6 z-[1100]">
+            <button
+              onClick={() => setShowDataTable(!showDataTable)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-xl shadow-lg transition-all duration-200 ${
+                showDataTable 
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                  : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                      d="M3 10h18M3 14h18M8 6h13M8 18h13M3 6h2M3 18h2" />
+              </svg>
+              <span className="font-medium">
+                {showDataTable ? 'Ocultar Tabla' : 'Ver Datos'}
+              </span>
+              {filteredCount !== null && (
+                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                  showDataTable 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-100 text-gray-700'
+                }`}>
+                  {filteredCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
 
@@ -462,6 +548,112 @@ export default function ClientMapPage() {
 
 
       </div>
+
+      {/* Tabla de datos deslizable */}
+      {showDataTable && (
+        <div className="fixed bottom-0 left-0 right-0 z-[1200] bg-white border-t border-gray-200 shadow-2xl">
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+            <div className="flex items-center space-x-3">
+              <h3 className="text-lg font-semibold text-gray-900">Datos de Propiedades</h3>
+              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                {propertiesData.length} propiedades
+              </span>
+            </div>
+            <button
+              onClick={() => setShowDataTable(false)}
+              className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+              aria-label="Cerrar tabla"
+            >
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div className="h-80 overflow-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-100 sticky top-0">
+                <tr>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700 border-b">Título</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700 border-b">Precio</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700 border-b">Distrito</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700 border-b">Tipo</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700 border-b">Operación</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700 border-b">Área (m²)</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700 border-b">Habitaciones</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700 border-b">Baños</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700 border-b">Lat</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700 border-b">Lng</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700 border-b">Fuente</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700 border-b">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {propertiesData.map((property, index) => (
+                  <tr key={property.id || index} className="hover:bg-gray-50 border-b border-gray-100">
+                    <td className="px-4 py-3">
+                      <div className="max-w-xs truncate" title={property.titulo}>
+                        {property.titulo}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 font-medium">
+                      {property.moneda} {property.precio?.toLocaleString() || 'N/A'}
+                    </td>
+                    <td className="px-4 py-3">{property.distrito}</td>
+                    <td className="px-4 py-3">
+                      <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">
+                        {property.tipo_propiedad}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        property.tipo_operacion?.toLowerCase() === 'venta' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {property.tipo_operacion}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">{property.area_total_m2 || 'N/A'}</td>
+                    <td className="px-4 py-3">{property.habitaciones || 'N/A'}</td>
+                    <td className="px-4 py-3">{property.banos || 'N/A'}</td>
+                    <td className="px-4 py-3 font-mono text-xs">{property.latitud?.toFixed(6) || 'N/A'}</td>
+                    <td className="px-4 py-3 font-mono text-xs">{property.longitud?.toFixed(6) || 'N/A'}</td>
+                    <td className="px-4 py-3">
+                      <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs">
+                        {property.fuente}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {property.url_original && (
+                        <a
+                          href={property.url_original}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 text-xs font-medium hover:underline"
+                        >
+                          Ver original
+                        </a>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            
+            {propertiesData.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <p>No hay datos para mostrar</p>
+                <p className="text-sm">Ajusta los filtros para ver propiedades</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Estilos Leaflet afinados */}
       <style jsx global>{`
@@ -796,6 +988,7 @@ type SidebarProps = {
   selectedSource: string; setSelectedSource: (v: string) => void;
   selectedOperationType: string; setSelectedOperationType: (v: string) => void;
   selectedPropertyType: string; setSelectedPropertyType: (v: string) => void;
+  includeNoGeo: boolean; setIncludeNoGeo: (v: boolean) => void;
   colorBy: 'fuente' | 'tipo_operacion' | 'tipo_propiedad';
   setColorBy: (v: 'fuente' | 'tipo_operacion' | 'tipo_propiedad') => void;
 };
@@ -811,6 +1004,7 @@ function SidebarContent({
   selectedSource, setSelectedSource,
   selectedOperationType, setSelectedOperationType,
   selectedPropertyType, setSelectedPropertyType,
+  includeNoGeo, setIncludeNoGeo,
   colorBy, setColorBy
 }: SidebarProps) {
 
@@ -1057,6 +1251,33 @@ function SidebarContent({
           </div>
         </div>
 
+        {/* Control de geolocalización */}
+        <div className="mb-6 p-4 bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-xl shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-sm font-semibold text-amber-800 flex items-center">
+              📍 Mostrar propiedades sin ubicación
+            </label>
+            <button
+              onClick={() => setIncludeNoGeo(!includeNoGeo)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                includeNoGeo ? 'bg-amber-600' : 'bg-gray-300'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  includeNoGeo ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+          <p className="text-xs text-amber-700">
+            {includeNoGeo 
+              ? "✅ Incluyendo propiedades sin coordenadas GPS" 
+              : "❌ Solo propiedades con ubicación en el mapa"
+            }
+          </p>
+        </div>
+
         {/* Botón para limpiar filtros */}
         <div className="mb-6">
           <button
@@ -1067,6 +1288,7 @@ function SidebarContent({
               setSelectedSource('Todos');
               setSelectedOperationType('Todos');
               setSelectedPropertyType('Todos');
+              setIncludeNoGeo(false);
             }}
             className="w-full px-4 py-3 text-sm bg-gradient-to-r from-red-50 to-pink-50 hover:from-red-100 hover:to-pink-100 text-red-700 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm border border-red-200 hover:border-red-300 font-medium"
           >

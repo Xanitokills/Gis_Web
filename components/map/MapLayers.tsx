@@ -8,9 +8,10 @@ import PolygonLayer from "./PolygonLayer";
 type Props = {
   propertyFilters: string;
   colorBy: 'fuente' | 'tipo_operacion' | 'tipo_propiedad';
+  onMetadataUpdate?: (metadata: any) => void;
 };
 
-export default function MapLayers({ propertyFilters, colorBy }: Props) {
+export default function MapLayers({ propertyFilters, colorBy, onMetadataUpdate }: Props) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function MapLayers({ propertyFilters, colorBy }: Props) {
         <PointsLayer
           url={propertyFilters}
           colorBy={colorBy}
+          onMetadataUpdate={onMetadataUpdate}
           popupFields={[
             { key: "titulo", label: "Título" },
             { key: "precio", label: "Precio" },

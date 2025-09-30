@@ -12,10 +12,12 @@ export async function GET(req: Request) {
   const source = searchParams.get("source") || ""; // Nuevo filtro por fuente
   const operationType = searchParams.get("operation_type") || ""; // Nuevo filtro
   const propertyType = searchParams.get("property_type") || ""; // Nuevo filtro
+  const includeNoGeo = searchParams.get("include_no_geo") === "true"; // Incluir propiedades sin geo
   const bboxArr = (searchParams.get("bbox") || "").split(",").map(Number);
   const hasBbox = bboxArr.length === 4 && bboxArr.every((n) => !isNaN(n));
 
-  const where: string[] = ["geo IS NOT NULL"]; // 👈 importante
+  // Filtro de geolocalización - incluir todo lo que tenga coordenadas
+  const where: string[] = ["(latitud IS NOT NULL AND longitud IS NOT NULL)"]; // 👈 Cambio principal
   const params: any[] = [];
 
   if (q) {
@@ -72,7 +74,11 @@ export async function GET(req: Request) {
         latitud, longitud,
         url_original, 
         created_at,
-        ST_SetSRID(geo::geometry, 4326) AS g4326
+        CASE 
+          WHEN geo IS NOT NULL THEN ST_SetSRID(geo::geometry, 4326)
+          WHEN latitud IS NOT NULL AND longitud IS NOT NULL THEN ST_SetSRID(ST_MakePoint(longitud, latitud), 4326)
+          ELSE NULL
+        END AS g4326
       FROM public.property_urbania
       ${whereSQL}
       ORDER BY precio DESC -- Ordenar para mostrar propiedades más caras primero
@@ -84,17 +90,35 @@ export async function GET(req: Request) {
         jsonb_build_object(
           'type','Feature',
           'id', id,
-          'geometry', ST_AsGeoJSON(g4326)::jsonb,
+          'geometry', CASE WHEN g4326 IS NOT NULL THEN ST_AsGeoJSON(g4326)::jsonb ELSE null END,
           'properties', to_jsonb(base) - 'g4326'
         )
-      ) FILTER (WHERE g4326 IS NOT NULL), '[]'::jsonb)
+      ), '[]'::jsonb)
     ) AS fc
     FROM base;
   `;
 
   try {
+    // Primero obtener el conteo total que coincide con los filtros
+    const countSql = `
+      SELECT COUNT(*) as total_count
+      FROM public.property_urbania
+      ${whereSQL}
+    `;
+    
+    const { rows: countRows } = await pg.query(countSql, params);
+    const totalMatching = parseInt(countRows[0]?.total_count) || 0;
+
     const { rows } = await pg.query(sql, params);
     const fc = rows?.[0]?.fc ?? { type: "FeatureCollection", features: [] };
+    
+    // Agregar metadatos sobre el conteo
+    fc.metadata = {
+      totalMatching: totalMatching,
+      featuresShown: fc.features?.length || 0,
+      limit: limit,
+      hasMoreResults: totalMatching > limit
+    };
     
     // Agregar información de debug en desarrollo
     if (process.env.NODE_ENV === 'development') {
@@ -104,9 +128,21 @@ export async function GET(req: Request) {
         min_price: min,
         max_price: max,
         limit,
+        include_no_geo: includeNoGeo,
         bbox: hasBbox ? bboxArr : null
       });
-      console.log(`[Urbania API] Total features devueltas: ${fc.features?.length || 0}`);
+      console.log(`[Urbania API] Total que coincide con filtros: ${totalMatching}, Features devueltas: ${fc.features?.length || 0}`);
+      
+      // Log detallado de coordenadas
+      if (fc.features && fc.features.length > 0) {
+        console.log(`[Urbania API] Coordenadas de features:`, fc.features.map((f: any) => ({
+          id: f.id,
+          title: f.properties?.titulo,
+          coords: f.geometry?.coordinates,
+          latitud: f.properties?.latitud,
+          longitud: f.properties?.longitud
+        })));
+      }
     }
     
     return Response.json(fc);

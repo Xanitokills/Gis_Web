@@ -12,7 +12,7 @@ export async function GET(req: Request) {
   const operationType = searchParams.get("operation_type") || "";
   const propertyType = searchParams.get("property_type") || "";
 
-  const where: string[] = ["geo IS NOT NULL"];
+  const where: string[] = ["(latitud IS NOT NULL AND longitud IS NOT NULL)"]; // Solo propiedades con coordenadas válidas
   const params: any[] = [];
 
   if (q) {

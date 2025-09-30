@@ -14,7 +14,7 @@ export async function GET(req: Request) {
   const bboxArr = (searchParams.get("bbox") || "").split(",").map(Number);
   const hasBbox = bboxArr.length === 4 && bboxArr.every((n) => !isNaN(n));
 
-  const where: string[] = ["geo IS NOT NULL"];
+  const where: string[] = ["(latitud IS NOT NULL AND longitud IS NOT NULL)"]; // Solo propiedades con coordenadas válidas
   const params: any[] = [];
 
   if (q) {
