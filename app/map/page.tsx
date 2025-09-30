@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import {
   Search, Filter, BarChart3, MapPin, Users, Building2,
   TrendingUp, Eye, EyeOff, Calendar, DollarSign, MapIcon,
-  Activity, Shield, Car
+  Activity, Shield, Car, ChevronUp, ChevronDown
 } from "lucide-react";
 
 // Importar dinámicamente el componente Map y MapLayers
@@ -300,10 +300,22 @@ export default function ClientMapPage() {
               </Map>
             )}
           </div>
+
+          {/* Leyenda Dinámica dentro del mapa (izquierda abajo) */}
+          <div className="absolute bottom-6 left-6 z-[1100]">
+            <DynamicLegend 
+              colorBy={colorBy}
+              filterOptions={filterOptions}
+              selectedSource={selectedSource}
+              selectedOperationType={selectedOperationType}
+              selectedPropertyType={selectedPropertyType}
+              filteredCount={filteredCount}
+            />
+          </div>
         </div>
 
         {/* Panel de info flotante (derecha) */}
-        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-4 max-w-xs border border-gray-200">
+        <div className="absolute top-4 right-4 z-[1100] bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-4 max-w-xs border border-gray-200">
           <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
             <Activity className="w-4 h-4 mr-2 text-orange-500" />
             Estado del Mercado
@@ -324,35 +336,8 @@ export default function ClientMapPage() {
           </div>
         </div>
 
-        {/* Leyenda (izquierda abajo) */}
-        <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-4 border border-gray-200">
-          <h4 className="font-semibold text-gray-900 mb-3 text-sm">Leyenda</h4>
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-xs">
-              <div className="w-3 h-3 bg-orange-500 rounded-full border border-white shadow-sm"></div>
-              <span className="text-gray-700">Propiedades</span>
-            </div>
-            <div className="flex items-center space-x-2 text-xs">
-              <div className="w-3 h-3 bg-amber-500 rounded-sm border border-white shadow-sm"></div>
-              <span className="text-gray-700">Área Urbana</span>
-            </div>
-            <div className="flex items-center space-x-2 text-xs">
-              <div className="w-3 h-3 bg-green-500 rounded-sm border border-white shadow-sm"></div>
-              <span className="text-gray-700">Viviendas</span>
-            </div>
-            <div className="flex items-center space-x-2 text-xs">
-              <div className="w-3 h-3 bg-blue-500 rounded-sm border border-white shadow-sm"></div>
-              <span className="text-gray-700">Oferta de Vivienda</span>
-            </div>
-            <div className="flex items-center space-x-2 text-xs">
-              <div className="w-3 h-3 bg-orange-600 rounded-sm border border-white shadow-sm"></div>
-              <span className="text-gray-700">Tendencias Económicas</span>
-            </div>
-          </div>
-        </div>
-
         {/* Acciones rápidas */}
-        <div className="absolute bottom-4 right-4 flex flex-col space-y-2">
+        <div className="absolute bottom-4 right-4 z-[1100] flex flex-col space-y-2">
           <button className="bg-orange-500 hover:bg-orange-600 text-white p-3 rounded-xl shadow-lg transition-colors">
             <Calendar className="w-5 h-5" />
           </button>
@@ -381,6 +366,15 @@ export default function ClientMapPage() {
         }
         .district-layer:hover {
           filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+        
+        /* Asegurar que la leyenda dinámica siempre esté visible */
+        .dynamic-legend {
+          position: relative !important;
+          z-index: 1100 !important;
+          pointer-events: auto !important;
+          visibility: visible !important;
+          opacity: 1 !important;
         }
         
         /* Estilos mejorados para tooltips de precios */
@@ -417,6 +411,257 @@ export default function ClientMapPage() {
           border-right-color: rgba(15, 58, 141, 0.9) !important;
         }
       `}</style>
+    </div>
+  );
+}
+
+/* ======================= DynamicLegend ======================= */
+
+type DynamicLegendProps = {
+  colorBy: 'fuente' | 'tipo_operacion' | 'tipo_propiedad';
+  filterOptions: any;
+  selectedSource: string;
+  selectedOperationType: string;
+  selectedPropertyType: string;
+  filteredCount: number | null;
+};
+
+function DynamicLegend({ 
+  colorBy, 
+  filterOptions, 
+  selectedSource, 
+  selectedOperationType, 
+  selectedPropertyType,
+  filteredCount 
+}: DynamicLegendProps) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  
+  // Debug: verificar que el componente se esté renderizando
+  useEffect(() => {
+    console.log('🗺️ DynamicLegend renderizada:', { colorBy, filteredCount, filterOptions: !!filterOptions });
+  }, [colorBy, filteredCount, filterOptions]);
+  
+  // Esquemas de colores (debe coincidir con PointsLayer)
+  const COLOR_SCHEMES = {
+    fuente: {
+      'urbania.pe': '#f97316', // orange-500
+      'default': '#6b7280' // gray-500
+    },
+    tipo_operacion: {
+      'venta': '#10b981', // emerald-500
+      'alquiler': '#3b82f6', // blue-500
+      'alquilar': '#3b82f6', // blue-500 (alias)
+      'default': '#6b7280' // gray-500
+    },
+    tipo_propiedad: {
+      'departamento': '#8b5cf6', // violet-500
+      'casa': '#f59e0b', // amber-500
+      'oficina': '#06b6d4', // cyan-500
+      'terreno': '#84cc16', // lime-500
+      'apartment': '#8b5cf6', // violet-500 (alias)
+      'default': '#6b7280' // gray-500
+    }
+  };
+
+  // Obtener icono y título para el criterio de coloración
+  const getColorCriteriaInfo = () => {
+    switch (colorBy) {
+      case 'fuente':
+        return { icon: '🏢', title: 'por Fuente', description: 'Origen de los datos' };
+      case 'tipo_operacion':
+        return { icon: '💰', title: 'por Operación', description: 'Venta o alquiler' };
+      case 'tipo_propiedad':
+        return { icon: '🏠', title: 'por Tipo', description: 'Categoría de propiedad' };
+      default:
+        return { icon: '🏢', title: 'por Fuente', description: 'Origen de los datos' };
+    }
+  };
+
+  // Obtener opciones disponibles según el criterio de coloración
+  const getColorLegendItems = () => {
+    if (!filterOptions) return [];
+
+    let options: string[] = [];
+
+    switch (colorBy) {
+      case 'fuente':
+        options = Array.isArray(filterOptions.sources) ? filterOptions.sources : [];
+        break;
+      case 'tipo_operacion':
+        options = Array.isArray(filterOptions.operationTypes) ? filterOptions.operationTypes : [];
+        break;
+      case 'tipo_propiedad':
+        options = Array.isArray(filterOptions.propertyTypes) ? filterOptions.propertyTypes : [];
+        break;
+    }
+
+    const scheme = COLOR_SCHEMES[colorBy];
+    if (!scheme) return [];
+    
+    return options.map(option => {
+      const optionStr = String(option || '');
+      const normalizedOption = optionStr.toLowerCase().trim();
+      const color = scheme[normalizedOption as keyof typeof scheme] || scheme.default;
+      
+      return {
+        label: optionStr,
+        color: color,
+        isActive: (
+          (colorBy === 'fuente' && (selectedSource === 'Todos' || selectedSource === optionStr)) ||
+          (colorBy === 'tipo_operacion' && (selectedOperationType === 'Todos' || selectedOperationType === optionStr)) ||
+          (colorBy === 'tipo_propiedad' && (selectedPropertyType === 'Todos' || selectedPropertyType === optionStr))
+        )
+      };
+    });
+  };
+
+  const colorLegendItems = getColorLegendItems();
+  const criteriaInfo = getColorCriteriaInfo();
+
+  // Capas geográficas estáticas
+  const staticLayers = [
+    { color: '#f59e0b', label: 'Área Urbana', shape: 'square', description: 'Delimitación urbana' },
+    { color: '#10b981', label: 'Viviendas', shape: 'square', description: 'Sectores residenciales' },
+    { color: '#3b82f6', label: 'Oferta de Vivienda', shape: 'square', description: 'Proyectos inmobiliarios' },
+    { color: '#f97316', label: 'Tendencias Económicas', shape: 'square', description: 'Análisis económico' }
+  ];
+
+  return (
+    <div 
+      className="dynamic-legend bg-white border-2 border-orange-500 rounded-xl shadow-2xl max-w-xs min-w-[280px] transition-all duration-300"
+      style={{ 
+        backgroundColor: 'rgba(255, 255, 255, 0.98)',
+        backdropFilter: 'blur(10px)',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(249, 115, 22, 0.5)'
+      }}
+    >
+      {/* Header de la leyenda - Siempre visible */}
+      <div className="p-4 border-b border-gray-100">
+        <div className="flex items-center justify-between">
+          <h4 className="font-semibold text-gray-900 text-sm flex items-center">
+            <div className="w-3 h-3 bg-orange-500 rounded-full mr-2 animate-pulse"></div>
+            Leyenda del Mapa
+          </h4>
+          <div className="flex items-center space-x-2">
+            {filteredCount !== null && (
+              <div className="flex items-center space-x-1">
+                <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-semibold">
+                  {filteredCount.toLocaleString()}
+                </span>
+                <div className="text-xs text-gray-500">props</div>
+              </div>
+            )}
+            <button
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="p-1 hover:bg-gray-100 rounded-md transition-colors"
+              aria-label={isCollapsed ? "Expandir leyenda" : "Colapsar leyenda"}
+            >
+              {isCollapsed ? (
+                <ChevronUp className="w-4 h-4 text-gray-600" />
+              ) : (
+                <ChevronDown className="w-4 h-4 text-gray-600" />
+              )}
+            </button>
+          </div>
+        </div>
+        {/* Criterio actual de coloración - Siempre visible */}
+        <div className="mt-2 text-xs text-gray-600 flex items-center">
+          <span className="mr-1">{criteriaInfo.icon}</span>
+          <span className="font-medium">Coloreado {criteriaInfo.title}</span>
+          <span className="mx-1">•</span>
+          <span>{criteriaInfo.description}</span>
+        </div>
+      </div>
+
+      {/* Contenido expansible */}
+      {!isCollapsed && (
+        <div className="p-4 space-y-4">
+          {/* Segmentación de Propiedades */}
+          {colorLegendItems.length > 0 ? (
+            <div>
+              <h5 className="text-xs font-semibold text-gray-700 mb-2 flex items-center">
+                <span className="mr-1">{criteriaInfo.icon}</span>
+                Propiedades {criteriaInfo.title}
+              </h5>
+              <div className="space-y-1.5">
+                {colorLegendItems.map((item, index) => (
+                  <div 
+                    key={index} 
+                    className={`flex items-center space-x-2 text-xs transition-all duration-200 ${
+                      item.isActive ? 'opacity-100 scale-100' : 'opacity-60 scale-95'
+                    }`}
+                  >
+                    <div 
+                      className={`w-3 h-3 rounded-full border border-white shadow-sm flex-shrink-0 transition-all duration-200 ${
+                        item.isActive ? 'ring-2 ring-offset-1 ring-gray-300' : ''
+                      }`}
+                      style={{ backgroundColor: item.color }}
+                    ></div>
+                    <span className={`text-gray-700 flex-1 ${item.isActive ? 'font-medium' : ''}`}>
+                      {item.label}
+                    </span>
+                    {item.isActive && (
+                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full flex-shrink-0 animate-pulse"></div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="text-xs text-gray-500 text-center py-2">
+              <div className="animate-pulse">Cargando opciones de filtro...</div>
+            </div>
+          )}
+
+          {/* Separador */}
+          {colorLegendItems.length > 0 && (
+            <div className="border-t border-gray-100"></div>
+          )}
+
+          {/* Capas Geográficas */}
+          <div>
+            <h5 className="text-xs font-semibold text-gray-700 mb-2 flex items-center">
+              🗺️ Capas Geográficas
+              <span className="ml-2 text-gray-400 font-normal">(Opcional)</span>
+            </h5>
+            <div className="space-y-1.5">
+              {staticLayers.map((layer, index) => (
+                <div key={index} className="flex items-center space-x-2 text-xs group hover:bg-gray-50 rounded p-1 transition-colors">
+                  <div 
+                    className={`w-3 h-3 border border-white shadow-sm flex-shrink-0 ${
+                      layer.shape === 'square' ? 'rounded-sm' : 'rounded-full'
+                    }`}
+                    style={{ backgroundColor: layer.color }}
+                  ></div>
+                  <div className="flex-1">
+                    <span className="text-gray-700 font-medium">{layer.label}</span>
+                    <div className="text-gray-500 text-[10px]">{layer.description}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Información adicional */}
+          <div className="border-t border-gray-100 pt-3">
+            <div className="text-xs text-gray-500 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-1">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                  <span>Filtro activo</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <div className="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
+                  <span>Disponible</span>
+                </div>
+              </div>
+              <div className="text-gray-400 text-[10px] leading-relaxed">
+                💡 Usa el control de capas (esquina superior derecha) para activar/desactivar las capas geográficas
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
