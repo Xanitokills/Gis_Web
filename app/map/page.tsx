@@ -314,8 +314,8 @@ export default function ClientMapPage() {
           </div>
         </div>
 
-        {/* Panel de info flotante (derecha) */}
-        <div className="absolute top-4 right-4 z-[1100] bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-4 max-w-xs border border-gray-200">
+        {/* Panel de info flotante (izquierda superior) */}
+        <div className="absolute top-4 left-4 z-[1100] bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-4 max-w-xs border border-gray-200">
           <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
             <Activity className="w-4 h-4 mr-2 text-orange-500" />
             Estado del Mercado
@@ -336,15 +336,7 @@ export default function ClientMapPage() {
           </div>
         </div>
 
-        {/* Acciones rápidas */}
-        <div className="absolute bottom-4 right-4 z-[1100] flex flex-col space-y-2">
-          <button className="bg-orange-500 hover:bg-orange-600 text-white p-3 rounded-xl shadow-lg transition-colors">
-            <Calendar className="w-5 h-5" />
-          </button>
-          <button className="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-xl shadow-lg transition-colors">
-            <BarChart3 className="w-5 h-5" />
-          </button>
-        </div>
+
       </div>
 
       {/* Estilos Leaflet afinados */}
