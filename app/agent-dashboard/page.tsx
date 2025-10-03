@@ -569,7 +569,7 @@ export default function AgentDashboardPage() {
               <div className="flex items-center space-x-3">
                 <button 
                   onClick={() => openModal('captacion')}
-                  className={`${theme.accent} ${theme.accentHover} text-white px-4 py-2 rounded-md transition-colors font-medium text-sm flex items-center space-x-2 shadow-md`}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-md transition-colors font-medium text-sm flex items-center space-x-2 shadow-md"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -804,7 +804,7 @@ export default function AgentDashboardPage() {
                 </div>
                 <button 
                   onClick={() => openModal('captacion')}
-                  className={`px-5 py-2.5 rounded-lg transition font-medium shadow-lg ${darkMode ? 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-emerald-600/20' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-600/20'}`}
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition font-medium shadow-lg shadow-emerald-600/20"
                 >
                   + Nueva Captación
                 </button>
@@ -1795,20 +1795,20 @@ export default function AgentDashboardPage() {
               {/* Modal: Nueva Captación */}
               {activeModal === 'captacion' && (
                 <div className="space-y-6">
-                  <div className="bg-emerald-600/10 border border-emerald-600/30 rounded-lg p-4">
-                    <p className="text-sm text-emerald-300">
+                  <div className={`${darkMode ? 'bg-emerald-600/10 border-emerald-600/30' : 'bg-emerald-50 border-emerald-200'} border rounded-lg p-4`}>
+                    <p className={`text-sm ${darkMode ? 'text-emerald-300' : 'text-emerald-700'}`}>
                       <span className="font-semibold">Smart Capture</span> ayuda a registrar rápidamente nuevas propiedades validando información clave.
                     </p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-300 mb-2">Dirección Completa *</label>
-                      <input type="text" className="w-full px-4 py-2.5 bg-[#252525] border border-[#3A3A3A] text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-500" placeholder="Av. Larco 1234, Miraflores" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Dirección Completa *</label>
+                      <input type="text" className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} placeholder="Av. Larco 1234, Miraflores" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-300 mb-2">Tipo de Propiedad *</label>
-                      <select className={`w-full px-4 py-2.5 ${theme.bgInput} border ${theme.borderInput} rounded-lg ${theme.textPrimary} focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`}>
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Tipo de Propiedad *</label>
+                      <select className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-300 text-gray-900'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`}>
                         <option>Casa</option>
                         <option>Departamento</option>
                         <option>Terreno</option>
@@ -1816,49 +1816,49 @@ export default function AgentDashboardPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-300 mb-2">Nombre del Propietario *</label>
-                      <input type="text" className="w-full px-4 py-2.5 bg-[#252525] border border-[#3A3A3A] text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-500" placeholder="Juan Pérez" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Nombre del Propietario *</label>
+                      <input type="text" className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} placeholder="Juan Pérez" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-300 mb-2">Teléfono de Contacto *</label>
-                      <input type="tel" className="w-full px-4 py-2.5 bg-[#252525] border border-[#3A3A3A] text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-500" placeholder="+51 999 888 777" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Teléfono de Contacto *</label>
+                      <input type="tel" className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} placeholder="+51 999 888 777" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-300 mb-2">Precio Esperado (S/) *</label>
-                      <input type="number" className="w-full px-4 py-2.5 bg-[#252525] border border-[#3A3A3A] text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-500" placeholder="280000" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Precio Esperado (S/) *</label>
+                      <input type="number" className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} placeholder="280000" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-300 mb-2">Área (m²) *</label>
-                      <input type="number" className="w-full px-4 py-2.5 bg-[#252525] border border-[#3A3A3A] text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-500" placeholder="120" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Área (m²) *</label>
+                      <input type="number" className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} placeholder="120" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-300 mb-2">Dormitorios</label>
-                      <input type="number" className="w-full px-4 py-2.5 bg-[#252525] border border-[#3A3A3A] text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-500" placeholder="3" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Dormitorios</label>
+                      <input type="number" className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} placeholder="3" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-300 mb-2">Baños</label>
-                      <input type="number" className="w-full px-4 py-2.5 bg-[#252525] border border-[#3A3A3A] text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-500" placeholder="2" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Baños</label>
+                      <input type="number" className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} placeholder="2" />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-300 mb-2">Notas / Observaciones</label>
-                    <textarea className={`w-full px-4 py-2.5 ${theme.bgInput} border ${theme.borderInput} rounded-lg ${theme.textPrimary} focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'placeholder:text-gray-500' : 'placeholder:text-gray-400'}`} rows={3} placeholder="Información adicional relevante..."></textarea>
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Notas / Observaciones</label>
+                    <textarea className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} rows={3} placeholder="Información adicional relevante..."></textarea>
                   </div>
 
                   <div className="flex items-center space-x-4">
                     <label className="flex items-center space-x-2">
-                      <input type="checkbox" className="w-4 h-4 text-emerald-500 bg-[#252525] border-[#3A3A3A] rounded focus:ring-emerald-500" />
-                      <span className="text-sm text-gray-300">Tiene documentación lista</span>
+                      <input type="checkbox" className={`w-4 h-4 text-emerald-500 rounded focus:ring-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A]' : 'bg-white border-gray-300'}`} />
+                      <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Tiene documentación lista</span>
                     </label>
                     <label className="flex items-center space-x-2">
-                      <input type="checkbox" className="w-4 h-4 text-emerald-500 bg-[#252525] border-[#3A3A3A] rounded focus:ring-emerald-500" />
-                      <span className="text-sm text-gray-300">Interés en exclusividad</span>
+                      <input type="checkbox" className={`w-4 h-4 text-emerald-500 rounded focus:ring-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A]' : 'bg-white border-gray-300'}`} />
+                      <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Interés en exclusividad</span>
                     </label>
                   </div>
 
-                  <div className="flex justify-end space-x-3 pt-4 border-t border-[#2A2A2A]">
-                    <button onClick={closeModal} className="px-6 py-2.5 border border-[#3A3A3A] text-gray-300 rounded-lg hover:bg-[#2A2A2A] hover:text-white transition-colors font-medium">
+                  <div className={`flex justify-end space-x-3 pt-4 border-t ${darkMode ? 'border-[#2A2A2A]' : 'border-gray-200'}`}>
+                    <button onClick={closeModal} className={`px-6 py-2.5 border rounded-lg transition-colors font-medium ${darkMode ? 'border-[#3A3A3A] text-gray-300 hover:bg-[#2A2A2A] hover:text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
                       Cancelar
                     </button>
                     <button className="px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition-colors font-medium shadow-lg shadow-emerald-600/20">
@@ -1871,8 +1871,8 @@ export default function AgentDashboardPage() {
               {/* Modal: Subir Fotos */}
               {activeModal === 'subirFotos' && (
                 <div className="space-y-6">
-                  <div className="bg-emerald-600/10 border border-emerald-600/30 rounded-lg p-4">
-                    <p className="text-sm text-emerald-300">
+                  <div className={`${darkMode ? 'bg-emerald-600/10 border-emerald-600/30' : 'bg-emerald-50 border-emerald-200'} border rounded-lg p-4`}>
+                    <p className={`text-sm ${darkMode ? 'text-emerald-300' : 'text-emerald-700'}`}>
                       Sube fotografías profesionales de alta calidad. Recomendado: <span className="font-semibold">15-25 fotos</span> mostrando todos los ambientes.
                     </p>
                   </div>
@@ -1895,17 +1895,17 @@ export default function AgentDashboardPage() {
 
                   <div className="space-y-3">
                     <label className="flex items-center space-x-2">
-                      <input type="checkbox" className="w-4 h-4 text-emerald-500 bg-[#252525] border-[#3A3A3A] rounded focus:ring-emerald-500" defaultChecked />
-                      <span className="text-sm text-gray-300">Aplicar corrección automática de iluminación</span>
+                      <input type="checkbox" className={`w-4 h-4 text-emerald-500 rounded focus:ring-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A]' : 'bg-white border-gray-300'}`} defaultChecked />
+                      <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Aplicar corrección automática de iluminación</span>
                     </label>
                     <label className="flex items-center space-x-2">
-                      <input type="checkbox" className="w-4 h-4 text-emerald-500 bg-[#252525] border-[#3A3A3A] rounded focus:ring-emerald-500" defaultChecked />
-                      <span className="text-sm text-gray-300">Agregar marca de agua con logo</span>
+                      <input type="checkbox" className={`w-4 h-4 text-emerald-500 rounded focus:ring-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A]' : 'bg-white border-gray-300'}`} defaultChecked />
+                      <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Agregar marca de agua con logo</span>
                     </label>
                   </div>
 
-                  <div className="flex justify-end space-x-3 pt-4 border-t border-[#2A2A2A]">
-                    <button onClick={closeModal} className="px-6 py-2.5 border border-[#3A3A3A] text-gray-300 rounded-lg hover:bg-[#2A2A2A] hover:text-white transition-colors font-medium">
+                  <div className={`flex justify-end space-x-3 pt-4 border-t ${darkMode ? 'border-[#2A2A2A]' : 'border-gray-200'}`}>
+                    <button onClick={closeModal} className={`px-6 py-2.5 border rounded-lg transition-colors font-medium ${darkMode ? 'border-[#3A3A3A] text-gray-300 hover:bg-[#2A2A2A] hover:text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
                       Cancelar
                     </button>
                     <button className="px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition-colors font-medium shadow-lg shadow-emerald-600/20">
