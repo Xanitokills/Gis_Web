@@ -3,353 +3,2249 @@
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 
-// Import dinámico del mapa
 const Map = dynamic(() => import("../../components/map/Map"), { ssr: false });
 const PointsLayer = dynamic(() => import("../../components/map/PointsLayer"), { ssr: false });
 
+type Phase = 'dashboard' | 'inicio' | 'preparacion' | 'difusion' | 'gestion' | 'negociacion' | 'cierre' | 'postventa' | 'reports';
+
+type ModalType = 
+  | 'captacion' 
+  | 'gestionarPropiedad' 
+  | 'subirFotos' 
+  | 'video360' 
+  | 'editarFicha'
+  | 'verCampañas'
+  | 'nuevaCampana'
+  | 'openHouse'
+  | 'enviarFeedback'
+  | 'calendarioVisitas'
+  | 'programarVisita'
+  | 'aceptarOferta'
+  | 'contraoferta'
+  | 'rechazarOferta'
+  | 'firmarArras'
+  | 'actualizarEstado'
+  | 'subirDocumentos'
+  | 'contactarNotaria'
+  | 'actualizarTramites'
+  | 'solicitarReferidos'
+  | 'exportarPDF'
+  | null;
+
 export default function AgentDashboardPage() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState<Phase>('dashboard');
+  const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(null);
+  const [activeModal, setActiveModal] = useState<ModalType>(null);
+  const [selectedProperty, setSelectedProperty] = useState<any>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [darkMode, setDarkMode] = useState(true); // true = dark, false = light
 
-  const tasks = [
-    { id: 1, title: 'Llamar a Juan Pérez', time: '10:00 AM', priority: 'high' },
-    { id: 2, title: 'Mostrar propiedad en Miraflores', time: '2:00 PM', priority: 'medium' },
-    { id: 3, title: 'Enviar propuesta a María García', time: '4:00 PM', priority: 'low' }
+  // Funnel de ventas - 7 Fases SmartCore BI
+  const funnelData = [
+    { fase: 'Inicio', total: 25, color: 'bg-gray-600', percentage: 100 },
+    { fase: 'Preparación', total: 20, color: 'bg-gray-600', percentage: 80 },
+    { fase: 'Difusión', total: 18, color: 'bg-gray-600', percentage: 72 },
+    { fase: 'Gestión', total: 15, color: 'bg-gray-600', percentage: 60 },
+    { fase: 'Negociación', total: 10, color: 'bg-gray-600', percentage: 40 },
+    { fase: 'Cierre Final', total: 6, color: 'bg-gray-600', percentage: 24 },
+    { fase: 'Post-Venta', total: 4, color: 'bg-gray-600', percentage: 16 }
   ];
 
-  const leads = [
-    { id: 1, name: 'Ana López', status: 'Interesado', lastActivity: 'Hace 2 horas', value: 180000 },
-    { id: 2, name: 'Carlos Ruiz', status: 'Contactado', lastActivity: 'Hace 1 día', value: 250000 },
-    { id: 3, name: 'Sofia Mendoza', status: 'Negociando', lastActivity: 'Hace 30 min', value: 320000 }
+  // Métricas principales
+  const metrics = {
+    leadsActivos: 12,
+    comisionesMes: 8500,
+    propiedadesActivas: 8,
+    tasaCierre: 68,
+    cpl: 45,
+    tiempoRespuesta: 12,
+    nps: 85,
+    tasaCaptacion: 78,
+    tiempoPreparacion: 3.2,
+    ctr: 4.5,
+    tasaConversion: 42,
+    diasCierre: 18
+  };
+
+  // Datos de prueba - FASE 1: INICIO
+  const propiedadesInicio = [
+    {
+      id: 101,
+      direccion: 'Av. Larco 1234, Miraflores',
+      propietario: 'Juan Pérez Sánchez',
+      pvs: 280000,
+      documentos: {
+        partidaRegistral: { status: true, validHasta: '2025-12-31' },
+        contratoExclusividad: { status: true, fechaFirma: '2025-09-15' },
+        dni: { status: true },
+        planoCatastral: { status: false },
+        certificadoNoAdeudo: { status: false }
+      },
+      validacionLegal: 60,
+      fechaContacto: '2025-09-10',
+      scoring: 4
+    },
+    {
+      id: 102,
+      direccion: 'Calle Los Rosales 456, San Isidro',
+      propietario: 'María García Torres',
+      pvs: 450000,
+      documentos: {
+        partidaRegistral: { status: true, validHasta: '2026-01-15' },
+        contratoExclusividad: { status: true, fechaFirma: '2025-09-20' },
+        dni: { status: true },
+        planoCatastral: { status: true },
+        certificadoNoAdeudo: { status: true }
+      },
+      validacionLegal: 100,
+      fechaContacto: '2025-09-18',
+      scoring: 5
+    }
   ];
 
-  const properties = [
-    { id: 1, title: 'Dept 3 hab San Isidro', price: 280000, status: 'Activa', views: 45 },
-    { id: 2, title: 'Casa familiar Barranco', price: 450000, status: 'Vendida', views: 120 }
+  // Datos de prueba - FASE 2: PREPARACIÓN
+  const propiedadesPreparacion = [
+    {
+      id: 201,
+      direccion: 'Dpto 302, Malecón Cisneros, Miraflores',
+      propietario: 'Carlos Mendoza',
+      pvs: 320000,
+      fotos: { cantidad: 12, calidad: 85 },
+      video360: false,
+      fichaComercial: 70,
+      buyerPersona: 'Familia joven profesional',
+      diasEnPreparacion: 5
+    },
+    {
+      id: 202,
+      direccion: 'Casa Los Sauces 789, La Molina',
+      propietario: 'Ana Rodríguez',
+      pvs: 550000,
+      fotos: { cantidad: 25, calidad: 95 },
+      video360: true,
+      fichaComercial: 100,
+      buyerPersona: 'Inversionista o familia grande',
+      diasEnPreparacion: 3
+    }
   ];
+
+  // Datos de prueba - FASE 3: DIFUSIÓN
+  const propiedadesDifusion = [
+    {
+      id: 301,
+      direccion: 'Dpto 501, Av. Benavides, Miraflores',
+      propietario: 'Roberto Silva',
+      pvs: 295000,
+      portales: ['Inmuebles24', 'Properati', 'Facebook Marketplace'],
+      campañasActivas: 2,
+      alcance: 15420,
+      clics: 687,
+      cpl: 42,
+      leadsGenerados: 8,
+      diasEnDifusion: 12
+    },
+    {
+      id: 302,
+      direccion: 'Penthouse, Malecón Balta, Barranco',
+      propietario: 'Patricia Vega',
+      pvs: 680000,
+      portales: ['Inmuebles24', 'Properati', 'Urbania'],
+      campañasActivas: 3,
+      alcance: 28950,
+      clics: 1234,
+      cpl: 55,
+      leadsGenerados: 15,
+      diasEnDifusion: 8
+    }
+  ];
+
+  // Datos de prueba - FASE 4: GESTIÓN
+  const propiedadesGestion = [
+    {
+      id: 401,
+      direccion: 'Casa Los Olivos, Surco',
+      propietario: 'Luis Ramírez',
+      pvs: 395000,
+      leads: [
+        { nombre: 'Ana López', scoring: 4, precalificado: true, visitasProgramadas: 1, ultimoContacto: '2025-10-01' },
+        { nombre: 'Pedro Gómez', scoring: 3, precalificado: false, visitasProgramadas: 1, ultimoContacto: '2025-09-28' }
+      ],
+      visitasRealizadas: 8,
+      feedbackDueño: 'Clientes muestran interés, precio aceptable'
+    },
+    {
+      id: 402,
+      direccion: 'Dpto 404, San Miguel',
+      propietario: 'Carmen Torres',
+      pvs: 195000,
+      leads: [
+        { nombre: 'Sofia Mendoza', scoring: 5, precalificado: true, visitasProgramadas: 2, ultimoContacto: '2025-10-02' },
+        { nombre: 'Jorge Castro', scoring: 4, precalificado: true, visitasProgramadas: 1, ultimoContacto: '2025-09-30' },
+        { nombre: 'María Díaz', scoring: 3, precalificado: false, visitasProgramadas: 0, ultimoContacto: '2025-09-29' }
+      ],
+      visitasRealizadas: 12,
+      feedbackDueño: 'Excelente respuesta, varios interesados'
+    }
+  ];
+
+  // Datos de prueba - FASE 5: NEGOCIACIÓN
+  const propiedadesNegociacion = [
+    {
+      id: 501,
+      direccion: 'Casa Barranco, Zona Residencial',
+      propietario: 'Carlos Silva Ramos',
+      pvs: 470000,
+      ofertas: [
+        { cliente: 'Sofia Mendoza', monto: 445000, fecha: '2025-09-28', estado: 'Pendiente', validez: '2025-10-15' },
+        { cliente: 'Roberto Vargas', monto: 455000, fecha: '2025-09-30', estado: 'Contraofertar', validez: '2025-10-20' }
+      ],
+      arras: false,
+      montoArras: 0,
+      estrategia: 'Contraofertar a S/ 460,000'
+    },
+    {
+      id: 502,
+      direccion: 'Dpto Santiago de Surco',
+      propietario: 'Elena Ruiz Pérez',
+      pvs: 310000,
+      ofertas: [
+        { cliente: 'Jorge Castro', monto: 305000, fecha: '2025-09-25', estado: 'Aceptada', validez: '2025-10-10' }
+      ],
+      arras: true,
+      montoArras: 15250,
+      estrategia: 'Oferta aceptada, arras firmadas'
+    }
+  ];
+
+  // Datos de prueba - FASE 6: CIERRE FINAL
+  const propiedadesCierre = [
+    {
+      id: 601,
+      direccion: 'Casa La Molina Country Club',
+      propietario: 'Miguel Ángel Torres',
+      pvs: 780000,
+      precioFinal: 750000,
+      comprador: 'Inversiones ABC SAC',
+      etapas: {
+        tasacion: { status: 'Completado', fecha: '2025-09-22', banco: 'BCP' },
+        notaria: { status: 'En Proceso', fecha: '2025-10-05', notaria: 'Notaría Ríos' },
+        escritura: { status: 'Pendiente', fecha: '2025-10-12' },
+        entregaLlaves: { status: 'Pendiente', fecha: '2025-10-15' }
+      },
+      diasParaCierre: 13,
+      documentosPendientes: ['Escritura pública final']
+    },
+    {
+      id: 602,
+      direccion: 'Dpto Jesús María',
+      propietario: 'Sofia Paredes Cruz',
+      pvs: 225000,
+      precioFinal: 220000,
+      comprador: 'Laura Sánchez',
+      etapas: {
+        tasacion: { status: 'En Proceso', fecha: '2025-10-03', banco: 'Interbank' },
+        notaria: { status: 'Pendiente', fecha: '2025-10-10', notaria: 'Notaría Central' },
+        escritura: { status: 'Pendiente', fecha: '2025-10-15' },
+        entregaLlaves: { status: 'Pendiente', fecha: '2025-10-18' }
+      },
+      diasParaCierre: 16,
+      documentosPendientes: ['Tasación bancaria', 'Documentos notariales']
+    }
+  ];
+
+  // Datos de prueba - FASE 7: POST-VENTA
+  const propiedadesPostVenta = [
+    {
+      id: 701,
+      direccion: 'Casa San Borja',
+      propietario: 'Ricardo Paz (Vendedor)',
+      comprador: 'Familia Gutiérrez',
+      precioFinal: 480000,
+      fechaCierre: '2025-09-15',
+      tramites: {
+        luz: { status: 'Completado', fecha: '2025-09-18' },
+        agua: { status: 'Completado', fecha: '2025-09-18' },
+        gas: { status: 'Completado', fecha: '2025-09-20' },
+        predial: { status: 'En Proceso', fecha: null }
+      },
+      nps: 9,
+      testimonio: 'Excelente servicio, muy profesionales',
+      referidosGenerados: 2
+    },
+    {
+      id: 702,
+      direccion: 'Dpto Surco',
+      propietario: 'Laura Castro (Vendedora)',
+      comprador: 'José Ramírez',
+      precioFinal: 265000,
+      fechaCierre: '2025-09-20',
+      tramites: {
+        luz: { status: 'Completado', fecha: '2025-09-22' },
+        agua: { status: 'Completado', fecha: '2025-09-22' },
+        gas: { status: 'Completado', fecha: '2025-09-25' },
+        predial: { status: 'Completado', fecha: '2025-09-28' }
+      },
+      nps: 10,
+      testimonio: 'Servicio impecable de principio a fin',
+      referidosGenerados: 1
+    }
+  ];
+
+  const openModal = (type: ModalType, property?: any) => {
+    setActiveModal(type);
+    if (property) setSelectedProperty(property);
+  };
+
+  const closeModal = () => {
+    setActiveModal(null);
+    setSelectedProperty(null);
+  };
+
+  // Clases de tema dinámicas
+  const theme = {
+    // Backgrounds
+    bgMain: darkMode ? 'bg-[#0D0D0D]' : 'bg-gradient-to-br from-gray-50 to-gray-100',
+    bgSidebar: darkMode ? 'bg-[#1C1C1C]' : 'bg-white',
+    bgCard: darkMode ? 'bg-[#1C1C1C]' : 'bg-white',
+    bgCardHover: darkMode ? 'hover:border-[#3A3A3A]' : 'hover:border-gray-300',
+    bgInput: darkMode ? 'bg-[#252525]' : 'bg-white',
+    bgHeader: darkMode ? 'bg-[#0D0D0D]' : 'bg-white',
+    bgActive: darkMode ? 'bg-emerald-600/10' : 'bg-emerald-50',
+    bgHover: darkMode ? 'hover:bg-[#2A2A2A]' : 'hover:bg-gray-100',
+    bgSecondary: darkMode ? 'bg-[#252525]' : 'bg-gray-50',
+    
+    // Borders
+    border: darkMode ? 'border-[#2A2A2A]' : 'border-gray-200',
+    borderInput: darkMode ? 'border-[#3A3A3A]' : 'border-gray-300',
+    borderHover: darkMode ? 'hover:border-emerald-600' : 'hover:border-emerald-500',
+    
+    // Text colors
+    textPrimary: darkMode ? 'text-white' : 'text-gray-900',
+    textSecondary: darkMode ? 'text-gray-400' : 'text-gray-600',
+    textTertiary: darkMode ? 'text-gray-500' : 'text-gray-500',
+    textActive: darkMode ? 'text-emerald-400' : 'text-emerald-600',
+    
+    // Accent colors
+    accent: darkMode ? 'bg-emerald-600' : 'bg-emerald-600',
+    accentHover: darkMode ? 'hover:bg-emerald-500' : 'hover:bg-emerald-700',
+    accentText: darkMode ? 'text-emerald-400' : 'text-emerald-600',
+    accentBg: darkMode ? 'bg-emerald-600/10' : 'bg-emerald-50',
+    accentBorder: darkMode ? 'border-emerald-600/20' : 'border-emerald-200',
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">A</span>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Dashboard Agente</h1>
-                <p className="text-sm text-gray-600">Juan Silva - Inmobiliaria Del Sol</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
-                Smart Capture
+    <div className={`min-h-screen ${theme.bgMain} flex transition-colors duration-300`}>
+      {/* SIDEBAR IZQUIERDO - Estilo Supabase */}
+      <aside className={`${sidebarCollapsed ? 'w-20' : 'w-72'} ${theme.bgSidebar} ${theme.textPrimary} flex-shrink-0 transition-all duration-300 fixed h-full z-30 border-r ${theme.border}`}>
+        <div className="flex flex-col h-full">
+          {/* Logo y Header */}
+          <div className={`p-6 border-b ${theme.border}`}>
+            <div className="flex items-center justify-between">
+              {!sidebarCollapsed && (
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h1 className={`text-base font-semibold ${theme.textPrimary}`}>SmartCore BI</h1>
+                    <p className={`text-xs ${theme.textTertiary}`}>Juan Silva</p>
+                  </div>
+                </div>
+              )}
+              <button 
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                className={`p-2 ${theme.bgHover} rounded-md transition-colors`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={sidebarCollapsed ? "M13 5l7 7-7 7M5 5l7 7-7 7" : "M11 19l-7-7 7-7m8 14l-7-7 7-7"} />
+                </svg>
               </button>
-              <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-                Nuevo Lead
-              </button>
             </div>
+            
+            {/* Toggle de Modo Oscuro/Claro */}
+            {!sidebarCollapsed && (
+              <div className="mt-4 pt-4 border-t border-[#2A2A2A]">
+                <button
+                  onClick={() => setDarkMode(!darkMode)}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg ${theme.bgHover} transition-colors group`}
+                >
+                  <div className="flex items-center space-x-2">
+                    {darkMode ? (
+                      <>
+                        <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
+                        </svg>
+                        <span className={`text-sm ${theme.textSecondary}`}>Modo Claro</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                        </svg>
+                        <span className={`text-sm ${theme.textSecondary}`}>Modo Oscuro</span>
+                      </>
+                    )}
+                  </div>
+                  <div className={`w-10 h-5 ${darkMode ? 'bg-emerald-600' : 'bg-gray-300'} rounded-full p-0.5 transition-colors duration-300`}>
+                    <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-300 ${darkMode ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                  </div>
+                </button>
+              </div>
+            )}
           </div>
-        </div>
-      </header>
 
-      {/* Navigation Tabs */}
-      <nav className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8">
-            {[
-              { id: 'dashboard', label: 'Dashboard' },
-              { id: 'leads', label: 'Leads' },
-              { id: 'properties', label: 'Propiedades' },
-              { id: 'map', label: 'Mapa' },
-              { id: 'crm', label: 'CRM' },
-              { id: 'reports', label: 'Reportes' }
-            ].map((tab) => (
+          {/* Navigation Items */}
+          <nav className="flex-1 overflow-y-auto py-4">
+            <div className="space-y-1 px-3">
+              {/* Dashboard */}
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id
-                    ? 'border-orange-500 text-orange-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                onClick={() => setActiveTab('dashboard')}
+                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-md transition-colors text-sm font-medium ${
+                  activeTab === 'dashboard' ? `${theme.bgActive} ${theme.textActive} border ${theme.accentBorder}` : `${theme.bgHover} ${theme.textSecondary} hover:${theme.textPrimary}`
                 }`}
               >
-                {tab.label}
+                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                {!sidebarCollapsed && <span className="font-medium">Dashboard</span>}
               </button>
-            ))}
-          </div>
+
+              {/* Separator */}
+              {!sidebarCollapsed && <div className={`px-3 pt-6 pb-2 text-xs font-medium ${theme.textTertiary} uppercase tracking-wider`}>Fases del Ciclo</div>}
+
+              {/* Fase 1: Inicio */}
+              <button
+                onClick={() => setActiveTab('inicio')}
+                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-md transition-colors text-sm font-medium ${
+                  activeTab === 'inicio' ? `${theme.bgActive} ${theme.textActive} border ${theme.accentBorder}` : `${theme.bgHover} ${theme.textSecondary} hover:${theme.textPrimary}`
+                }`}
+              >
+                <div className={`w-5 h-5 flex-shrink-0 rounded-full flex items-center justify-center text-xs font-semibold ${
+                  activeTab === 'inicio' ? 'bg-emerald-500 text-white' : `${theme.bgSecondary} ${theme.textTertiary}`
+                }`}>1</div>
+                {!sidebarCollapsed && <span>Inicio</span>}
+              </button>
+
+              {/* Fase 2: Preparación */}
+              <button
+                onClick={() => setActiveTab('preparacion')}
+                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-md transition-colors text-sm font-medium ${
+                  activeTab === 'preparacion' ? `${theme.bgActive} ${theme.textActive} border ${theme.accentBorder}` : `${theme.bgHover} ${theme.textSecondary} hover:${theme.textPrimary}`
+                }`}
+              >
+                <div className={`w-5 h-5 flex-shrink-0 rounded-full flex items-center justify-center text-xs font-semibold ${
+                  activeTab === 'preparacion' ? 'bg-emerald-500 text-white' : `${theme.bgSecondary} ${theme.textTertiary}`
+                }`}>2</div>
+                {!sidebarCollapsed && <span>Preparación</span>}
+              </button>
+
+              {/* Fase 3: Difusión */}
+              <button
+                onClick={() => setActiveTab('difusion')}
+                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-md transition-colors text-sm font-medium ${
+                  activeTab === 'difusion' ? `${theme.bgActive} ${theme.textActive} border ${theme.accentBorder}` : `${theme.bgHover} ${theme.textSecondary} hover:${theme.textPrimary}`
+                }`}
+              >
+                <div className={`w-5 h-5 flex-shrink-0 rounded-full flex items-center justify-center text-xs font-semibold ${
+                  activeTab === 'difusion' ? 'bg-emerald-500 text-white' : `${theme.bgSecondary} ${theme.textTertiary}`
+                }`}>3</div>
+                {!sidebarCollapsed && <span>Difusión</span>}
+              </button>
+
+              {/* Fase 4: Gestión */}
+              <button
+                onClick={() => setActiveTab('gestion')}
+                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-md transition-colors text-sm font-medium ${
+                  activeTab === 'gestion' ? `${theme.bgActive} ${theme.textActive} border ${theme.accentBorder}` : `${theme.bgHover} ${theme.textSecondary} hover:${theme.textPrimary}`
+                }`}
+              >
+                <div className={`w-5 h-5 flex-shrink-0 rounded-full flex items-center justify-center text-xs font-semibold ${
+                  activeTab === 'gestion' ? 'bg-emerald-500 text-white' : `${theme.bgSecondary} ${theme.textTertiary}`
+                }`}>4</div>
+                {!sidebarCollapsed && <span>Gestión</span>}
+              </button>
+
+              {/* Fase 5: Negociación */}
+              <button
+                onClick={() => setActiveTab('negociacion')}
+                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-md transition-colors text-sm font-medium ${
+                  activeTab === 'negociacion' ? `${theme.bgActive} ${theme.textActive} border ${theme.accentBorder}` : `${theme.bgHover} ${theme.textSecondary} hover:${theme.textPrimary}`
+                }`}
+              >
+                <div className={`w-5 h-5 flex-shrink-0 rounded-full flex items-center justify-center text-xs font-semibold ${
+                  activeTab === 'negociacion' ? 'bg-emerald-500 text-white' : `${theme.bgSecondary} ${theme.textTertiary}`
+                }`}>5</div>
+                {!sidebarCollapsed && <span>Negociación</span>}
+              </button>
+
+              {/* Fase 6: Cierre Final */}
+              <button
+                onClick={() => setActiveTab('cierre')}
+                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-md transition-colors text-sm font-medium ${
+                  activeTab === 'cierre' ? `${theme.bgActive} ${theme.textActive} border ${theme.accentBorder}` : `${theme.bgHover} ${theme.textSecondary} hover:${theme.textPrimary}`
+                }`}
+              >
+                <div className={`w-5 h-5 flex-shrink-0 rounded-full flex items-center justify-center text-xs font-semibold ${
+                  activeTab === 'cierre' ? 'bg-emerald-500 text-white' : `${theme.bgSecondary} ${theme.textTertiary}`
+                }`}>6</div>
+                {!sidebarCollapsed && <span>Cierre Final</span>}
+              </button>
+
+              {/* Fase 7: Post-Venta */}
+              <button
+                onClick={() => setActiveTab('postventa')}
+                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-md transition-colors text-sm font-medium ${
+                  activeTab === 'postventa' ? `${theme.bgActive} ${theme.textActive} border ${theme.accentBorder}` : `${theme.bgHover} ${theme.textSecondary} hover:${theme.textPrimary}`
+                }`}
+              >
+                <div className={`w-5 h-5 flex-shrink-0 rounded-full flex items-center justify-center text-xs font-semibold ${
+                  activeTab === 'postventa' ? 'bg-emerald-500 text-white' : `${theme.bgSecondary} ${theme.textTertiary}`
+                }`}>7</div>
+                {!sidebarCollapsed && <span>Post-Venta</span>}
+              </button>
+
+              {/* Separator */}
+              {!sidebarCollapsed && <div className="px-3 pt-6 pb-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Análisis</div>}
+
+              {/* Reportes */}
+              <button
+                onClick={() => setActiveTab('reports')}
+                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-md transition-colors text-sm font-medium ${
+                  activeTab === 'reports' ? 'bg-emerald-600/10 text-emerald-400 border border-emerald-600/20' : 'hover:bg-[#2A2A2A] text-gray-400 hover:text-gray-200'
+                }`}
+              >
+                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                {!sidebarCollapsed && <span className="font-medium">Reportes</span>}
+              </button>
+            </div>
+          </nav>
+
+          {/* Footer con métricas rápidas */}
+          {!sidebarCollapsed && (
+            <div className={`p-4 border-t ${theme.border}`}>
+              <div className={`${theme.bgSecondary} rounded-lg p-3 border ${theme.border}`}>
+                <p className={`text-xs ${theme.textTertiary} mb-1 font-medium`}>Comisiones Mes</p>
+                <p className={`text-xl font-bold ${theme.accentText}`}>S/ {metrics.comisionesMes.toLocaleString()}</p>
+              </div>
+            </div>
+          )}
         </div>
-      </nav>
+      </aside>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'dashboard' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {/* KPIs */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <div className="flex items-center">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <span className="text-blue-600 text-2xl">📈</span>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Leads Activos</p>
-                  <p className="text-2xl font-bold text-gray-900">12</p>
-                </div>
+      {/* CONTENIDO PRINCIPAL */}
+      <div className={`flex-1 ${sidebarCollapsed ? 'ml-20' : 'ml-72'} transition-all duration-300`}>
+        {/* Header Superior */}
+        <header className={`${theme.bgHeader} border-b ${theme.border} sticky top-0 z-20 shadow-sm transition-colors duration-300`}>
+          <div className="px-8 py-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className={`text-xl font-semibold ${theme.textPrimary}`}>
+                  {activeTab === 'dashboard' && 'Dashboard General'}
+                  {activeTab === 'inicio' && 'Fase 1: Inicio'}
+                  {activeTab === 'preparacion' && 'Fase 2: Preparación'}
+                  {activeTab === 'difusion' && 'Fase 3: Difusión'}
+                  {activeTab === 'gestion' && 'Fase 4: Gestión'}
+                  {activeTab === 'negociacion' && 'Fase 5: Negociación'}
+                  {activeTab === 'cierre' && 'Fase 6: Cierre Final'}
+                  {activeTab === 'postventa' && 'Fase 7: Post-Venta'}
+                  {activeTab === 'reports' && 'Reportes y KPIs'}
+                </h2>
+                <p className={`text-sm ${theme.textSecondary} mt-1`}>
+                  {activeTab === 'dashboard' && 'Visión general del rendimiento y pipeline'}
+                  {activeTab === 'inicio' && 'Validar legalidad y formalizar relación'}
+                  {activeTab === 'preparacion' && 'Optimizar presentación del inmueble'}
+                  {activeTab === 'difusion' && 'Atraer leads calificados'}
+                  {activeTab === 'gestion' && 'Calificar leads y programar visitas'}
+                  {activeTab === 'negociacion' && 'Maximizar valor de venta'}
+                  {activeTab === 'cierre' && 'Coordinar trámites legales'}
+                  {activeTab === 'postventa' && 'Garantizar experiencia memorable'}
+                  {activeTab === 'reports' && 'Métricas y análisis de performance'}
+                </p>
               </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <div className="flex items-center">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <span className="text-green-600 text-2xl">💰</span>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Comisiones Este Mes</p>
-                  <p className="text-2xl font-bold text-gray-900">S/ 8,500</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <div className="flex items-center">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <span className="text-purple-600 text-2xl">🏠</span>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Propiedades Activas</p>
-                  <p className="text-2xl font-bold text-gray-900">8</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <div className="flex items-center">
-                <div className="p-2 bg-orange-100 rounded-lg">
-                  <span className="text-orange-600 text-2xl">⭐</span>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Tasa de Cierre</p>
-                  <p className="text-2xl font-bold text-gray-900">68%</p>
-                </div>
+              <div className="flex items-center space-x-3">
+                <button 
+                  onClick={() => openModal('captacion')}
+                  className={`${theme.accent} ${theme.accentHover} text-white px-4 py-2 rounded-md transition-colors font-medium text-sm flex items-center space-x-2 shadow-md`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>Smart Capture</span>
+                </button>
+                <button className={`${theme.bgCard} ${theme.bgHover} border ${theme.border} ${theme.textSecondary} px-4 py-2 rounded-md transition-colors font-medium text-sm flex items-center space-x-2`}>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <span>+ Nuevo Lead</span>
+                </button>
               </div>
             </div>
           </div>
-        )}
+        </header>
 
+        {/* Área de Contenido */}
+        <main className={`p-8 ${theme.bgMain} min-h-screen transition-colors duration-300`}>
+        
+        {/* DASHBOARD PRINCIPAL */}
         {activeTab === 'dashboard' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Tareas del Día */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h3 className="text-lg font-semibold mb-4">Tareas de Hoy</h3>
-              <div className="space-y-3">
-                {tasks.map((task) => (
-                  <div key={task.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-3 h-3 rounded-full ${
-                        task.priority === 'high' ? 'bg-red-500' :
-                        task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-                      }`}></div>
-                      <div>
-                        <p className="font-medium">{task.title}</p>
-                        <p className="text-sm text-gray-500">{task.time}</p>
+          <div className="space-y-8">
+            {/* KPIs Principales */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className={`${theme.bgCard} p-6 rounded-lg border ${theme.border} ${theme.bgCardHover} transition-colors`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Leads Activos</p>
+                    <p className="text-3xl font-semibold text-white mt-2">{metrics.leadsActivos}</p>
+                    <p className="text-xs text-gray-500 mt-1 font-medium">↑ 15% vs mes anterior</p>
+                  </div>
+                  <div className="w-12 h-12 bg-emerald-500/10 rounded-lg flex items-center justify-center">
+                    <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-[#1C1C1C] p-6 rounded-lg border border-[#2A2A2A] hover:border-[#3A3A3A] transition-colors">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Comisiones Mes</p>
+                    <p className="text-3xl font-semibold text-white mt-2">S/ {metrics.comisionesMes.toLocaleString()}</p>
+                    <p className="text-xs text-gray-500 mt-1 font-medium">↑ 23% vs mes anterior</p>
+                  </div>
+                  <div className="w-12 h-12 bg-emerald-500/10 rounded-lg flex items-center justify-center">
+                    <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-[#1C1C1C] p-6 rounded-lg border border-[#2A2A2A] hover:border-[#3A3A3A] transition-colors">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Propiedades</p>
+                    <p className="text-3xl font-semibold text-white mt-2">{metrics.propiedadesActivas}</p>
+                    <p className="text-xs text-gray-400 mt-1 font-medium">3 en negociación</p>
+                  </div>
+                  <div className="w-12 h-12 bg-emerald-500/10 rounded-lg flex items-center justify-center">
+                    <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-[#1C1C1C] p-6 rounded-lg border border-[#2A2A2A] hover:border-[#3A3A3A] transition-colors">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Tasa de Cierre</p>
+                    <p className="text-3xl font-semibold text-white mt-2">{metrics.tasaCierre}%</p>
+                    <p className="text-xs text-gray-500 mt-1 font-medium">Meta: 60% ✓</p>
+                  </div>
+                  <div className="w-12 h-12 bg-emerald-500/10 rounded-lg flex items-center justify-center">
+                    <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Funnel de Ventas */}
+            <div className="bg-[#1C1C1C] p-8 rounded-lg border border-[#2A2A2A]">
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-white">Embudo de Ventas - Ciclo Completo</h3>
+                <p className="text-sm text-gray-400 mt-1">Distribución de propiedades por fase del proceso de venta</p>
+              </div>
+              <div className="space-y-6">
+                {funnelData.map((item, index) => (
+                  <div key={index}>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-xs font-medium text-gray-400 bg-[#252525] px-3 py-1 rounded-md border border-[#2A2A2A]">
+                          Fase {index + 1}
+                        </span>
+                        <span className="font-medium text-white text-base">{item.fase}</span>
+                      </div>
+                      <div className="flex items-center space-x-6">
+                        <span className="text-sm text-gray-400 font-medium">{item.total} propiedades</span>
+                        <span className="text-base font-semibold text-white w-16 text-right">{item.percentage}%</span>
                       </div>
                     </div>
-                    <button className="text-blue-600 hover:text-blue-800">Completar</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Leads Calientes */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h3 className="text-lg font-semibold mb-4">Leads de Alto Interés</h3>
-              <div className="space-y-3">
-                {leads.map((lead) => (
-                  <div key={lead.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                    <div>
-                      <p className="font-medium">{lead.name}</p>
-                      <p className="text-sm text-gray-500">{lead.status} • {lead.lastActivity}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-orange-600">S/ {lead.value.toLocaleString('es-PE')}</p>
-                      <button className="text-sm text-blue-600 hover:text-blue-800">Contactar</button>
+                    <div className="w-full bg-[#252525] rounded-full h-2 overflow-hidden">
+                      <div 
+                        className="bg-emerald-600 h-2 rounded-full transition-all duration-700"
+                        style={{ width: `${item.percentage}%` }}
+                      ></div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
-        )}
 
-        {activeTab === 'leads' && (
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold">Gestión de Leads</h3>
-              <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-                Nuevo Lead
-              </button>
+            {/* Métricas SmartCore BI */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-lg hover:border-emerald-600/20 transition-colors">
+                <h4 className="font-medium mb-2 text-sm text-gray-400 uppercase tracking-wider">CPL (Costo por Lead)</h4>
+                <p className="text-3xl font-semibold text-white">S/ {metrics.cpl}</p>
+                <p className="text-xs mt-2 text-gray-400">Meta: S/ 50 o menos</p>
+                <div className="mt-3 bg-emerald-600/5 border border-emerald-600/20 rounded-md px-3 py-1 inline-block text-xs font-medium text-emerald-500">
+                  ✓ Dentro del objetivo
+                </div>
+              </div>
+
+              <div className="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-lg hover:border-emerald-600/20 transition-colors">
+                <h4 className="font-medium mb-2 text-sm text-gray-400 uppercase tracking-wider">Tiempo de Respuesta</h4>
+                <p className="text-3xl font-semibold text-white">{metrics.tiempoRespuesta} min</p>
+                <p className="text-xs mt-2 text-gray-400">Meta: menos de 15 minutos</p>
+                <div className="mt-3 bg-emerald-600/10 border border-emerald-600/20 rounded-md px-3 py-1 inline-block text-xs font-medium text-emerald-400">
+                  ✓ Excelente performance
+                </div>
+              </div>
+
+              <div className="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-lg hover:border-emerald-600/20 transition-colors">
+                <h4 className="font-medium mb-2 text-sm text-gray-400 uppercase tracking-wider">NPS Post-Venta</h4>
+                <p className="text-3xl font-semibold text-white">{metrics.nps}</p>
+                <p className="text-xs mt-2 text-gray-400">Satisfacción del cliente</p>
+                <div className="mt-3 bg-emerald-600/10 border border-emerald-600/20 rounded-md px-3 py-1 inline-block text-xs font-medium text-emerald-400">
+                  ✓ Nivel excepcional
+                </div>
+              </div>
             </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Nombre
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Estado
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Valor
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Última Actividad
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Acciones
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {leads.map((lead) => (
-                    <tr key={lead.id}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="font-medium text-gray-900">{lead.name}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          lead.status === 'Negociando' ? 'bg-green-100 text-green-800' :
-                          lead.status === 'Interesado' ? 'bg-blue-100 text-blue-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {lead.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        S/ {lead.value.toLocaleString('es-PE')}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {lead.lastActivity}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-blue-600 hover:text-blue-900 mr-3">Editar</button>
-                        <button className="text-green-600 hover:text-green-900">Contactar</button>
-                      </td>
-                    </tr>
+
+            {/* Tareas y Leads */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="bg-[#1C1C1C] p-6 rounded-lg border border-[#2A2A2A]">
+                <h3 className="font-semibold text-lg mb-5 text-white">Tareas Programadas Hoy</h3>
+                <div className="space-y-3">
+                  {[
+                    { title: 'Validar documentos legales - Propiedad Av. Larco', time: '10:00 AM', priority: 'high', phase: 'Inicio' },
+                    { title: 'Sesión fotográfica profesional - Dpto Miraflores', time: '14:00 PM', priority: 'medium', phase: 'Preparación' },
+                    { title: 'Visita programada con cliente - Sr. Carlos Ruiz', time: '16:00 PM', priority: 'high', phase: 'Gestión' },
+                    { title: 'Revisión de contraoferta - Casa en Barranco', time: '17:30 PM', priority: 'high', phase: 'Negociación' }
+                  ].map((task, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 border border-[#2A2A2A] rounded-lg hover:border-emerald-600/20 hover:bg-[#252525] transition-colors">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-2 h-2 rounded-full ${
+                          task.priority === 'high' ? 'bg-gray-400' : 'bg-gray-600'
+                        }`}></div>
+                        <div className="flex-1">
+                          <p className="font-medium text-white text-sm">{task.title}</p>
+                          <p className="text-xs text-gray-400 mt-0.5">{task.time} · {task.phase}</p>
+                        </div>
+                      </div>
+                      <button className="text-emerald-400 hover:text-emerald-300 text-sm font-medium px-3 py-1 border border-[#2A2A2A] rounded-md hover:bg-[#252525] transition-colors">
+                        Ver detalles
+                      </button>
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              </div>
+
+              <div className="bg-[#1C1C1C] p-6 rounded-lg border border-[#2A2A2A]">
+                <h3 className="font-semibold text-lg mb-5 text-white">Leads de Alto Potencial</h3>
+                <div className="space-y-3">
+                  {[
+                    { name: 'Sofia Mendoza', scoring: 5, value: 320000, phase: 'Negociación', status: 'hot' },
+                    { name: 'Ana María López', scoring: 4, value: 180000, phase: 'Gestión', status: 'warm' },
+                    { name: 'Roberto Vargas', scoring: 5, value: 450000, phase: 'Difusión', status: 'hot' }
+                  ].map((lead, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 border border-[#2A2A2A] rounded-lg hover:border-emerald-600/20 hover:bg-[#252525] transition-colors">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <p className="font-medium text-white">{lead.name}</p>
+                          <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${
+                            lead.status === 'hot' ? 'bg-emerald-600/10 border border-emerald-600/20 text-emerald-400' : 'bg-[#2A2A2A] border border-[#3A3A3A] text-gray-400'
+                          }`}>
+                            {lead.status === 'hot' ? 'Caliente' : 'Tibio'}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-3 text-xs text-gray-500">
+                          <span>{lead.phase}</span>
+                          <span>·</span>
+                          <div className="flex space-x-0.5">
+                            {[...Array(lead.scoring)].map((_, i) => (
+                              <span key={i} className="text-yellow-500">★</span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right ml-4">
+                        <p className="font-bold text-emerald-400">S/ {lead.value.toLocaleString()}</p>
+                        <button className="text-sm text-emerald-400 hover:text-emerald-300 font-medium mt-1">
+                          Contactar →
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {activeTab === 'properties' && (
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold">Mis Propiedades</h3>
-              <button className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
-                Publicar Nueva
+        {/* FASE 1: INICIO */}
+        {activeTab === 'inicio' && (
+          <div className="space-y-6">
+            <div className="bg-[#1C1C1C] p-6 rounded-xl border border-[#2A2A2A]">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-white">Fase 1: INICIO</h2>
+                  <p className="text-gray-400 mt-1">Validar legalidad del inmueble y formalizar relación con el vendedor</p>
+                </div>
+                <button 
+                  onClick={() => openModal('captacion')}
+                  className="bg-emerald-600 text-white px-5 py-2.5 rounded-lg hover:bg-emerald-500 transition font-medium shadow-lg shadow-emerald-600/20"
+                >
+                  + Nueva Captación
+                </button>
+              </div>
+
+              {/* Métricas de la Fase */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Validación Legal</p>
+                  <p className="text-3xl font-bold">92%</p>
+                  <p className="text-xs mt-1 opacity-80">Listados completos</p>
+                </div>
+                <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Tasa Captación</p>
+                  <p className="text-3xl font-bold">78%</p>
+                  <p className="text-xs mt-1 opacity-80">Reunión → Exclusividad</p>
+                </div>
+                <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Tiempo Promedio</p>
+                  <p className="text-3xl font-bold">3.2 días</p>
+                  <p className="text-xs mt-1 opacity-80">Contacto → Firma</p>
+                </div>
+                <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Scoring Promedio</p>
+                  <p className="text-3xl font-bold">4.2/5</p>
+                  <p className="text-xs mt-1 opacity-80">Calidad del lead</p>
+                </div>
+              </div>
+
+              {/* Lista de Propiedades en Inicio */}
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Propiedad</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Propietario</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase">PVS</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Documentos</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Scoring</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {propiedadesInicio.map((prop) => (
+                      <tr key={prop.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-gray-900">{prop.direccion}</div>
+                          <div className="text-sm text-gray-500">ID: {prop.id}</div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-300">{prop.propietario}</td>
+                        <td className="px-6 py-4">
+                          <span className="font-bold text-green-600">S/ {prop.pvs.toLocaleString()}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-full bg-gray-200 rounded-full h-2.5 w-24">
+                              <div 
+                                className={`h-2.5 rounded-full ${prop.validacionLegal === 100 ? 'bg-green-500' : 'bg-yellow-500'}`}
+                                style={{ width: `${prop.validacionLegal}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-medium">{prop.validacionLegal}%</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex space-x-0.5">
+                            {[...Array(prop.scoring)].map((_, i) => (
+                              <span key={i} className="text-yellow-500">★</span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <button 
+                            onClick={() => openModal('gestionarPropiedad', prop)}
+                            className="text-blue-600 hover:text-blue-800 font-medium mr-3"
+                          >
+                            Ver
+                          </button>
+                          <button 
+                            onClick={() => openModal('gestionarPropiedad', prop)}
+                            className="text-green-600 hover:text-green-800 font-medium"
+                          >
+                            Gestionar
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* FASE 2: PREPARACIÓN */}
+        {activeTab === 'preparacion' && (
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Fase 2: PREPARACIÓN</h2>
+                  <p className="text-gray-400 mt-1">Optimizar presentación del inmueble para maximizar su atractivo</p>
+                </div>
+              </div>
+
+              {/* Métricas de la Fase */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Tiempo Preparación</p>
+                  <p className="text-3xl font-bold">3.2 días</p>
+                  <p className="text-xs mt-1 opacity-80">Firma → Listado activo</p>
+                </div>
+                <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Índice Calidad Visual</p>
+                  <p className="text-3xl font-bold">88/100</p>
+                  <p className="text-xs mt-1 opacity-80">Fotos + descripción</p>
+                </div>
+                <div className="bg-gradient-to-br from-pink-500 to-pink-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Con Video 360°</p>
+                  <p className="text-3xl font-bold">50%</p>
+                  <p className="text-xs mt-1 opacity-80">De propiedades</p>
+                </div>
+              </div>
+
+              {/* Lista de Propiedades en Preparación */}
+              <div className="space-y-4">
+                {propiedadesPreparacion.map((prop) => (
+                  <div key={prop.id} className="border border-gray-200 rounded-lg p-6 hover:border-indigo-300 hover:bg-indigo-50 transition">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="font-bold text-lg text-gray-900">{prop.direccion}</h3>
+                        <p className="text-sm text-gray-600">Propietario: {prop.propietario}</p>
+                        <p className="text-lg font-bold text-green-600 mt-1">PVS: S/ {prop.pvs.toLocaleString()}</p>
+                      </div>
+                      <span className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">
+                        {prop.diasEnPreparacion} días
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="border-l-4 border-blue-500 pl-4">
+                        <p className="text-xs text-gray-600 font-semibold uppercase">Fotos</p>
+                        <p className="text-xl font-bold text-gray-900">{prop.fotos.cantidad}</p>
+                        <p className="text-xs text-gray-500">Calidad: {prop.fotos.calidad}%</p>
+                      </div>
+                      <div className="border-l-4 border-green-500 pl-4">
+                        <p className="text-xs text-gray-600 font-semibold uppercase">Video 360°</p>
+                        <p className="text-xl font-bold text-gray-900">{prop.video360 ? 'Sí' : 'No'}</p>
+                        <p className="text-xs text-gray-500">{prop.video360 ? 'Completado' : 'Pendiente'}</p>
+                      </div>
+                      <div className="border-l-4 border-purple-500 pl-4">
+                        <p className="text-xs text-gray-600 font-semibold uppercase">Ficha Comercial</p>
+                        <p className="text-xl font-bold text-gray-900">{prop.fichaComercial}%</p>
+                        <p className="text-xs text-gray-500">Completitud</p>
+                      </div>
+                      <div className="border-l-4 border-orange-500 pl-4">
+                        <p className="text-xs text-gray-600 font-semibold uppercase">Buyer Persona</p>
+                        <p className="text-sm font-medium text-gray-900">{prop.buyerPersona}</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 flex space-x-3">
+                      <button 
+                        onClick={() => openModal('subirFotos', prop)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+                      >
+                        Subir Fotos
+                      </button>
+                      <button 
+                        onClick={() => openModal('video360', prop)}
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm font-medium"
+                      >
+                        Crear Video 360°
+                      </button>
+                      <button 
+                        onClick={() => openModal('editarFicha', prop)}
+                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition text-sm font-medium"
+                      >
+                        Editar Ficha
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* FASE 3: DIFUSIÓN */}
+        {activeTab === 'difusion' && (
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Fase 3: DIFUSIÓN</h2>
+                  <p className="text-gray-400 mt-1">Atraer leads calificados mediante canales orgánicos y pagados</p>
+                </div>
+              </div>
+
+              {/* Métricas de la Fase */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">CPL Promedio</p>
+                  <p className="text-3xl font-bold">S/ 48</p>
+                  <p className="text-xs mt-1 opacity-80">Costo por lead</p>
+                </div>
+                <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">CTR Promedio</p>
+                  <p className="text-3xl font-bold">4.3%</p>
+                  <p className="text-xs mt-1 opacity-80">Click through rate</p>
+                </div>
+                <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Leads Scoring Alto</p>
+                  <p className="text-3xl font-bold">62%</p>
+                  <p className="text-xs mt-1 opacity-80">Scoring 4-5</p>
+                </div>
+                <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Alcance Total</p>
+                  <p className="text-3xl font-bold">44.3K</p>
+                  <p className="text-xs mt-1 opacity-80">Impresiones</p>
+                </div>
+              </div>
+
+              {/* Lista de Propiedades en Difusión */}
+              <div className="space-y-4">
+                {propiedadesDifusion.map((prop) => (
+                  <div key={prop.id} className="border border-gray-200 rounded-lg p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="font-bold text-lg text-gray-900">{prop.direccion}</h3>
+                        <p className="text-sm text-gray-600">Propietario: {prop.propietario}</p>
+                        <p className="text-lg font-bold text-green-600 mt-1">PVS: S/ {prop.pvs.toLocaleString()}</p>
+                      </div>
+                      <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+                        {prop.diasEnDifusion} días activo
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
+                      <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <p className="text-xs text-gray-600 font-semibold">Alcance</p>
+                        <p className="text-xl font-bold text-blue-600">{(prop.alcance / 1000).toFixed(1)}K</p>
+                      </div>
+                      <div className="text-center p-3 bg-green-50 rounded-lg">
+                        <p className="text-xs text-gray-600 font-semibold">Clics</p>
+                        <p className="text-xl font-bold text-green-600">{prop.clics}</p>
+                      </div>
+                      <div className="text-center p-3 bg-purple-50 rounded-lg">
+                        <p className="text-xs text-gray-600 font-semibold">CPL</p>
+                        <p className="text-xl font-bold text-purple-600">S/ {prop.cpl}</p>
+                      </div>
+                      <div className="text-center p-3 bg-orange-50 rounded-lg">
+                        <p className="text-xs text-gray-600 font-semibold">Leads</p>
+                        <p className="text-xl font-bold text-orange-600">{prop.leadsGenerados}</p>
+                      </div>
+                      <div className="text-center p-3 bg-pink-50 rounded-lg">
+                        <p className="text-xs text-gray-600 font-semibold">Campañas</p>
+                        <p className="text-xl font-bold text-pink-600">{prop.campañasActivas}</p>
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <p className="text-sm font-semibold text-gray-700 mb-2">Portales Activos:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {prop.portales.map((portal, idx) => (
+                          <span key={idx} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
+                            {portal}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex space-x-3">
+                      <button 
+                        onClick={() => openModal('verCampañas', prop)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+                      >
+                        Ver Campañas
+                      </button>
+                      <button 
+                        onClick={() => openModal('nuevaCampana', prop)}
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm font-medium"
+                      >
+                        Nueva Campaña
+                      </button>
+                      <button 
+                        onClick={() => openModal('openHouse', prop)}
+                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition text-sm font-medium"
+                      >
+                        Open House
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* FASE 4: GESTIÓN */}
+        {activeTab === 'gestion' && (
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Fase 4: GESTIÓN</h2>
+                  <p className="text-gray-400 mt-1">Calificar leads, programar visitas y mantener informado al vendedor</p>
+                </div>
+              </div>
+
+              {/* Métricas de la Fase */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-pink-500 to-pink-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Tasa de Conversión</p>
+                  <p className="text-3xl font-bold">42%</p>
+                  <p className="text-xs mt-1 opacity-80">Visitas → Oferta formal</p>
+                </div>
+                <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Tiempo de Respuesta</p>
+                  <p className="text-3xl font-bold">12 min</p>
+                  <p className="text-xs mt-1 opacity-80">Promedio al lead</p>
+                </div>
+                <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Ofertas Aceptadas</p>
+                  <p className="text-3xl font-bold">68%</p>
+                  <p className="text-xs mt-1 opacity-80">Del total recibidas</p>
+                </div>
+              </div>
+
+              {/* Propiedades en Gestión */}
+              <div className="space-y-6">
+                {propiedadesGestion.map((prop) => (
+                  <div key={prop.id} className="border border-gray-200 rounded-lg p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="font-bold text-lg text-gray-900">{prop.direccion}</h3>
+                        <p className="text-sm text-gray-600">Propietario: {prop.propietario}</p>
+                        <p className="text-lg font-bold text-green-600 mt-1">PVS: S/ {prop.pvs.toLocaleString()}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm font-medium">
+                          {prop.visitasRealizadas} visitas
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Leads Asociados */}
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-gray-900 mb-3">Leads en Proceso ({prop.leads.length})</h4>
+                      <div className="space-y-2">
+                        {prop.leads.map((lead, idx) => (
+                          <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div className="flex items-center space-x-4">
+                              <div className="flex space-x-0.5">
+                                {[...Array(lead.scoring)].map((_, i) => (
+                                  <span key={i} className="text-yellow-500 text-sm">★</span>
+                                ))}
+                              </div>
+                              <div>
+                                <p className="font-medium text-gray-900">{lead.nombre}</p>
+                                <p className="text-xs text-gray-500">Último contacto: {lead.ultimoContacto}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                              {lead.precalificado ? (
+                                <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">
+                                  ✓ Precalificado
+                                </span>
+                              ) : (
+                                <button className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium hover:bg-yellow-200">
+                                  Solicitar Precalificación
+                                </button>
+                              )}
+                              <span className="text-sm text-gray-600">{lead.visitasProgramadas} visitas</span>
+                              <button 
+                                onClick={() => openModal('programarVisita', { ...prop, lead })}
+                                className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+                              >
+                                Programar Visita
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Feedback del Dueño */}
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                      <p className="text-sm font-semibold text-blue-900 mb-1">Feedback del Propietario:</p>
+                      <p className="text-sm text-blue-800">{prop.feedbackDueño}</p>
+                    </div>
+
+                    <div className="mt-4 flex space-x-3">
+                      <button 
+                        onClick={() => openModal('enviarFeedback', prop)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+                      >
+                        Enviar Feedback
+                      </button>
+                      <button 
+                        onClick={() => openModal('calendarioVisitas', prop)}
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm font-medium"
+                      >
+                        Calendario de Visitas
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* FASE 5: NEGOCIACIÓN */}
+        {activeTab === 'negociacion' && (
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Fase 5: NEGOCIACIÓN</h2>
+                  <p className="text-gray-400 mt-1">Maximizar el valor de la venta mediante estrategia inteligente</p>
+                </div>
+              </div>
+
+              {/* Métricas de la Fase */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Desviación de Precio</p>
+                  <p className="text-3xl font-bold">-3.2%</p>
+                  <p className="text-xs mt-1 opacity-80">PVS vs Precio Final</p>
+                </div>
+                <div className="bg-gradient-to-br from-red-500 to-red-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Tiempo Negociación</p>
+                  <p className="text-3xl font-bold">8 días</p>
+                  <p className="text-xs mt-1 opacity-80">Oferta → Arras</p>
+                </div>
+                <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Satisfacción</p>
+                  <p className="text-3xl font-bold">92%</p>
+                  <p className="text-xs mt-1 opacity-80">En proceso de cierre</p>
+                </div>
+              </div>
+
+              {/* Propiedades en Negociación */}
+              <div className="space-y-6">
+                {propiedadesNegociacion.map((prop) => (
+                  <div key={prop.id} className="border-2 border-orange-200 rounded-lg p-6 bg-orange-50">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="font-bold text-xl text-gray-900">{prop.direccion}</h3>
+                        <p className="text-sm text-gray-600">Propietario: {prop.propietario}</p>
+                        <div className="flex items-center space-x-4 mt-2">
+                          <p className="text-sm text-gray-700">PVS: <span className="font-bold">S/ {prop.pvs.toLocaleString()}</span></p>
+                          {prop.arras && (
+                            <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                              ✓ ARRAS FIRMADAS
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Ofertas Recibidas */}
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-gray-900 mb-3">Ofertas Recibidas ({prop.ofertas.length})</h4>
+                      <div className="space-y-3">
+                        {prop.ofertas.map((oferta, idx) => (
+                          <div key={idx} className="bg-white p-4 rounded-lg border-2 border-gray-300">
+                            <div className="flex items-center justify-between mb-2">
+                              <div>
+                                <p className="font-bold text-lg text-gray-900">{oferta.cliente}</p>
+                                <p className="text-xs text-gray-500">Fecha: {oferta.fecha} · Validez: {oferta.validez}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-2xl font-bold text-green-600">S/ {oferta.monto.toLocaleString()}</p>
+                                <p className="text-xs text-gray-600">
+                                  {((oferta.monto - prop.pvs) / prop.pvs * 100).toFixed(1)}% del PVS
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                oferta.estado === 'Aceptada' ? 'bg-green-100 text-green-800' :
+                                oferta.estado === 'Contraofertar' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {oferta.estado}
+                              </span>
+                              <div className="flex space-x-2">
+                                <button 
+                                  onClick={() => openModal('aceptarOferta', { ...prop, oferta })}
+                                  className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm font-medium"
+                                >
+                                  Aceptar
+                                </button>
+                                <button 
+                                  onClick={() => openModal('contraoferta', { ...prop, oferta })}
+                                  className="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 text-sm font-medium"
+                                >
+                                  Contraofertar
+                                </button>
+                                <button 
+                                  onClick={() => openModal('rechazarOferta', { ...prop, oferta })}
+                                  className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm font-medium"
+                                >
+                                  Rechazar
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Estrategia y Arras */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <p className="text-sm font-semibold text-blue-900 mb-1">Estrategia Recomendada:</p>
+                        <p className="text-sm text-blue-800">{prop.estrategia}</p>
+                      </div>
+                      {prop.arras && (
+                        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                          <p className="text-sm font-semibold text-green-900 mb-1">Arras Depositadas:</p>
+                          <p className="text-xl font-bold text-green-800">S/ {prop.montoArras.toLocaleString()}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-4 flex space-x-3">
+                      {!prop.arras && (
+                        <button 
+                          onClick={() => openModal('firmarArras', prop)}
+                          className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition text-sm font-medium"
+                        >
+                          Firmar Contrato de Arras
+                        </button>
+                      )}
+                      <button 
+                        onClick={() => openModal('verCampañas', prop)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+                      >
+                        Ver Historial de Ofertas
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* FASE 6: CIERRE FINAL */}
+        {activeTab === 'cierre' && (
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Fase 6: CIERRE FINAL</h2>
+                  <p className="text-gray-400 mt-1">Coordinar trámites legales y financieros para la transferencia</p>
+                </div>
+              </div>
+
+              {/* Métricas de la Fase */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-red-500 to-red-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Días para el Cierre</p>
+                  <p className="text-3xl font-bold">18 días</p>
+                  <p className="text-xs mt-1 opacity-80">Arras → Escritura</p>
+                </div>
+                <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Cierres Sin Incidencias</p>
+                  <p className="text-3xl font-bold">95%</p>
+                  <p className="text-xs mt-1 opacity-80">Proceso exitoso</p>
+                </div>
+              </div>
+
+              {/* Propiedades en Cierre */}
+              <div className="space-y-6">
+                {propiedadesCierre.map((prop) => (
+                  <div key={prop.id} className="border-2 border-red-200 rounded-lg p-6 bg-red-50">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="font-bold text-xl text-gray-900">{prop.direccion}</h3>
+                        <p className="text-sm text-gray-600">Vendedor: {prop.propietario}</p>
+                        <p className="text-sm text-gray-600">Comprador: {prop.comprador}</p>
+                        <div className="flex items-center space-x-4 mt-2">
+                          <p className="text-sm text-gray-700">PVS: <span className="line-through">S/ {prop.pvs.toLocaleString()}</span></p>
+                          <p className="text-lg font-bold text-green-600">Final: S/ {prop.precioFinal.toLocaleString()}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold">
+                          {prop.diasParaCierre} días para cierre
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Timeline de Cierre */}
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-gray-900 mb-4">Línea de Tiempo del Cierre</h4>
+                      <div className="space-y-3">
+                        {/* Tasación */}
+                        <div className="flex items-center space-x-4">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            prop.etapas.tasacion.status === 'Completado' ? 'bg-green-500' :
+                            prop.etapas.tasacion.status === 'En Proceso' ? 'bg-yellow-500' : 'bg-gray-300'
+                          }`}>
+                            {prop.etapas.tasacion.status === 'Completado' ? (
+                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              <span className="text-white font-bold">1</span>
+                            )}
+                          </div>
+                          <div className="flex-1 bg-white p-3 rounded-lg border border-gray-300">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="font-semibold text-gray-900">Tasación Bancaria</p>
+                                <p className="text-xs text-gray-600">Banco: {prop.etapas.tasacion.banco}</p>
+                              </div>
+                              <div className="text-right">
+                                <span className={`text-sm font-medium ${
+                                  prop.etapas.tasacion.status === 'Completado' ? 'text-green-600' :
+                                  prop.etapas.tasacion.status === 'En Proceso' ? 'text-yellow-600' : 'text-gray-500'
+                                }`}>
+                                  {prop.etapas.tasacion.status}
+                                </span>
+                                <p className="text-xs text-gray-500">{prop.etapas.tasacion.fecha}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Notaría */}
+                        <div className="flex items-center space-x-4">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            prop.etapas.notaria.status === 'Completado' ? 'bg-green-500' :
+                            prop.etapas.notaria.status === 'En Proceso' ? 'bg-yellow-500' : 'bg-gray-300'
+                          }`}>
+                            {prop.etapas.notaria.status === 'Completado' ? (
+                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              <span className="text-white font-bold">2</span>
+                            )}
+                          </div>
+                          <div className="flex-1 bg-white p-3 rounded-lg border border-gray-300">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="font-semibold text-gray-900">Coordinación Notaría</p>
+                                <p className="text-xs text-gray-600">Notaría: {prop.etapas.notaria.notaria}</p>
+                              </div>
+                              <div className="text-right">
+                                <span className={`text-sm font-medium ${
+                                  prop.etapas.notaria.status === 'Completado' ? 'text-green-600' :
+                                  prop.etapas.notaria.status === 'En Proceso' ? 'text-yellow-600' : 'text-gray-500'
+                                }`}>
+                                  {prop.etapas.notaria.status}
+                                </span>
+                                <p className="text-xs text-gray-500">{prop.etapas.notaria.fecha}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Escritura */}
+                        <div className="flex items-center space-x-4">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            prop.etapas.escritura.status === 'Completado' ? 'bg-green-500' :
+                            prop.etapas.escritura.status === 'En Proceso' ? 'bg-yellow-500' : 'bg-gray-300'
+                          }`}>
+                            <span className="text-white font-bold">3</span>
+                          </div>
+                          <div className="flex-1 bg-white p-3 rounded-lg border border-gray-300">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="font-semibold text-gray-900">Firma Escritura Pública</p>
+                              </div>
+                              <div className="text-right">
+                                <span className="text-sm font-medium text-gray-500">{prop.etapas.escritura.status}</span>
+                                <p className="text-xs text-gray-500">{prop.etapas.escritura.fecha}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Entrega de Llaves */}
+                        <div className="flex items-center space-x-4">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            prop.etapas.entregaLlaves.status === 'Completado' ? 'bg-green-500' :
+                            prop.etapas.entregaLlaves.status === 'En Proceso' ? 'bg-yellow-500' : 'bg-gray-300'
+                          }`}>
+                            <span className="text-white font-bold">4</span>
+                          </div>
+                          <div className="flex-1 bg-white p-3 rounded-lg border border-gray-300">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="font-semibold text-gray-900">Entrega de Llaves</p>
+                              </div>
+                              <div className="text-right">
+                                <span className="text-sm font-medium text-gray-500">{prop.etapas.entregaLlaves.status}</span>
+                                <p className="text-xs text-gray-500">{prop.etapas.entregaLlaves.fecha}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Documentos Pendientes */}
+                    {prop.documentosPendientes.length > 0 && (
+                      <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-4">
+                        <p className="text-sm font-semibold text-yellow-900 mb-2">Documentos Pendientes:</p>
+                        <ul className="list-disc list-inside text-sm text-yellow-800">
+                          {prop.documentosPendientes.map((doc, idx) => (
+                            <li key={idx}>{doc}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    <div className="flex space-x-3">
+                      <button 
+                        onClick={() => openModal('actualizarEstado', prop)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+                      >
+                        Actualizar Estado
+                      </button>
+                      <button 
+                        onClick={() => openModal('subirDocumentos', prop)}
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm font-medium"
+                      >
+                        Subir Documentos
+                      </button>
+                      <button 
+                        onClick={() => openModal('contactarNotaria', prop)}
+                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition text-sm font-medium"
+                      >
+                        Contactar Notaría
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* FASE 7: POST-VENTA */}
+        {activeTab === 'postventa' && (
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Fase 7: POST-VENTA</h2>
+                  <p className="text-gray-400 mt-1">Garantizar experiencia memorable y generar referidos</p>
+                </div>
+              </div>
+
+              {/* Métricas de la Fase */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">NPS Promedio</p>
+                  <p className="text-3xl font-bold">9.5</p>
+                  <p className="text-xs mt-1 opacity-80">Satisfacción post-venta</p>
+                </div>
+                <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Referidos Generados</p>
+                  <p className="text-3xl font-bold">3</p>
+                  <p className="text-xs mt-1 opacity-80">Por cliente</p>
+                </div>
+                <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 rounded-lg">
+                  <p className="text-sm opacity-90">Tiempo Trámites</p>
+                  <p className="text-3xl font-bold">5 días</p>
+                  <p className="text-xs mt-1 opacity-80">Resolución promedio</p>
+                </div>
+              </div>
+
+              {/* Casos en Post-Venta */}
+              <div className="space-y-6">
+                {propiedadesPostVenta.map((prop) => (
+                  <div key={prop.id} className="border-2 border-green-200 rounded-lg p-6 bg-green-50">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="font-bold text-xl text-gray-900">{prop.direccion}</h3>
+                        <p className="text-sm text-gray-600">Vendedor: {prop.propietario}</p>
+                        <p className="text-sm text-gray-600">Comprador: {prop.comprador}</p>
+                        <p className="text-lg font-bold text-green-600 mt-1">Precio Final: S/ {prop.precioFinal.toLocaleString()}</p>
+                        <p className="text-xs text-gray-500">Cierre: {prop.fechaCierre}</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="bg-green-500 text-white px-4 py-2 rounded-lg mb-2">
+                          <p className="text-xs">NPS Score</p>
+                          <p className="text-3xl font-bold">{prop.nps}/10</p>
+                        </div>
+                        <span className="text-sm text-green-700 font-medium">
+                          {prop.referidosGenerados} referidos
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Checklist de Trámites */}
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-gray-900 mb-3">Checklist de Trámites Post-Venta</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {Object.entries(prop.tramites).map(([key, tramite]) => (
+                          <div key={key} className={`p-3 rounded-lg border-2 ${
+                            tramite.status === 'Completado' ? 'bg-white border-green-500' :
+                            tramite.status === 'En Proceso' ? 'bg-white border-yellow-500' : 'bg-white border-gray-300'
+                          }`}>
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="font-semibold text-sm capitalize">{key}</p>
+                              {tramite.status === 'Completado' && (
+                                <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-600">{tramite.status}</p>
+                            {tramite.fecha && (
+                              <p className="text-xs text-gray-500">{tramite.fecha}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Testimonio */}
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
+                      <p className="text-sm font-semibold text-blue-900 mb-1">Testimonio del Cliente:</p>
+                      <p className="text-sm text-blue-800 italic">"{prop.testimonio}"</p>
+                    </div>
+
+                    <div className="flex space-x-3">
+                      <button 
+                        onClick={() => openModal('actualizarTramites', prop)}
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm font-medium"
+                      >
+                        Actualizar Trámites
+                      </button>
+                      <button 
+                        onClick={() => openModal('solicitarReferidos', prop)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+                      >
+                        Solicitar Referidos
+                      </button>
+                      <button 
+                        onClick={() => openModal('exportarPDF', prop)}
+                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition text-sm font-medium"
+                      >
+                        Exportar Resumen PDF
+                      </button>
+                      <button 
+                        onClick={() => openModal('gestionarPropiedad', prop)}
+                        className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition text-sm font-medium"
+                      >
+                        Archivar Caso
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reportes */}
+        {activeTab === 'reports' && (
+          <div className="space-y-6">
+            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+              <h3 className="text-2xl font-bold mb-6 text-gray-900">Reportes y KPIs Completos</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="p-6 border-2 border-green-200 rounded-xl bg-green-50">
+                  <h4 className="font-semibold mb-2 text-gray-700 text-sm uppercase tracking-wide">VTC (Valor Total Cliente)</h4>
+                  <p className="text-4xl font-bold text-green-600">S/ 3,120</p>
+                  <p className="text-sm text-gray-600 mt-2">Comisión venta + servicios adicionales</p>
+                </div>
+                <div className="p-6 border-2 border-blue-200 rounded-xl bg-blue-50">
+                  <h4 className="font-semibold mb-2 text-gray-700 text-sm uppercase tracking-wide">Tasa de Conversión</h4>
+                  <p className="text-4xl font-bold text-blue-600">{metrics.tasaConversion}%</p>
+                  <p className="text-sm text-gray-600 mt-2">De visitas a ofertas formales</p>
+                </div>
+                <div className="p-6 border-2 border-purple-200 rounded-xl bg-purple-50">
+                  <h4 className="font-semibold mb-2 text-gray-700 text-sm uppercase tracking-wide">Días para Cierre</h4>
+                  <p className="text-4xl font-bold text-purple-600">{metrics.diasCierre}</p>
+                  <p className="text-sm text-gray-600 mt-2">Desde arras hasta escritura pública</p>
+                </div>
+                <div className="p-6 border-2 border-orange-200 rounded-xl bg-orange-50">
+                  <h4 className="font-semibold mb-2 text-gray-700 text-sm uppercase tracking-wide">Tasa de Captación</h4>
+                  <p className="text-4xl font-bold text-orange-600">{metrics.tasaCaptacion}%</p>
+                  <p className="text-sm text-gray-600 mt-2">Reuniones que culminan en exclusividad</p>
+                </div>
+                <div className="p-6 border-2 border-indigo-200 rounded-xl bg-indigo-50">
+                  <h4 className="font-semibold mb-2 text-gray-700 text-sm uppercase tracking-wide">Tiempo Preparación</h4>
+                  <p className="text-4xl font-bold text-indigo-600">{metrics.tiempoPreparacion} días</p>
+                  <p className="text-sm text-gray-600 mt-2">Desde firma hasta listado activo</p>
+                </div>
+                <div className="p-6 border-2 border-pink-200 rounded-xl bg-pink-50">
+                  <h4 className="font-semibold mb-2 text-gray-700 text-sm uppercase tracking-wide">CTR (Click Through Rate)</h4>
+                  <p className="text-4xl font-bold text-pink-600">{metrics.ctr}%</p>
+                  <p className="text-sm text-gray-600 mt-2">En campañas digitales</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        </main>
+      </div>
+
+      {/* MODALES FUNCIONALES */}
+      {activeModal && (
+        <div className={`fixed inset-0 ${darkMode ? 'bg-black/80' : 'bg-gray-900/50'} backdrop-blur-sm z-50 flex items-center justify-center p-4`}>
+          <div className={`${theme.bgCard} border ${theme.border} rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto`}>
+            {/* Header del Modal */}
+            <div className={`sticky top-0 ${theme.bgCard} border-b ${theme.border} px-6 py-4 flex items-center justify-between z-10`}>
+              <h3 className={`text-lg font-semibold ${theme.textPrimary}`}>
+                {activeModal === 'captacion' && 'Nueva Captación - Smart Capture'}
+                {activeModal === 'gestionarPropiedad' && 'Gestionar Propiedad'}
+                {activeModal === 'subirFotos' && 'Subir Fotografías Profesionales'}
+                {activeModal === 'video360' && 'Crear Video 360°'}
+                {activeModal === 'editarFicha' && 'Editar Ficha Comercial'}
+                {activeModal === 'verCampañas' && 'Campañas Activas'}
+                {activeModal === 'nuevaCampana' && 'Nueva Campaña Digital'}
+                {activeModal === 'openHouse' && 'Programar Open House'}
+                {activeModal === 'enviarFeedback' && 'Enviar Feedback al Propietario'}
+                {activeModal === 'calendarioVisitas' && 'Calendario de Visitas'}
+                {activeModal === 'programarVisita' && 'Programar Visita'}
+                {activeModal === 'aceptarOferta' && 'Aceptar Oferta'}
+                {activeModal === 'contraoferta' && 'Realizar Contraoferta'}
+                {activeModal === 'rechazarOferta' && 'Rechazar Oferta'}
+                {activeModal === 'firmarArras' && 'Firmar Contrato de Arras'}
+                {activeModal === 'actualizarEstado' && 'Actualizar Estado de Cierre'}
+                {activeModal === 'subirDocumentos' && 'Subir Documentos Legales'}
+                {activeModal === 'contactarNotaria' && 'Contactar Notaría'}
+                {activeModal === 'actualizarTramites' && 'Actualizar Trámites Post-Venta'}
+                {activeModal === 'solicitarReferidos' && 'Solicitar Referidos'}
+                {activeModal === 'exportarPDF' && 'Exportar Resumen PDF'}
+              </h3>
+              <button 
+                onClick={closeModal}
+                className={`p-2 ${theme.bgHover} rounded-md transition-colors`}
+              >
+                <svg className={`w-5 h-5 ${theme.textSecondary}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {properties.map((property) => (
-                <div key={property.id} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium">{property.title}</h4>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      property.status === 'Activa' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
-                      {property.status}
-                    </span>
+
+            {/* Contenido del Modal */}
+            <div className="p-6">
+              {/* Modal: Nueva Captación */}
+              {activeModal === 'captacion' && (
+                <div className="space-y-6">
+                  <div className="bg-emerald-600/10 border border-emerald-600/30 rounded-lg p-4">
+                    <p className="text-sm text-emerald-300">
+                      <span className="font-semibold">Smart Capture</span> ayuda a registrar rápidamente nuevas propiedades validando información clave.
+                    </p>
                   </div>
-                  <p className="text-2xl font-bold text-orange-600 mb-2">
-                    S/ {property.price.toLocaleString('es-PE')}
-                  </p>
-                  <p className="text-sm text-gray-600 mb-3">{property.views} visualizaciones</p>
-                  <div className="flex space-x-2">
-                    <button className="text-blue-600 hover:text-blue-800 text-sm">Editar</button>
-                    <button className="text-green-600 hover:text-green-800 text-sm">Ver Detalles</button>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-300 mb-2">Dirección Completa *</label>
+                      <input type="text" className="w-full px-4 py-2.5 bg-[#252525] border border-[#3A3A3A] text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-500" placeholder="Av. Larco 1234, Miraflores" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-300 mb-2">Tipo de Propiedad *</label>
+                      <select className={`w-full px-4 py-2.5 ${theme.bgInput} border ${theme.borderInput} rounded-lg ${theme.textPrimary} focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`}>
+                        <option>Casa</option>
+                        <option>Departamento</option>
+                        <option>Terreno</option>
+                        <option>Local Comercial</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-300 mb-2">Nombre del Propietario *</label>
+                      <input type="text" className="w-full px-4 py-2.5 bg-[#252525] border border-[#3A3A3A] text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-500" placeholder="Juan Pérez" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-300 mb-2">Teléfono de Contacto *</label>
+                      <input type="tel" className="w-full px-4 py-2.5 bg-[#252525] border border-[#3A3A3A] text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-500" placeholder="+51 999 888 777" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-300 mb-2">Precio Esperado (S/) *</label>
+                      <input type="number" className="w-full px-4 py-2.5 bg-[#252525] border border-[#3A3A3A] text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-500" placeholder="280000" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-300 mb-2">Área (m²) *</label>
+                      <input type="number" className="w-full px-4 py-2.5 bg-[#252525] border border-[#3A3A3A] text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-500" placeholder="120" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-300 mb-2">Dormitorios</label>
+                      <input type="number" className="w-full px-4 py-2.5 bg-[#252525] border border-[#3A3A3A] text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-500" placeholder="3" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-300 mb-2">Baños</label>
+                      <input type="number" className="w-full px-4 py-2.5 bg-[#252525] border border-[#3A3A3A] text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-500" placeholder="2" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-300 mb-2">Notas / Observaciones</label>
+                    <textarea className={`w-full px-4 py-2.5 ${theme.bgInput} border ${theme.borderInput} rounded-lg ${theme.textPrimary} focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'placeholder:text-gray-500' : 'placeholder:text-gray-400'}`} rows={3} placeholder="Información adicional relevante..."></textarea>
+                  </div>
+
+                  <div className="flex items-center space-x-4">
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" className="w-4 h-4 text-emerald-500 bg-[#252525] border-[#3A3A3A] rounded focus:ring-emerald-500" />
+                      <span className="text-sm text-gray-300">Tiene documentación lista</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" className="w-4 h-4 text-emerald-500 bg-[#252525] border-[#3A3A3A] rounded focus:ring-emerald-500" />
+                      <span className="text-sm text-gray-300">Interés en exclusividad</span>
+                    </label>
+                  </div>
+
+                  <div className="flex justify-end space-x-3 pt-4 border-t border-[#2A2A2A]">
+                    <button onClick={closeModal} className="px-6 py-2.5 border border-[#3A3A3A] text-gray-300 rounded-lg hover:bg-[#2A2A2A] hover:text-white transition-colors font-medium">
+                      Cancelar
+                    </button>
+                    <button className="px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition-colors font-medium shadow-lg shadow-emerald-600/20">
+                      Registrar Propiedad
+                    </button>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+              )}
 
-        {activeTab === 'map' && (
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-lg font-semibold mb-4">Mapa de Propiedades y Leads</h3>
-            <div className="h-96 rounded-lg overflow-hidden">
-              <Map center={[-12.0464, -77.0428]} zoom={12} className="h-full">
-                {/* Propiedades del agente */}
-                <PointsLayer
-                  url="/api/map/agent-properties"
-                  popupFields={[
-                    { key: "title", label: "Propiedad" },
-                    { key: "price", label: "Precio" },
-                    { key: "status", label: "Estado" },
-                    { key: "views", label: "Visualizaciones" }
-                  ]}
-                  renderAs="marker"
-                  iconUrl="/icons/marker-orange.png"
-                  autoFit={true}
-                />
-                {/* Leads activos */}
-                <PointsLayer
-                  url="/api/map/agent-leads"
-                  popupFields={[
-                    { key: "name", label: "Cliente" },
-                    { key: "value", label: "Valor Estimado" },
-                    { key: "status", label: "Estado" }
-                  ]}
-                  renderAs="circle"
-                  circleStyle={{
-                    color: '#10b981',
-                    fillColor: '#10b981',
-                    fillOpacity: 0.6,
-                    radius: 8
-                  }}
-                />
-              </Map>
-            </div>
-            <div className="mt-4 flex items-center justify-center space-x-6 text-sm">
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-orange-500 rounded"></div>
-                <span>Mis Propiedades</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-                <span>Leads Activos</span>
-              </div>
-            </div>
-          </div>
-        )}
+              {/* Modal: Subir Fotos */}
+              {activeModal === 'subirFotos' && (
+                <div className="space-y-6">
+                  <div className="bg-emerald-600/10 border border-emerald-600/30 rounded-lg p-4">
+                    <p className="text-sm text-emerald-300">
+                      Sube fotografías profesionales de alta calidad. Recomendado: <span className="font-semibold">15-25 fotos</span> mostrando todos los ambientes.
+                    </p>
+                  </div>
 
-        {activeTab === 'crm' && (
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-lg font-semibold mb-4">CRM - Gestión de Clientes</h3>
-            <p className="text-gray-600">Funcionalidad completa de CRM integrada próximamente.</p>
-          </div>
-        )}
+                  <div className={`border-2 border-dashed ${theme.borderInput} rounded-lg p-12 text-center hover:border-emerald-600 transition cursor-pointer ${darkMode ? 'bg-[#252525]/30' : 'bg-gray-50'}`}>
+                    <svg className={`w-16 h-16 ${theme.textTertiary} mx-auto mb-4`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p className={`${theme.textPrimary} font-medium mb-2`}>Arrastra las fotos aquí o haz clic para seleccionar</p>
+                    <p className={`text-sm ${theme.textSecondary}`}>Formatos: JPG, PNG (máx. 10MB por foto)</p>
+                  </div>
 
-        {activeTab === 'reports' && (
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-lg font-semibold mb-4">Reportes y KPIs</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <h4 className="font-medium mb-2">VTC (Valor Total del Cliente)</h4>
-                <p className="text-2xl font-bold text-green-600">S/ 3,120</p>
-                <p className="text-sm text-gray-600">Comisión venta + servicios</p>
-              </div>
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <h4 className="font-medium mb-2">Tasa de Conversión</h4>
-                <p className="text-2xl font-bold text-blue-600">68%</p>
-                <p className="text-sm text-gray-600">Leads → Cierres</p>
-              </div>
+                  <div className="grid grid-cols-4 gap-4">
+                    {[1,2,3,4].map((i) => (
+                      <div key={i} className={`aspect-square ${theme.bgSecondary} rounded-lg border ${theme.border} flex items-center justify-center`}>
+                        <span className={`text-xs ${theme.textTertiary}`}>Foto {i}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" className="w-4 h-4 text-emerald-500 bg-[#252525] border-[#3A3A3A] rounded focus:ring-emerald-500" defaultChecked />
+                      <span className="text-sm text-gray-300">Aplicar corrección automática de iluminación</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" className="w-4 h-4 text-emerald-500 bg-[#252525] border-[#3A3A3A] rounded focus:ring-emerald-500" defaultChecked />
+                      <span className="text-sm text-gray-300">Agregar marca de agua con logo</span>
+                    </label>
+                  </div>
+
+                  <div className="flex justify-end space-x-3 pt-4 border-t border-[#2A2A2A]">
+                    <button onClick={closeModal} className="px-6 py-2.5 border border-[#3A3A3A] text-gray-300 rounded-lg hover:bg-[#2A2A2A] hover:text-white transition-colors font-medium">
+                      Cancelar
+                    </button>
+                    <button className="px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition-colors font-medium shadow-lg shadow-emerald-600/20">
+                      Subir Fotos
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Modal: Nueva Campaña */}
+              {activeModal === 'nuevaCampana' && (
+                <div className="space-y-6">
+                  <div className="bg-emerald-600/10 border border-emerald-600/30 rounded-lg p-4">
+                    <p className="text-sm text-emerald-300">
+                      Crea una campaña digital optimizada para atraer leads calificados en múltiples canales.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Nombre de la Campaña *</label>
+                      <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Campaña Dpto Miraflores" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Presupuesto Diario (S/) *</label>
+                      <input type="number" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="50" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">Canales de Publicación *</label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {['Facebook', 'Instagram', 'Inmuebles24', 'Urbania', 'Properati', 'Google Ads'].map((canal) => (
+                        <label key={canal} className="flex items-center space-x-2 p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer">
+                          <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
+                          <span className="text-sm text-gray-700">{canal}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Buyer Persona Objetivo</label>
+                    <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                      <option>Familia joven profesional</option>
+                      <option>Inversionista</option>
+                      <option>Pareja sin hijos</option>
+                      <option>Ejecutivo soltero</option>
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha Inicio</label>
+                      <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha Fin</label>
+                      <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                    <button onClick={closeModal} className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                      Cancelar
+                    </button>
+                    <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
+                      Crear Campaña
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Modal: Programar Visita */}
+              {activeModal === 'programarVisita' && (
+                <div className="space-y-6">
+                  <div className={`${darkMode ? 'bg-emerald-600/10 border-emerald-600/30' : 'bg-emerald-50 border-emerald-200'} border rounded-lg p-4`}>
+                    <p className={`text-sm ${darkMode ? 'text-emerald-300' : 'text-emerald-700'}`}>
+                      Coordina una visita con el lead. Se enviará confirmación automática por email y SMS.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2`}>Nombre del Lead *</label>
+                      <input type="text" className={`w-full px-4 py-2 ${theme.bgInput} border ${theme.borderInput} rounded-lg ${theme.textPrimary} focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'placeholder:text-gray-500' : 'placeholder:text-gray-400'}`} placeholder="Ana López" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Teléfono *</label>
+                      <input type="tel" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent" placeholder="+51 999 888 777" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha de Visita *</label>
+                      <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Hora *</label>
+                      <input type="time" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Tipo de Visita</label>
+                    <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent">
+                      <option>Presencial</option>
+                      <option>Virtual (videollamada)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Notas Adicionales</label>
+                    <textarea className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent" rows={3} placeholder="Información importante para la visita..."></textarea>
+                  </div>
+
+                  <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                    <button onClick={closeModal} className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                      Cancelar
+                    </button>
+                    <button className="px-6 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition font-medium">
+                      Confirmar Visita
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Modal: Aceptar Oferta */}
+              {activeModal === 'aceptarOferta' && selectedProperty && (
+                <div className="space-y-6">
+                  <div className={`${darkMode ? 'bg-green-600/10 border-green-600/30' : 'bg-green-50 border-green-200'} border rounded-lg p-4`}>
+                    <p className={`text-sm ${darkMode ? 'text-green-300' : 'text-green-700'}`}>
+                      Estás a punto de <span className="font-semibold">aceptar la oferta</span>. Se notificará al comprador y al vendedor automáticamente.
+                    </p>
+                  </div>
+
+                  <div className={`${theme.bgCard} border ${theme.border} rounded-lg p-4`}>
+                    <h4 className={`font-semibold ${theme.textPrimary} mb-3`}>Detalles de la Oferta</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-gray-600">Propiedad</p>
+                        <p className="font-medium text-gray-900">{selectedProperty.direccion}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">PVS Original</p>
+                        <p className="font-medium text-gray-900">S/ {selectedProperty.pvs?.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Comprador</p>
+                        <p className="font-medium text-gray-900">Sofia Mendoza</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Monto Ofertado</p>
+                        <p className="font-bold text-green-600 text-lg">S/ 445,000</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Monto de Arras (S/) *</label>
+                    <input type="number" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="22250" />
+                    <p className="text-xs text-gray-500 mt-1">Recomendado: 5% del valor de la oferta</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Comentarios</label>
+                    <textarea className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" rows={3} placeholder="Condiciones especiales, términos acordados..."></textarea>
+                  </div>
+
+                  <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                    <button onClick={closeModal} className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                      Cancelar
+                    </button>
+                    <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
+                      Aceptar Oferta
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Modal: Firmar Arras */}
+              {activeModal === 'firmarArras' && (
+                <div className="space-y-6">
+                  <div className={`${darkMode ? 'bg-orange-600/10 border-orange-600/30' : 'bg-orange-50 border-orange-200'} border rounded-lg p-4`}>
+                    <p className={`text-sm ${darkMode ? 'text-orange-300' : 'text-orange-700'}`}>
+                      <span className="font-semibold">Contrato de Arras</span> - Documento legal que formaliza el compromiso de compra-venta.
+                    </p>
+                  </div>
+
+                  <div className={`border ${theme.border} rounded-lg p-6 ${theme.bgSecondary}`}>
+                    <h4 className={`font-semibold ${theme.textPrimary} mb-4`}>Información del Contrato</h4>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-600">Vendedor</p>
+                        <p className="font-medium">Carlos Silva Ramos</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Comprador</p>
+                        <p className="font-medium">Sofia Mendoza</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Monto Total</p>
+                        <p className="font-bold text-green-600">S/ 455,000</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Arras (10%)</p>
+                        <p className="font-bold text-orange-600">S/ 45,500</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Subir Contrato de Arras Firmado (PDF) *</label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-orange-500 transition cursor-pointer">
+                      <svg className="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      <p className="text-sm text-gray-600">Haz clic para seleccionar el archivo PDF</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha de Firma</label>
+                    <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" />
+                  </div>
+
+                  <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                    <button onClick={closeModal} className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                      Cancelar
+                    </button>
+                    <button className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition font-medium">
+                      Registrar Arras
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Modal: Actualizar Estado de Cierre */}
+              {activeModal === 'actualizarEstado' && (
+                <div className="space-y-6">
+                  <div className={`${darkMode ? 'bg-red-600/10 border-red-600/30' : 'bg-red-50 border-red-200'} border rounded-lg p-4`}>
+                    <p className={`text-sm ${darkMode ? 'text-red-300' : 'text-red-700'}`}>
+                      Actualiza el progreso de las etapas del proceso de cierre final.
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="border border-gray-300 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-semibold text-gray-900">Tasación Bancaria</h4>
+                        <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+                          <option>Completado</option>
+                          <option>En Proceso</option>
+                          <option>Pendiente</option>
+                        </select>
+                      </div>
+                      <input type="date" className="w-full px-3 py-2 border border-gray-300 rounded text-sm" />
+                    </div>
+
+                    <div className="border border-gray-300 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-semibold text-gray-900">Coordinación Notaría</h4>
+                        <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+                          <option>Completado</option>
+                          <option>En Proceso</option>
+                          <option>Pendiente</option>
+                        </select>
+                      </div>
+                      <input type="date" className="w-full px-3 py-2 border border-gray-300 rounded text-sm" />
+                    </div>
+
+                    <div className="border border-gray-300 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-semibold text-gray-900">Firma Escritura Pública</h4>
+                        <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+                          <option>Completado</option>
+                          <option>En Proceso</option>
+                          <option>Pendiente</option>
+                        </select>
+                      </div>
+                      <input type="date" className="w-full px-3 py-2 border border-gray-300 rounded text-sm" />
+                    </div>
+
+                    <div className="border border-gray-300 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-semibold text-gray-900">Entrega de Llaves</h4>
+                        <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+                          <option>Completado</option>
+                          <option>En Proceso</option>
+                          <option>Pendiente</option>
+                        </select>
+                      </div>
+                      <input type="date" className="w-full px-3 py-2 border border-gray-300 rounded text-sm" />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                    <button onClick={closeModal} className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                      Cancelar
+                    </button>
+                    <button className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium">
+                      Guardar Cambios
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Modal: Solicitar Referidos */}
+              {activeModal === 'solicitarReferidos' && (
+                <div className="space-y-6">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-sm text-blue-800">
+                      Solicita referidos a clientes satisfechos para expandir tu cartera de contactos.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Cliente Satisfecho</label>
+                    <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Familia Gutiérrez" disabled />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">Método de Contacto</label>
+                    <div className="space-y-2">
+                      <label className="flex items-center space-x-2">
+                        <input type="radio" name="metodo" className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" defaultChecked />
+                        <span className="text-sm text-gray-700">Email</span>
+                      </label>
+                      <label className="flex items-center space-x-2">
+                        <input type="radio" name="metodo" className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
+                        <span className="text-sm text-gray-700">WhatsApp</span>
+                      </label>
+                      <label className="flex items-center space-x-2">
+                        <input type="radio" name="metodo" className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
+                        <span className="text-sm text-gray-700">Llamada telefónica</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Mensaje Personalizado</label>
+                    <textarea className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows={5} defaultValue="Estimada Familia Gutiérrez,
+
+Espero que estén disfrutando de su nuevo hogar. Ha sido un placer acompañarlos en este proceso.
+
+Si conocen a alguien que esté buscando comprar o vender una propiedad, les agradecería mucho que me recomienden. Estaré encantado de brindarles el mismo servicio de calidad.
+
+Saludos cordiales,
+Juan Silva"></textarea>
+                  </div>
+
+                  <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                    <button onClick={closeModal} className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                      Cancelar
+                    </button>
+                    <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                      Enviar Solicitud
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Modal Genérico para otros casos */}
+              {!['captacion', 'subirFotos', 'nuevaCampana', 'programarVisita', 'aceptarOferta', 'firmarArras', 'actualizarEstado', 'solicitarReferidos'].includes(activeModal!) && (
+                <div className="py-12 text-center">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Funcionalidad en Desarrollo</h4>
+                  <p className="text-gray-600 mb-6">Esta función estará disponible próximamente.</p>
+                  <button onClick={closeModal} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                    Entendido
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

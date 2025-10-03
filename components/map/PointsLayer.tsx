@@ -16,6 +16,171 @@ type FC = { type: "FeatureCollection"; features: Feature[] };
 
 type SimplePoint = { lat: number; lng: number; [k: string]: any };
 
+// Componente interno para manejar múltiples propiedades en un punto
+function MultiPropertyPopup({ features, popupFields }: { features: Feature[], popupFields: Field[] }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const totalFeatures = features.length;
+
+  if (totalFeatures === 0) return null;
+
+  const currentFeature = features[currentIndex];
+  const props = currentFeature.properties || {};
+
+  const nextProperty = () => {
+    setCurrentIndex((prev) => (prev + 1) % totalFeatures);
+  };
+
+  const prevProperty = () => {
+    setCurrentIndex((prev) => (prev - 1 + totalFeatures) % totalFeatures);
+  };
+
+  // Construir contenido de la propiedad actual
+  const propertyContent = popupFields.length > 0
+    ? popupFields.map(({ key, label }) => {
+        const v = props[key];
+        if (key === "url_original" && typeof v === "string") {
+          return `<div><b>${label || key}:</b> <a href="${v}" target="_blank" rel="noopener noreferrer">Abrir aviso</a></div>`;
+        }
+        return `<div><b>${label || key}:</b> ${v ?? "-"}</div>`;
+      }).join("")
+    : `<div><b>${props.titulo ?? "Elemento"}</b></div>`;
+
+  return (
+    <div style={{ minWidth: '280px', maxWidth: '320px' }}>
+      {/* Header con contador y navegación */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '10px',
+        padding: '8px',
+        backgroundColor: '#f3f4f6',
+        borderRadius: '6px',
+        fontSize: '12px',
+        fontWeight: 'bold'
+      }}>
+        <button 
+          onClick={prevProperty}
+          disabled={totalFeatures <= 1}
+          style={{
+            background: totalFeatures <= 1 ? '#e5e7eb' : '#3b82f6',
+            color: totalFeatures <= 1 ? '#9ca3af' : 'white',
+            border: 'none',
+            borderRadius: '4px',
+            padding: '4px 8px',
+            cursor: totalFeatures <= 1 ? 'not-allowed' : 'pointer',
+            fontSize: '12px'
+          }}
+        >
+          ◀
+        </button>
+        
+        <span style={{ color: '#374151' }}>
+          {currentIndex + 1} de {totalFeatures} propiedades
+        </span>
+        
+        <button 
+          onClick={nextProperty}
+          disabled={totalFeatures <= 1}
+          style={{
+            background: totalFeatures <= 1 ? '#e5e7eb' : '#3b82f6',
+            color: totalFeatures <= 1 ? '#9ca3af' : 'white',
+            border: 'none',
+            borderRadius: '4px',
+            padding: '4px 8px',
+            cursor: totalFeatures <= 1 ? 'not-allowed' : 'pointer',
+            fontSize: '12px'
+          }}
+        >
+          ▶
+        </button>
+      </div>
+
+      {/* Contenido de la propiedad actual */}
+      <div style={{ 
+        padding: '8px',
+        border: '1px solid #e5e7eb',
+        borderRadius: '6px',
+        backgroundColor: 'white'
+      }}>
+        {/* Precio destacado */}
+        <div style={{ 
+          fontSize: '16px', 
+          fontWeight: 'bold', 
+          color: '#059669',
+          marginBottom: '8px',
+          textAlign: 'center'
+        }}>
+          {props.moneda || 'PEN'} {props.precio?.toLocaleString() || 'N/A'}
+        </div>
+        
+        {/* Título */}
+        <div style={{ 
+          fontSize: '14px', 
+          fontWeight: '600', 
+          marginBottom: '8px',
+          lineHeight: '1.4'
+        }}>
+          {props.titulo?.substring(0, 80) || 'Sin título'}...
+        </div>
+        
+        {/* Detalles */}
+        <div style={{ fontSize: '12px', color: '#6b7280', lineHeight: '1.4' }}>
+          <div><b>Tipo:</b> {props.tipo_propiedad || 'N/A'}</div>
+          <div><b>Operación:</b> {props.tipo_operacion || 'N/A'}</div>
+          <div><b>Distrito:</b> {props.distrito || 'N/A'}</div>
+          {props.area_total_m2 && <div><b>Área:</b> {props.area_total_m2} m²</div>}
+          {props.habitaciones && <div><b>Habitaciones:</b> {props.habitaciones}</div>}
+          {props.banos && <div><b>Baños:</b> {props.banos}</div>}
+          <div><b>Fuente:</b> {props.fuente || 'N/A'}</div>
+          {props.url_original && (
+            <div style={{ marginTop: '8px' }}>
+              <a 
+                href={props.url_original} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ 
+                  color: '#3b82f6', 
+                  textDecoration: 'none',
+                  fontSize: '12px',
+                  fontWeight: '500'
+                }}
+              >
+                🔗 Ver aviso original
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Indicadores de páginas */}
+      {totalFeatures > 1 && (
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          gap: '4px',
+          marginTop: '8px'
+        }}>
+          {Array.from({ length: totalFeatures }, (_, i) => (
+            <div
+              key={i}
+              onClick={() => setCurrentIndex(i)}
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: i === currentIndex ? '#3b82f6' : '#d1d5db',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s'
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 type Props = {
   url: string;
   popupFields?: Field[];
@@ -257,49 +422,63 @@ export default function PointsLayer({
   const items = useMemo(() => {
     if (features.length === 0) return null;
 
-    return features.map((f, i) => {
-      const [lng, lat] = f.geometry.coordinates; // [lng,lat]
-      const props = f.properties || {};
+    // Agrupar features por coordenadas para manejar puntos superpuestos
+    const coordinateGroups = new Map<string, Feature[]>();
+    
+    features.forEach(feature => {
+      const [lng, lat] = feature.geometry.coordinates;
+      // Usar coordenadas redondeadas para agrupar puntos muy cercanos (6 decimales = ~1 metro)
+      const key = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+      
+      if (!coordinateGroups.has(key)) {
+        coordinateGroups.set(key, []);
+      }
+      coordinateGroups.get(key)!.push(feature);
+    });
 
-      // Construye contenido del popup (detalles completos)
-      const html =
-        popupFields.length > 0
-          ? popupFields
-              .map(({ key, label }) => {
-                const v = props[key];
-                if (key === "url_original" && typeof v === "string") {
-                  // Enlaces abren en nueva pestaña
-                  return `<div><b>${label || key}:</b> <a href="${v}" target="_blank" rel="noopener noreferrer">Abrir aviso</a></div>`;
-                }
-                return `<div><b>${label || key}:</b> ${v ?? "-"}</div>`;
-              })
-              .join("")
-          : `<div><b>${props.titulo ?? "Elemento"}</b></div>`;
+    console.log("🗂️ PointsLayer - Coordinate groups:", Array.from(coordinateGroups.entries()).map(([key, groupFeatures]) => ({
+      coordinates: key,
+      count: groupFeatures.length,
+      prices: groupFeatures.map(f => f.properties.precio),
+      titles: groupFeatures.map(f => f.properties.titulo?.substring(0, 30))
+    })));
 
-      // Obtener texto del tooltip según zoom
-      const tooltipText = getTooltipText(props);
+    return Array.from(coordinateGroups.entries()).map(([coordKey, groupFeatures], groupIndex) => {
+      const [lat, lng] = coordKey.split(',').map(Number);
+      const count = groupFeatures.length;
+
+      // Obtener texto del tooltip
+      const tooltipText = count > 1 
+        ? `${count} propiedades` 
+        : getTooltipText(groupFeatures[0].properties);
 
       if (renderAs === "circle") {
-        // Obtener color dinámico basado en el campo de segmentación
-        const colorValue = props[colorBy] || '';
+        // Para el color, usar la primera propiedad del grupo
+        const mainFeature = groupFeatures[0];
+        const colorValue = mainFeature.properties[colorBy] || '';
         const dynamicColor = getColorForValue(colorBy, colorValue);
-        const markerSize = getMarkerSize();
+        let markerSize = getMarkerSize();
+        
+        // Aumentar el tamaño si hay múltiples propiedades
+        if (count > 1) {
+          markerSize = Math.min(markerSize + (count * 3), 25); // Máximo 25px
+        }
         
         return (
           <CircleMarker
-            key={f.id ?? i}
+            key={`group-${groupIndex}`}
             center={[lat, lng]}
             radius={markerSize}
             pathOptions={{
-              weight: 3, // Borde más grueso
-              fillOpacity: 0.9, // Más opaco
-              color: '#ffffff', // Borde blanco para contraste
-              fillColor: dynamicColor,
+              weight: count > 1 ? 4 : 3, // Borde más grueso para clusters
+              fillOpacity: 0.9,
+              color: count > 1 ? '#dc2626' : '#ffffff', // Rojo para clusters, blanco para individuales
+              fillColor: count > 1 ? '#dc2626' : dynamicColor,
               // Permitir override con circleStyle
               ...(circleStyle || {}),
             }}
           >
-            {/* Tooltip con precio - solo se muestra cuando hay texto y zoom suficiente */}
+            {/* Tooltip con información del cluster */}
             {tooltipText && (
               <Tooltip
                 permanent={currentZoom >= 13}
@@ -312,9 +491,29 @@ export default function PointsLayer({
               </Tooltip>
             )}
             
-            {/* Popup con detalles completos - se abre al hacer click */}
-            <Popup maxWidth={360} closeButton={true}>
-              <div dangerouslySetInnerHTML={{ __html: html }} />
+            {/* Mostrar número si hay múltiples propiedades */}
+            {count > 1 && (
+              <Tooltip
+                permanent={true}
+                direction="center"
+                offset={[0, 0]}
+                className="cluster-count-tooltip"
+                opacity={1}
+              >
+                <span style={{ 
+                  color: 'white', 
+                  fontWeight: 'bold', 
+                  fontSize: currentZoom >= 14 ? '14px' : '12px',
+                  textShadow: '1px 1px 1px rgba(0,0,0,0.8)'
+                }}>
+                  {count}
+                </span>
+              </Tooltip>
+            )}
+            
+            {/* Popup con carrusel de propiedades */}
+            <Popup maxWidth={350} closeButton={true}>
+              <MultiPropertyPopup features={groupFeatures} popupFields={popupFields} />
             </Popup>
           </CircleMarker>
         );
@@ -322,8 +521,8 @@ export default function PointsLayer({
 
       // Marker con icono
       return (
-        <Marker key={f.id ?? i} position={[lat, lng]} icon={iconMemo}>
-          {/* Tooltip con precio para markers también */}
+        <Marker key={`marker-group-${groupIndex}`} position={[lat, lng]} icon={iconMemo}>
+          {/* Tooltip con información del cluster */}
           {tooltipText && (
             <Tooltip
               permanent={currentZoom >= 13}
@@ -336,13 +535,14 @@ export default function PointsLayer({
             </Tooltip>
           )}
           
-          <Popup maxWidth={360} closeButton={true}>
-            <div dangerouslySetInnerHTML={{ __html: html }} />
+          {/* Popup con carrusel de propiedades */}
+          <Popup maxWidth={350} closeButton={true}>
+            <MultiPropertyPopup features={groupFeatures} popupFields={popupFields} />
           </Popup>
         </Marker>
       );
     });
-  }, [features, popupFields, renderAs, circleStyle, iconMemo, colorBy, currentZoom, getTooltipText, getMarkerSize]);
+  }, [features, popupFields, renderAs, iconMemo, currentZoom, colorBy, circleStyle, getTooltipText, getMarkerSize, getColorForValue]);
 
   if (!items) return null;
   return <LayerGroup>{items}</LayerGroup>;

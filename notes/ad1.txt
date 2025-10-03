@@ -1,0 +1,218 @@
+ DOCUMENTO DE PROCESOS OPERATIVOS – SMARTCORE BI
+Ciclo Completo de Venta Inmobiliaria
+1. FASE: INICIO
+Objetivo: Validar la legalidad del inmueble y formalizar la relación con el vendedor.
+Rol principal: Vendedor (con apoyo del Agente)
+Acciones clave:
+Carga de documentos legales básicos
+Validación legal completa (SUNARP, municipalidad, arbitrios)
+Firma de contrato de exclusividad (digital o física)
+Fijación del Precio de Venta Sugerido (PVS) con análisis CMA en SmartCore BI
+Registro del inmueble en CRM (SmartCore)
+Confirmación de disponibilidad para fotos/visitas
+Documentos necesarios:
+Partida registral actualizada
+Contrato de exclusividad firmado
+DNI del propietario
+Plano catastral
+Certificado de no adeudo municipal
+Métricas de éxito:
+% de listados con validación legal completa
+Tasa de Captación: % de reuniones que culminan en exclusividad
+Tiempo promedio desde contacto inicial hasta firma
+Calidad del lead (scoring SmartCore: 1–5)
+Vistas web sugeridas:
+Vista de Carga de Documentos:
+Formulario con checklist de documentos requeridos
+Validación en tiempo real (ej: “Partida registral válida hasta 2025”)
+Botón “Enviar para validación legal”
+Vista de Firma de Contrato:
+Vista previa del contrato de exclusividad
+Opción de firma digital (DocuSign/PandaDoc) o escaneo de firma física
+Confirmación automática al agente
+Vista de Definición de PVS:
+Gráfico comparativo: PVS vs. precios en zona (con datos Sunarp)
+Campo editable con justificación del agente
+Botón “Confirmar PVS”
+Siguiente fase: → Preparación (Listado listo para difusión)
+2. FASE: PREPARACIÓN
+Objetivo: Optimizar la presentación del inmueble para maximizar su atractivo.
+Rol principal: Vendedor (guiado por el Agente)
+Acciones clave:
+Carga de fotos HD + video tour 360°
+Creación de ficha comercial estandarizada
+Definición de Buyer Persona detallada
+Confirmación de disponibilidad para fotos/visitas
+Etiquetado en SmartCore BI (tipo, zona, precio, urgencia)
+Documentos necesarios:
+Fotos HD y video tour (formato .jpg/.mp4)
+Perfil Buyer Persona (documento interno)
+Ficha técnica del inmueble (SmartCore)
+Certificado de no gravamen SUNARP
+Certificado de no adeudo municipal
+Métricas de éxito:
+Tiempo de Preparación: días desde firma hasta listado activo
+Índice de calidad visual (puntaje SmartCore: fotos + descripción)
+Vistas web sugeridas:
+Vista de Carga Multimedia:
+Subida de fotos y video con previsualización
+Validación automática de calidad (resolución mínima, iluminación)
+Integración con Matterport para tours 360°
+Vista de Ficha Comercial:
+Formulario guiado: amenidades, estado, historia del inmueble
+Campo “Por qué este inmueble es especial” (storytelling)
+Vista previa como se verá en portales
+Vista de Buyer Persona:
+Selección de perfil ideal (familia joven, inversionista, etc.)
+Recomendaciones automáticas de enfoque de marketing
+Siguiente fase: → Difusión (Activación en portales + campañas)
+3. FASE: DIFUSIÓN
+Objetivo: Atraer leads calificados mediante canales orgánicos y pagados.
+Rol principal: Ambos (Agente + Vendedor)
+Acciones clave:
+Activación en portales (Inmuebles24, Properati, Facebook Marketplace)
+Lanzamiento de ads segmentados (Meta, Google Ads)
+Publicación orgánica con storytelling
+Coordinación de Open House (presencial/virtual)
+Automatización de leads entrantes (SmartCore)
+Documentos necesarios:
+Link de publicación en portales
+Capturas de campañas digitales (Meta/Google Ads)
+Invitaciones a Open House (digital/física)
+Reporte de engagement en redes sociales
+Métricas de éxito:
+Costo por Lead Calificado (CPL)
+Alcance total y tasa de clics (CTR)
+% de leads con scoring alto (4–5)
+% de leads generados por canal (orgánico vs. pago)
+Vistas web sugeridas:
+Vista de Publicación Multicanal:
+Checklist de portales activados
+Botón “Publicar en todos los canales”
+Vista previa en cada portal
+Vista de Campañas Digitales:
+Configuración de presupuesto, audiencia, creativos
+Integración con Meta Ads Manager y Google Ads
+Reporte en tiempo real de impresiones y clics
+Vista de Open House:
+Calendario para programar fechas
+Opción de evento virtual (Zoom/Google Meet integrado)
+Lista de inscritos con notificaciones automáticas
+Siguiente fase: → Gestión (Calificación, seguimiento, programación)
+4. FASE: GESTIÓN
+Objetivo: Calificar leads, programar visitas y mantener al vendedor informado.
+Rol principal: Comprador (con gestión del Agente)
+Acciones clave:
+Filtrado de solvencia (precalificación bancaria o respaldo financiero)
+Programación de visitas confirmadas
+Envío de feedback al dueño (resumen de visitas, comentarios)
+Actualización de scoring del lead en SmartCore BI
+Comunicación de aceptación/rechazo de oferta (si aplica)
+Documentos necesarios:
+Formulario de precalificación financiera
+Confirmación de visita (email/SMS/WhatsApp)
+Historial de contactos y scoring del lead
+Feedback del dueño (plantilla SmartCore)
+Métricas de éxito:
+Tasa de Conversión (Visitas → Oferta Formal)
+Tiempo promedio de respuesta al lead (<15 min)
+% de ofertas aceptadas vs. rechazadas
+Vistas web sugeridas:
+Vista de Calificación de Leads:
+Dashboard con leads entrantes
+Scoring automático (1–5) basado en comportamiento
+Botón “Solicitar precalificación bancaria”
+Vista de Programación de Visitas:
+Calendario compartido (agente + cliente)
+Confirmación automática vía WhatsApp/SMS
+Recordatorios 24h antes
+Vista de Feedback al Dueño:
+Plantilla automática: “Hoy visitaron tu propiedad. Comentarios: [X]”
+Opción de adjuntar fotos/videos de la visita
+Siguiente fase: → Negociación (Oferta formal, estrategia, arras)
+5. FASE: NEGOCIACIÓN
+Objetivo: Maximizar el valor de la venta mediante una estrategia de oferta inteligente.
+Rol principal: Vendedor (con apoyo estratégico del Agente)
+Acciones clave:
+Recibir oferta formal por escrito
+Estrategia de contraoferta (basada en historial de ofertas en SmartCore)
+Firma de arras (depósito vinculante)
+Ajuste de precio si aplica (con autorización del propietario)
+Comunicación de aceptación/rechazo de oferta
+Documentos necesarios:
+Oferta formal por escrito (con monto, condiciones, validez)
+Constancia de pago de arras (si aplica)
+Contrato de arras (con cláusulas de devolución)
+Acuerdo de ajuste de precio (si aplica)
+Métricas de éxito:
+Desviación de Precio (PVS vs. Precio Final)
+Tiempo desde primera oferta hasta firma de arras
+% de clientes satisfechos con proceso de cierre
+Vistas web sugeridas:
+Vista de Gestión de Ofertas:
+Tabla comparativa de ofertas recibidas
+Recomendación automática: “Aceptar”, “Contraofertar”, “Rechazar”
+Botón “Generar contraoferta”
+Vista de Firma de Arras:
+Contrato de arras prellenado
+Integración con SMARTCORE Pay para depósito
+Confirmación legal con firma digital
+Siguiente fase: → Cierre Final (Tasación, notaría, escritura)
+6. FASE: CIERRE FINAL
+Objetivo: Coordinar todos los trámites legales y financieros para la transferencia.
+Rol principal: Ambos (Agente como coordinador)
+Acciones clave:
+Coordinar tasación bancaria (si es crédito)
+Coordinar notaría (fecha, documento, partes)
+Firma escritura pública (transferencia)
+Entrega de llaves y documentación final
+Documentos necesarios:
+Tasación bancaria aprobada
+Escritura pública (draft y final)
+Acta de entrega de llaves
+Documentos de transferencia (firma ante notario)
+Métricas de éxito:
+Días para el Cierre (desde arras hasta firma escritura)
+% de cierres sin incidencias legales
+Vistas web sugeridas:
+Vista de Línea de Tiempo de Cierre:
+Fases: Tasación → Notaría → Firma → Entrega
+Estado en tiempo real con fechas estimadas
+Alertas automáticas si hay retrasos
+Vista de Coordinación con Notaría:
+Selección de notaría certificada
+Agenda integrada
+Subida de documentos requeridos
+Siguiente fase: → Post-Venta (Trámites, testimonio, referidos)
+7. FASE: POST-VENTA
+Objetivo: Garantizar una experiencia memorable y generar referidos.
+Rol principal: Ambos (Agente como gestor)
+Acciones clave:
+Asistir en trámites post-venta (luz, agua, gas, predial)
+Solicitar testimonio notarial
+Gestión de referidos (encuesta NPS + incentivo)
+Archivar caso en SmartCore BI con feedback final
+Documentos necesarios:
+Constancia de trámites realizados (servicios públicos)
+Testimonio notarial (copia)
+Encuesta NPS completada
+Referido registrado en SmartCore BI
+Métricas de éxito:
+Net Promoter Score (NPS): satisfacción post-venta
+% de referidos generados por cliente anterior
+Tiempo promedio de resolución de trámites post-venta
+Vistas web sugeridas:
+Vista de Checklist Post-Venta:
+Lista de trámites pendientes (luz, agua, etc.)
+Botones para “Marcar como completado”
+Enlaces directos a portales de servicios públicos
+Vista de Encuesta NPS + Referidos:
+Pregunta: “¿Recomendarías SMARTCORE BI? (0–10)”
+Campo abierto para comentarios
+Botón “Invitar a un amigo” con link personalizado
+Vista de Archivo de Caso:
+Resumen final: precio, días, servicios usados
+Opción de “Exportar reporte PDF”
+Botón “Iniciar nueva captación”
+Siguiente fase: → Archivar / Nueva Captación (Cerrar ciclo + iniciar nuevo funnel)
+Este documento te servirá como guía maestra para el diseño de tu plataforma. Cada vista descrita puede convertirse en un módulo funcional en tu web, con flujos claros, validaciones y métricas integradas.
