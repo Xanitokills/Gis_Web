@@ -6,28 +6,71 @@ import dynamic from 'next/dynamic';
 const Map = dynamic(() => import("../../components/map/Map"), { ssr: false });
 const PointsLayer = dynamic(() => import("../../components/map/PointsLayer"), { ssr: false });
 
+// Componentes del Ciclo de Ventas
+import DocumentUploadForm from '@/components/crm/DocumentUploadForm';
+import ContratoExclusividad from '@/components/crm/ContratoExclusividad';
+import PVSCalculator from '@/components/crm/PVSCalculator';
+import FotoUploadManager from '@/components/crm/FotoUploadManager';
+import BuyerPersonaBuilder from '@/components/crm/BuyerPersonaBuilder';
+import CampañaDigitalForm from '@/components/crm/CampañaDigitalForm';
+import LeadCalificacion from '@/components/crm/LeadCalificacion';
+import GestionOfertas from '@/components/crm/GestionOfertas';
+import LineaTiempoCierre from '@/components/crm/LineaTiempoCierre';
+import ChecklistPostVenta from '@/components/crm/ChecklistPostVenta';
+import EncuestaNPS from '@/components/crm/EncuestaNPS';
+import SistemaReferidos from '@/components/crm/SistemaReferidos';
+
+// Nuevos componentes completados
+import Video360Creator from '@/components/crm/Video360Creator';
+import FichaComercialEditor from '@/components/crm/FichaComercialEditor';
+import CampanasViewer from '@/components/crm/CampanasViewer';
+import OpenHouseScheduler from '@/components/crm/OpenHouseScheduler';
+import CalificarLead from '@/components/crm/CalificarLead';
+import FeedbackSender from '@/components/crm/FeedbackSender';
+import CalendarioVisitas from '@/components/crm/CalendarioVisitas';
+import ContraofertaForm from '@/components/crm/ContraofertaForm';
+import RechazarOferta from '@/components/crm/RechazarOferta';
+import ExportarPDF from '@/components/crm/ExportarPDF';
+import PropiedadManager from '@/components/crm/PropiedadManager';
+
 type Phase = 'dashboard' | 'inicio' | 'preparacion' | 'difusion' | 'gestion' | 'negociacion' | 'cierre' | 'postventa' | 'reports';
 
 type ModalType = 
   | 'captacion' 
-  | 'gestionarPropiedad' 
+  | 'gestionarPropiedad'
+  // Fase 1: INICIO
+  | 'cargarDocumentos'
+  | 'firmarContrato'
+  | 'definirPVS'
+  // Fase 2: PREPARACIÓN
   | 'subirFotos' 
   | 'video360' 
+  | 'buyerPersona'
   | 'editarFicha'
+  // Fase 3: DIFUSIÓN
   | 'verCampañas'
   | 'nuevaCampana'
   | 'openHouse'
+  // Fase 4: GESTIÓN
+  | 'calificarLead'
   | 'enviarFeedback'
   | 'calendarioVisitas'
   | 'programarVisita'
+  // Fase 5: NEGOCIACIÓN
+  | 'gestionarOfertas'
   | 'aceptarOferta'
   | 'contraoferta'
   | 'rechazarOferta'
   | 'firmarArras'
+  // Fase 6: CIERRE
+  | 'lineaTiempoCierre'
   | 'actualizarEstado'
   | 'subirDocumentos'
   | 'contactarNotaria'
   | 'actualizarTramites'
+  // Fase 7: POST-VENTA
+  | 'checklistTramites'
+  | 'encuestaNPS'
   | 'solicitarReferidos'
   | 'exportarPDF'
   | null;
@@ -903,18 +946,43 @@ export default function AgentDashboardPage() {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <button 
-                            onClick={() => openModal('gestionarPropiedad', prop)}
-                            className="text-blue-600 hover:text-blue-800 font-medium mr-3"
-                          >
-                            Ver
-                          </button>
-                          <button 
-                            onClick={() => openModal('gestionarPropiedad', prop)}
-                            className="text-green-600 hover:text-green-800 font-medium"
-                          >
-                            Gestionar
-                          </button>
+                          <div className="flex flex-col gap-2">
+                            <div className="flex gap-2">
+                              <button 
+                                onClick={() => openModal('cargarDocumentos', prop)}
+                                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                                  darkMode 
+                                    ? 'bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-600/30' 
+                                    : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border border-emerald-300'
+                                }`}
+                                title="Cargar Documentos"
+                              >
+                                📄 Docs
+                              </button>
+                              <button 
+                                onClick={() => openModal('firmarContrato', prop)}
+                                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                                  darkMode 
+                                    ? 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border border-blue-600/30' 
+                                    : 'bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-300'
+                                }`}
+                                title="Firmar Contrato"
+                              >
+                                ✍️ Contrato
+                              </button>
+                            </div>
+                            <button 
+                              onClick={() => openModal('definirPVS', prop)}
+                              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                                darkMode 
+                                  ? 'bg-purple-600/20 text-purple-400 hover:bg-purple-600/30 border border-purple-600/30' 
+                                  : 'bg-purple-100 text-purple-700 hover:bg-purple-200 border border-purple-300'
+                              }`}
+                              title="Definir Precio de Venta Sugerido"
+                            >
+                              💰 Definir PVS
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -992,24 +1060,30 @@ export default function AgentDashboardPage() {
                       </div>
                     </div>
 
-                    <div className="mt-4 flex space-x-3">
+                    <div className="mt-4 flex flex-wrap gap-3">
                       <button 
                         onClick={() => openModal('subirFotos', prop)}
                         className={`px-4 py-2 rounded-lg transition text-sm font-medium ${darkMode ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-purple-100 text-purple-700 hover:bg-purple-200 border border-purple-200'}`}
                       >
-                        Subir Fotos
+                        📸 Subir Fotos
+                      </button>
+                      <button 
+                        onClick={() => openModal('buyerPersona', prop)}
+                        className={`px-4 py-2 rounded-lg transition text-sm font-medium ${darkMode ? 'bg-purple-600 text-white hover:bg-purple-500' : 'bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-200'}`}
+                      >
+                        👥 Buyer Persona
                       </button>
                       <button 
                         onClick={() => openModal('video360', prop)}
-                        className={`px-4 py-2 rounded-lg transition text-sm font-medium ${darkMode ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border border-emerald-200'}`}
+                        className={`px-4 py-2 rounded-lg transition text-sm font-medium ${darkMode ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border border-emerald-200'}`}
                       >
-                        Crear Video 360°
+                        🎥 Video 360°
                       </button>
                       <button 
                         onClick={() => openModal('editarFicha', prop)}
-                        className={`px-4 py-2 rounded-lg transition text-sm font-medium ${darkMode ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-pink-100 text-pink-700 hover:bg-pink-200 border border-pink-200'}`}
+                        className={`px-4 py-2 rounded-lg transition text-sm font-medium ${darkMode ? 'bg-pink-600 text-white hover:bg-pink-500' : 'bg-pink-100 text-pink-700 hover:bg-pink-200 border border-pink-200'}`}
                       >
-                        Editar Ficha
+                        📝 Editar Ficha
                       </button>
                     </div>
                   </div>
@@ -1206,10 +1280,21 @@ export default function AgentDashboardPage() {
                               )}
                               <span className="text-sm text-gray-600">{lead.visitasProgramadas} visitas</span>
                               <button 
+                                onClick={() => openModal('calificarLead')}
+                                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                                  darkMode 
+                                    ? 'bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-600/30' 
+                                    : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border border-emerald-300'
+                                }`}
+                                title="Calificar Lead"
+                              >
+                                ⭐ Calificar
+                              </button>
+                              <button 
                                 onClick={() => openModal('programarVisita', { ...prop, lead })}
                                 className="text-blue-600 hover:text-blue-800 font-medium text-sm"
                               >
-                                Programar Visita
+                                📅 Visita
                               </button>
                             </div>
                           </div>
@@ -1359,20 +1444,30 @@ export default function AgentDashboardPage() {
                       )}
                     </div>
 
-                    <div className="mt-4 flex space-x-3">
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      <button 
+                        onClick={() => openModal('gestionarOfertas', prop)}
+                        className={`px-4 py-2 rounded-lg transition text-sm font-medium ${
+                          darkMode 
+                            ? 'bg-amber-600 text-white hover:bg-amber-500' 
+                            : 'bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-300'
+                        }`}
+                      >
+                        💼 Gestionar Ofertas
+                      </button>
                       {!prop.arras && (
                         <button 
                           onClick={() => openModal('firmarArras', prop)}
                           className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition text-sm font-medium"
                         >
-                          Firmar Contrato de Arras
+                          📝 Firmar Arras
                         </button>
                       )}
                       <button 
                         onClick={() => openModal('verCampañas', prop)}
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
                       >
-                        Ver Historial de Ofertas
+                        📊 Ver Historial
                       </button>
                     </div>
                   </div>
@@ -1584,18 +1679,28 @@ export default function AgentDashboardPage() {
                       </div>
                     )}
 
-                    <div className="flex space-x-3">
+                    <div className="flex flex-wrap gap-3">
+                      <button 
+                        onClick={() => openModal('lineaTiempoCierre', prop)}
+                        className={`px-4 py-2 rounded-lg transition text-sm font-medium ${
+                          darkMode 
+                            ? 'bg-blue-600 text-white hover:bg-blue-500' 
+                            : 'bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-300'
+                        }`}
+                      >
+                        ⏱️ Ver Timeline Completo
+                      </button>
                       <button 
                         onClick={() => openModal('actualizarEstado', prop)}
                         className={`px-4 py-2 rounded-lg transition text-sm font-medium ${darkMode ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-gray-900 text-white hover:bg-gray-800'}`}
                       >
-                        Actualizar Estado
+                        📝 Actualizar Estado
                       </button>
                       <button 
                         onClick={() => openModal('subirDocumentos', prop)}
                         className={`px-4 py-2 rounded-lg transition text-sm font-medium border ${darkMode ? 'border-emerald-600 text-emerald-400 hover:bg-emerald-600/10' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
                       >
-                        Subir Documentos
+                        📄 Documentos
                       </button>
                       <button 
                         onClick={() => openModal('contactarNotaria', prop)}
@@ -1701,30 +1806,48 @@ export default function AgentDashboardPage() {
                       <p className="text-sm text-blue-800 italic">"{prop.testimonio}"</p>
                     </div>
 
-                    <div className="flex space-x-3">
+                    <div className="flex flex-wrap gap-3">
                       <button 
-                        onClick={() => openModal('actualizarTramites', prop)}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm font-medium"
+                        onClick={() => openModal('checklistTramites', prop)}
+                        className={`px-4 py-2 rounded-lg transition text-sm font-medium ${
+                          darkMode 
+                            ? 'bg-emerald-600 text-white hover:bg-emerald-500' 
+                            : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border border-emerald-300'
+                        }`}
                       >
-                        Actualizar Trámites
+                        ✅ Checklist Trámites
+                      </button>
+                      <button 
+                        onClick={() => openModal('encuestaNPS', prop)}
+                        className={`px-4 py-2 rounded-lg transition text-sm font-medium ${
+                          darkMode 
+                            ? 'bg-purple-600 text-white hover:bg-purple-500' 
+                            : 'bg-purple-100 text-purple-700 hover:bg-purple-200 border border-purple-300'
+                        }`}
+                      >
+                        ⭐ Encuesta NPS
                       </button>
                       <button 
                         onClick={() => openModal('solicitarReferidos', prop)}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+                        className={`px-4 py-2 rounded-lg transition text-sm font-medium ${
+                          darkMode 
+                            ? 'bg-pink-600 text-white hover:bg-pink-500' 
+                            : 'bg-pink-100 text-pink-700 hover:bg-pink-200 border border-pink-300'
+                        }`}
                       >
-                        Solicitar Referidos
+                        🎁 Programa Referidos
                       </button>
                       <button 
                         onClick={() => openModal('exportarPDF', prop)}
-                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition text-sm font-medium"
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
                       >
-                        Exportar Resumen PDF
+                        📄 Exportar PDF
                       </button>
                       <button 
                         onClick={() => openModal('gestionarPropiedad', prop)}
                         className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition text-sm font-medium"
                       >
-                        Archivar Caso
+                        🗂️ Archivar
                       </button>
                     </div>
                   </div>
@@ -1784,26 +1907,50 @@ export default function AgentDashboardPage() {
             {/* Header del Modal */}
             <div className={`sticky top-0 ${theme.bgCard} border-b ${theme.border} px-6 py-4 flex items-center justify-between z-10`}>
               <h3 className={`text-lg font-semibold ${theme.textPrimary}`}>
-                {activeModal === 'captacion' && 'Nueva Captación - Smart Capture'}
-                {activeModal === 'gestionarPropiedad' && 'Gestionar Propiedad'}
-                {activeModal === 'subirFotos' && 'Subir Fotografías Profesionales'}
+                {/* Fase 1: INICIO */}
+                {activeModal === 'cargarDocumentos' && '📄 Cargar Documentos de Propiedad'}
+                {activeModal === 'firmarContrato' && '✍️ Firmar Contrato de Exclusividad'}
+                {activeModal === 'definirPVS' && '💰 Definir Precio de Venta Sugerido (PVS)'}
+                
+                {/* Fase 2: PREPARACIÓN */}
+                {activeModal === 'subirFotos' && '📸 Subir Fotografías Profesionales'}
+                {activeModal === 'buyerPersona' && '👥 Definir Buyer Persona'}
                 {activeModal === 'video360' && 'Crear Video 360°'}
                 {activeModal === 'editarFicha' && 'Editar Ficha Comercial'}
+                
+                {/* Fase 3: DIFUSIÓN */}
                 {activeModal === 'verCampañas' && 'Campañas Activas'}
-                {activeModal === 'nuevaCampana' && 'Nueva Campaña Digital'}
+                {activeModal === 'nuevaCampana' && '🚀 Nueva Campaña Digital'}
                 {activeModal === 'openHouse' && 'Programar Open House'}
+                
+                {/* Fase 4: GESTIÓN */}
+                {activeModal === 'calificarLead' && '⭐ Calificar Lead'}
                 {activeModal === 'enviarFeedback' && 'Enviar Feedback al Propietario'}
                 {activeModal === 'calendarioVisitas' && 'Calendario de Visitas'}
                 {activeModal === 'programarVisita' && 'Programar Visita'}
+                
+                {/* Fase 5: NEGOCIACIÓN */}
+                {activeModal === 'gestionarOfertas' && '💼 Gestionar Ofertas'}
                 {activeModal === 'aceptarOferta' && 'Aceptar Oferta'}
                 {activeModal === 'contraoferta' && 'Realizar Contraoferta'}
                 {activeModal === 'rechazarOferta' && 'Rechazar Oferta'}
                 {activeModal === 'firmarArras' && 'Firmar Contrato de Arras'}
+                
+                {/* Fase 6: CIERRE */}
+                {activeModal === 'lineaTiempoCierre' && '⏱️ Línea de Tiempo - Cierre Final'}
                 {activeModal === 'actualizarEstado' && 'Actualizar Estado de Cierre'}
                 {activeModal === 'subirDocumentos' && 'Subir Documentos Legales'}
                 {activeModal === 'contactarNotaria' && 'Contactar Notaría'}
+                
+                {/* Fase 7: POST-VENTA */}
                 {activeModal === 'actualizarTramites' && 'Actualizar Trámites Post-Venta'}
                 {activeModal === 'solicitarReferidos' && 'Solicitar Referidos'}
+                {activeModal === 'checklistTramites' && 'Checklist de Trámites'}
+                {activeModal === 'encuestaNPS' && 'Encuesta NPS'}
+                
+                {/* Otros */}
+                {activeModal === 'captacion' && 'Nueva Captación - Smart Capture'}
+                {activeModal === 'gestionarPropiedad' && 'Gestionar Propiedad'}
                 {activeModal === 'exportarPDF' && 'Exportar Resumen PDF'}
               </h3>
               <button 
@@ -1818,6 +1965,254 @@ export default function AgentDashboardPage() {
 
             {/* Contenido del Modal */}
             <div className="p-6">
+
+              {/* FASE 1: INICIO - Cargar Documentos */}
+              {activeModal === 'cargarDocumentos' && selectedProperty && (
+                <DocumentUploadForm
+                  propiedadId={selectedProperty.id}
+                  darkMode={darkMode}
+                  onSuccess={() => {
+                    alert('¡Documentos cargados exitosamente!');
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 1: INICIO - Firmar Contrato de Exclusividad */}
+              {activeModal === 'firmarContrato' && selectedProperty && (
+                <ContratoExclusividad
+                  propiedad={{
+                    direccion: selectedProperty.direccion,
+                    propietario: selectedProperty.propietario,
+                    pvs: selectedProperty.pvs
+                  }}
+                  darkMode={darkMode}
+                  onFirmar={(tipoFirma) => {
+                    console.log('Contrato firmado vía:', tipoFirma);
+                    alert(`Contrato firmado exitosamente vía ${tipoFirma}`);
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 1: INICIO - Definir PVS */}
+              {activeModal === 'definirPVS' && selectedProperty && (
+                <PVSCalculator
+                  propiedad={{
+                    direccion: selectedProperty.direccion,
+                    distrito: 'Miraflores',
+                    area: 120,
+                    habitaciones: 3,
+                    baños: 2
+                  }}
+                  darkMode={darkMode}
+                  onConfirmar={(pvs, justificacion) => {
+                    console.log('PVS confirmado:', pvs, 'Justificación:', justificacion);
+                    alert(`PVS establecido en S/ ${pvs.toLocaleString()}`);
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 2: PREPARACIÓN - Subir Fotos */}
+              {activeModal === 'subirFotos' && selectedProperty && (
+                <FotoUploadManager
+                  propiedadId={selectedProperty.id}
+                  darkMode={darkMode}
+                  onSuccess={() => {
+                    alert('Fotos guardadas exitosamente');
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 2: PREPARACIÓN - Buyer Persona */}
+              {activeModal === 'buyerPersona' && selectedProperty && (
+                <BuyerPersonaBuilder
+                  propiedadId={selectedProperty.id}
+                  darkMode={darkMode}
+                  onConfirmar={(personaTipo, detallePersona) => {
+                    console.log('Buyer Persona:', personaTipo, detallePersona);
+                    alert('Buyer Persona configurado exitosamente');
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 3: DIFUSIÓN - Nueva Campaña Digital */}
+              {activeModal === 'nuevaCampana' && selectedProperty && (
+                <CampañaDigitalForm
+                  propiedadId={selectedProperty.id}
+                  darkMode={darkMode}
+                  onCrear={(campanaData) => {
+                    console.log('Nueva campaña:', campanaData);
+                    alert(`Campaña creada en ${campanaData.plataforma}`);
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 4: GESTIÓN - Calificar Lead */}
+              {activeModal === 'calificarLead' && (
+                <LeadCalificacion
+                  lead={{
+                    id: 123,
+                    nombre: 'María González',
+                    email: 'maria@email.com',
+                    telefono: '+51 999 888 777',
+                    scoring: 3
+                  }}
+                  darkMode={darkMode}
+                  onCalificar={(leadId, calificacionData) => {
+                    console.log('Lead calificado:', leadId, calificacionData);
+                    alert('Lead calificado exitosamente');
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 5: NEGOCIACIÓN - Gestión de Ofertas */}
+              {activeModal === 'gestionarOfertas' && selectedProperty && (
+                <GestionOfertas
+                  propiedad={{
+                    id: selectedProperty.id,
+                    pvs: selectedProperty.pvs,
+                    direccion: selectedProperty.direccion
+                  }}
+                  ofertas={[
+                    {
+                      id: 1,
+                      cliente: 'Juan Pérez',
+                      monto: 280000,
+                      fecha: '2025-09-25',
+                      estado: 'Pendiente',
+                      validez: '2025-10-15',
+                      condiciones: [
+                        'Crédito hipotecario aprobado por BCP',
+                        'Pago de inicial 30%',
+                        'Posesión en 60 días'
+                      ]
+                    },
+                    {
+                      id: 2,
+                      cliente: 'Ana Torres',
+                      monto: 295000,
+                      fecha: '2025-09-28',
+                      estado: 'Pendiente',
+                      validez: '2025-10-20'
+                    }
+                  ]}
+                  darkMode={darkMode}
+                  onAccion={(accion, ofertaId, data) => {
+                    console.log('Acción:', accion, 'Oferta:', ofertaId, 'Data:', data);
+                    switch(accion) {
+                      case 'aceptar':
+                        alert('Oferta aceptada');
+                        break;
+                      case 'rechazar':
+                        alert('Oferta rechazada');
+                        break;
+                      case 'contraofertar':
+                        alert(`Contraoferta enviada: S/ ${data.monto.toLocaleString()}`);
+                        break;
+                      case 'firmar-arras':
+                        alert(`Arras firmadas por S/ ${data.monto}`);
+                        break;
+                    }
+                  }}
+                />
+              )}
+
+              {/* FASE 6: CIERRE - Timeline de Cierre */}
+              {activeModal === 'lineaTiempoCierre' && selectedProperty && (
+                <LineaTiempoCierre
+                  propiedad={{
+                    id: selectedProperty.id,
+                    direccion: selectedProperty.direccion,
+                    comprador: 'Juan Pérez',
+                    precioFinal: 285000
+                  }}
+                  etapas={{
+                    tasacion: {
+                      nombre: 'Tasación Bancaria',
+                      status: 'Completado',
+                      fecha: '2025-09-22',
+                      responsable: 'BCP',
+                      notas: 'Tasación aprobada en S/ 290,000',
+                      documentos: [
+                        { nombre: 'Tasación BCP.pdf', url: '/docs/tasacion.pdf' }
+                      ]
+                    },
+                    notaria: {
+                      nombre: 'Coordinación Notaría',
+                      status: 'En Proceso',
+                      fecha: '2025-10-05',
+                      responsable: 'Notaría Ríos',
+                      notas: 'Cita programada para el 05/10'
+                    },
+                    escritura: {
+                      nombre: 'Firma Escritura',
+                      status: 'Pendiente',
+                      fecha: '2025-10-12',
+                      notas: 'Pendiente de coordinación de notaría'
+                    },
+                    entregaLlaves: {
+                      nombre: 'Entrega de Llaves',
+                      status: 'Pendiente',
+                      fecha: '2025-10-15'
+                    }
+                  }}
+                  darkMode={darkMode}
+                  onActualizar={(etapa, data) => {
+                    console.log('Actualizar etapa:', etapa, data);
+                    alert(`Etapa ${etapa} actualizada`);
+                  }}
+                />
+              )}
+
+              {/* FASE 7: POST-VENTA - Checklist de Trámites */}
+              {activeModal === 'checklistTramites' && selectedProperty && (
+                <ChecklistPostVenta
+                  propiedadId={selectedProperty.id}
+                  direccion={selectedProperty.direccion}
+                  comprador="Juan Pérez"
+                  darkMode={darkMode}
+                  onActualizar={(tramites) => {
+                    console.log('Trámites actualizados:', tramites);
+                    const completados = tramites.filter(t => t.completado).length;
+                    alert(`✓ Progreso actualizado: ${completados}/${tramites.length} trámites completados`);
+                  }}
+                />
+              )}
+
+              {/* FASE 7: POST-VENTA - Encuesta NPS */}
+              {activeModal === 'encuestaNPS' && selectedProperty && (
+                <EncuestaNPS
+                  clienteNombre="Familia Gutiérrez"
+                  propiedadDireccion={selectedProperty.direccion}
+                  agenteNombre="Juan Silva"
+                  darkMode={darkMode}
+                  onEnviar={(datos) => {
+                    console.log('Encuesta NPS enviada:', datos);
+                    alert(`✓ Encuesta enviada - NPS: ${datos.puntuacion}/10`);
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 7: POST-VENTA - Sistema de Referidos */}
+              {activeModal === 'solicitarReferidos' && selectedProperty && (
+                <SistemaReferidos
+                  clienteNombre="Familia Gutiérrez"
+                  clienteId={123}
+                  darkMode={darkMode}
+                  onRegistrarReferido={(referido) => {
+                    console.log('Referido registrado:', referido);
+                    alert(`✓ Referido registrado: ${referido.nombre}`);
+                  }}
+                />
+              )}
+
               {/* Modal: Nueva Captación */}
               {activeModal === 'captacion' && (
                 <div className="space-y-6">
@@ -2292,8 +2687,159 @@ Juan Silva"></textarea>
                 </div>
               )}
 
+              {/* FASE 2: PREPARACIÓN - Tour Virtual 360° */}
+              {activeModal === 'video360' && selectedProperty && (
+                <Video360Creator
+                  propiedadId={selectedProperty.id}
+                  darkMode={darkMode}
+                  onClose={closeModal}
+                  onSave={(data) => {
+                    console.log('Tour 360 guardado:', data);
+                    alert('✓ Tour virtual 360° creado exitosamente');
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 2: PREPARACIÓN - Editar Ficha Comercial */}
+              {activeModal === 'editarFicha' && selectedProperty && (
+                <FichaComercialEditor
+                  propiedadId={selectedProperty.id}
+                  darkMode={darkMode}
+                  onClose={closeModal}
+                  onSave={(data) => {
+                    console.log('Ficha comercial actualizada:', data);
+                    alert('✓ Ficha comercial actualizada correctamente');
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 3: DIFUSIÓN - Ver Campañas Activas */}
+              {activeModal === 'verCampañas' && selectedProperty && (
+                <CampanasViewer
+                  propiedadId={selectedProperty.id}
+                  darkMode={darkMode}
+                  onClose={closeModal}
+                />
+              )}
+
+              {/* FASE 3: DIFUSIÓN - Programar Open House */}
+              {activeModal === 'openHouse' && selectedProperty && (
+                <OpenHouseScheduler
+                  propiedadId={selectedProperty.id}
+                  darkMode={darkMode}
+                  onClose={closeModal}
+                  onSave={(data) => {
+                    console.log('Open house programado:', data);
+                    alert(`✓ Open house programado para ${new Date(data.fecha).toLocaleDateString()}`);
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 4: GESTIÓN - Calificar Lead (alternativo) */}
+              {activeModal === 'calificarLead' && !selectedProperty && (
+                <CalificarLead
+                  leadId={123}
+                  darkMode={darkMode}
+                  onClose={closeModal}
+                  onSave={(data) => {
+                    console.log('Lead calificado:', data);
+                    alert(`✓ Lead calificado: ${data.calificacion} estrellas`);
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 4: GESTIÓN - Enviar Feedback al Propietario */}
+              {activeModal === 'enviarFeedback' && selectedProperty && (
+                <FeedbackSender
+                  propiedadId={selectedProperty.id}
+                  propietario="Carlos Mendoza"
+                  darkMode={darkMode}
+                  onClose={closeModal}
+                  onSave={(data) => {
+                    console.log('Feedback enviado:', data);
+                    alert('✓ Feedback enviado al propietario');
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 4: GESTIÓN - Calendario de Visitas */}
+              {activeModal === 'calendarioVisitas' && selectedProperty && (
+                <CalendarioVisitas
+                  propiedadId={selectedProperty.id}
+                  darkMode={darkMode}
+                  onClose={closeModal}
+                />
+              )}
+
+              {/* FASE 5: NEGOCIACIÓN - Contraoferta */}
+              {activeModal === 'contraoferta' && selectedProperty && (
+                <ContraofertaForm
+                  oferta={{ monto: 280000, cliente: 'Juan Pérez' }}
+                  propiedadId={selectedProperty.id}
+                  darkMode={darkMode}
+                  onClose={closeModal}
+                  onSave={(data) => {
+                    console.log('Contraoferta enviada:', data);
+                    alert(`✓ Contraoferta enviada por S/ ${data.monto.toLocaleString()}`);
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 5: NEGOCIACIÓN - Rechazar Oferta */}
+              {activeModal === 'rechazarOferta' && selectedProperty && (
+                <RechazarOferta
+                  oferta={{ monto: 280000, cliente: 'Juan Pérez' }}
+                  darkMode={darkMode}
+                  onClose={closeModal}
+                  onSave={(data) => {
+                    console.log('Oferta rechazada:', data);
+                    alert(`✓ Oferta rechazada - Motivo: ${data.motivo}`);
+                    closeModal();
+                  }}
+                />
+              )}
+
+              {/* FASE 7: POST-VENTA - Exportar Reporte PDF */}
+              {activeModal === 'exportarPDF' && selectedProperty && (
+                <ExportarPDF
+                  propiedadId={selectedProperty.id}
+                  darkMode={darkMode}
+                  onClose={closeModal}
+                />
+              )}
+
+              {/* GENERAL - Gestionar Propiedad */}
+              {activeModal === 'gestionarPropiedad' && selectedProperty && (
+                <PropiedadManager
+                  propiedad={selectedProperty}
+                  darkMode={darkMode}
+                  onClose={closeModal}
+                  onEdit={() => {
+                    closeModal();
+                    openModal('editarFicha', selectedProperty);
+                  }}
+                  onDelete={() => {
+                    if (confirm('¿Está seguro de que desea archivar esta propiedad?')) {
+                      alert('✓ Propiedad archivada');
+                      closeModal();
+                    }
+                  }}
+                />
+              )}
+
               {/* Modal Genérico para otros casos */}
-              {!['captacion', 'subirFotos', 'nuevaCampana', 'programarVisita', 'aceptarOferta', 'firmarArras', 'actualizarEstado', 'solicitarReferidos'].includes(activeModal!) && (
+              {!['captacion', 'subirFotos', 'nuevaCampana', 'programarVisita', 'aceptarOferta', 'firmarArras', 
+                  'actualizarEstado', 'solicitarReferidos', 'cargarDocumentos', 'firmarContrato', 'definirPVS',
+                  'buyerPersona', 'video360', 'editarFicha', 'verCampañas', 'openHouse', 'calificarLead',
+                  'enviarFeedback', 'calendarioVisitas', 'gestionarOfertas', 'contraoferta', 'rechazarOferta',
+                  'lineaTiempoCierre', 'checklistTramites', 'encuestaNPS', 'exportarPDF', 'gestionarPropiedad']
+                  .includes(activeModal!) && (
                 <div className="py-12 text-center">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

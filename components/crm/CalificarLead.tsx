@@ -1,0 +1,180 @@
+'use client';
+
+import React, { useState } from 'react';
+import { X, Star, ThumbsUp, ThumbsDown, MessageSquare, Send, Save } from 'lucide-react';
+
+interface CalificarLeadProps {
+  leadId?: number;
+  onClose: () => void;
+  onSave?: (data: any) => void;
+  darkMode: boolean;
+}
+
+export default function CalificarLead({ leadId, onClose, onSave, darkMode }: CalificarLeadProps) {
+  const [calificacion, setCalificacion] = useState(3);
+  const [interes, setInteres] = useState<'alto' | 'medio' | 'bajo'>('medio');
+  const [presupuesto, setPresupuesto] = useState<'confirmado' | 'estimado' | 'sin-confirmar'>('estimado');
+  const [urgencia, setUrgencia] = useState<'inmediata' | '1-3-meses' | '3-6-meses' | 'mas-6-meses'>('1-3-meses');
+  const [notas, setNotas] = useState('');
+  const [guardando, setGuardando] = useState(false);
+
+  const handleGuardar = async () => {
+    setGuardando(true);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    onSave?.({ calificacion, interes, presupuesto, urgencia, notas });
+    setGuardando(false);
+    onClose();
+  };
+
+  return (
+    <div className={`fixed inset-0 ${darkMode ? 'bg-black/50' : 'bg-black/30'} backdrop-blur-sm z-50 flex items-center justify-center p-4`}>
+      <div className={`${darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} rounded-xl shadow-2xl border max-w-lg w-full`}>
+        
+        <div className={`${darkMode ? 'bg-gradient-to-r from-yellow-900 to-orange-900' : 'bg-gradient-to-r from-yellow-600 to-orange-600'} px-6 py-4 border-b flex items-center justify-between`}>
+          <div className="flex items-center gap-3">
+            <Star className="w-6 h-6 text-white fill-white" />
+            <div>
+              <h2 className="text-xl font-bold text-white">Calificar Lead</h2>
+              <p className="text-yellow-100 text-sm">Lead #{leadId || 'Nuevo'}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-lg">
+            <X className="w-5 h-5 text-white" />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-5">
+          
+          <div>
+            <label className={`block text-sm font-medium mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Calificación General (1-5 estrellas)
+            </label>
+            <div className="flex gap-2 justify-center">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => setCalificacion(star)}
+                  className="focus:outline-none transform transition-transform hover:scale-110"
+                >
+                  <Star 
+                    className={`w-10 h-10 ${
+                      star <= calificacion 
+                        ? 'text-yellow-500 fill-yellow-500' 
+                        : darkMode ? 'text-gray-600' : 'text-gray-300'
+                    }`} 
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Nivel de Interés
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { value: 'alto', label: 'Alto', icon: ThumbsUp, color: 'green' },
+                { value: 'medio', label: 'Medio', icon: MessageSquare, color: 'yellow' },
+                { value: 'bajo', label: 'Bajo', icon: ThumbsDown, color: 'red' }
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => setInteres(opt.value as any)}
+                  className={`p-3 rounded-lg border-2 font-medium text-sm transition-all ${
+                    interes === opt.value
+                      ? `border-${opt.color}-500 bg-${opt.color}-500/20 text-${opt.color}-600 dark:text-${opt.color}-400`
+                      : darkMode ? 'border-gray-700 text-gray-400' : 'border-gray-200 text-gray-600'
+                  }`}
+                >
+                  <opt.icon className="w-5 h-5 mx-auto mb-1" />
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Estado del Presupuesto
+            </label>
+            <select
+              value={presupuesto}
+              onChange={(e) => setPresupuesto(e.target.value as any)}
+              className={`w-full px-4 py-2 rounded-lg border ${
+                darkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300'
+              }`}
+            >
+              <option value="confirmado">Presupuesto Confirmado</option>
+              <option value="estimado">Presupuesto Estimado</option>
+              <option value="sin-confirmar">Sin Confirmar</option>
+            </select>
+          </div>
+
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Urgencia de Compra
+            </label>
+            <select
+              value={urgencia}
+              onChange={(e) => setUrgencia(e.target.value as any)}
+              className={`w-full px-4 py-2 rounded-lg border ${
+                darkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300'
+              }`}
+            >
+              <option value="inmediata">Inmediata (menos de 1 mes)</option>
+              <option value="1-3-meses">1-3 meses</option>
+              <option value="3-6-meses">3-6 meses</option>
+              <option value="mas-6-meses">Más de 6 meses</option>
+            </select>
+          </div>
+
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Notas y Observaciones
+            </label>
+            <textarea
+              value={notas}
+              onChange={(e) => setNotas(e.target.value)}
+              rows={3}
+              placeholder="Información adicional sobre el lead..."
+              className={`w-full px-4 py-2 rounded-lg border ${
+                darkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300'
+              }`}
+            />
+          </div>
+        </div>
+
+        <div className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'} px-6 py-4 border-t flex justify-end gap-3`}>
+          <button
+            onClick={onClose}
+            className={`px-4 py-2 rounded-lg border font-medium ${
+              darkMode ? 'border-gray-600 hover:bg-gray-700 text-gray-300' : 'border-gray-300 hover:bg-gray-100 text-gray-700'
+            }`}
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={handleGuardar}
+            disabled={guardando}
+            className={`px-6 py-2 rounded-lg font-medium flex items-center gap-2 ${
+              guardando ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700'
+            } text-white`}
+          >
+            {guardando ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Guardando...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                Guardar Calificación
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
