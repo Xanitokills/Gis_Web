@@ -117,8 +117,7 @@ export default function CampañasViewer({ propiedadId, onClose, darkMode }: Camp
   };
 
   return (
-    <div className={`fixed inset-0 ${darkMode ? 'bg-black/50' : 'bg-black/30'} backdrop-blur-sm z-50 flex items-center justify-center p-4`}>
-      <div className={`${darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} rounded-xl shadow-2xl border max-w-7xl w-full max-h-[90vh] overflow-hidden flex flex-col`}>
+    <div className="flex flex-col h-full">
         
         {/* Header */}
         <div className={`${darkMode ? 'bg-gradient-to-r from-orange-900 to-red-900 border-gray-700' : 'bg-gradient-to-r from-orange-600 to-red-600 border-gray-200'} px-6 py-4 border-b flex items-center justify-between`}>
@@ -404,6 +403,5 @@ export default function CampañasViewer({ propiedadId, onClose, darkMode }: Camp
           </button>
         </div>
       </div>
-    </div>
   );
 }

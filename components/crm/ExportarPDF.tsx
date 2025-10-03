@@ -33,10 +33,9 @@ export default function ExportarPDF({ propiedadId, onClose, darkMode }: Exportar
   };
 
   return (
-    <div className={`fixed inset-0 ${darkMode ? 'bg-black/50' : 'bg-black/30'} backdrop-blur-sm z-50 flex items-center justify-center p-4`}>
-      <div className={`${darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} rounded-xl shadow-2xl border max-w-md w-full`}>
-        
-        <div className={`${darkMode ? 'bg-gradient-to-r from-red-900 to-pink-900' : 'bg-gradient-to-r from-red-600 to-pink-600'} px-6 py-4 border-b flex items-center justify-between`}>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className={`${darkMode ? 'bg-gradient-to-r from-red-900 to-pink-900' : 'bg-gradient-to-r from-red-600 to-pink-600'} px-6 py-4 border-b flex items-center justify-between`}>
           <div className="flex items-center gap-3">
             <FileText className="w-6 h-6 text-white" />
             <div>
@@ -128,6 +127,5 @@ export default function ExportarPDF({ propiedadId, onClose, darkMode }: Exportar
           </button>
         </div>
       </div>
-    </div>
   );
 }

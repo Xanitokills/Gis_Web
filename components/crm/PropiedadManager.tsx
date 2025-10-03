@@ -15,8 +15,7 @@ export default function PropiedadManager({ propiedad, onClose, onEdit, onDelete,
   const [activeTab, setActiveTab] = useState<'general' | 'estadisticas' | 'configuracion'>('general');
 
   return (
-    <div className={`fixed inset-0 ${darkMode ? 'bg-black/50' : 'bg-black/30'} backdrop-blur-sm z-50 flex items-center justify-center p-4`}>
-      <div className={`${darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} rounded-xl shadow-2xl border max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col`}>
+    <div className="space-y-6">
         
         <div className={`${darkMode ? 'bg-gradient-to-r from-blue-900 to-indigo-900' : 'bg-gradient-to-r from-blue-600 to-indigo-600'} px-6 py-4 border-b flex items-center justify-between`}>
           <div className="flex items-center gap-3">
@@ -217,6 +216,5 @@ export default function PropiedadManager({ propiedad, onClose, onEdit, onDelete,
           </button>
         </div>
       </div>
-    </div>
   );
 }
