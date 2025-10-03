@@ -1918,38 +1918,38 @@ export default function AgentDashboardPage() {
               {/* Modal: Nueva Campaña */}
               {activeModal === 'nuevaCampana' && (
                 <div className="space-y-6">
-                  <div className="bg-emerald-600/10 border border-emerald-600/30 rounded-lg p-4">
-                    <p className="text-sm text-emerald-300">
+                  <div className={`${darkMode ? 'bg-emerald-600/10 border-emerald-600/30' : 'bg-emerald-50 border-emerald-200'} border rounded-lg p-4`}>
+                    <p className={`text-sm ${darkMode ? 'text-emerald-300' : 'text-emerald-700'}`}>
                       Crea una campaña digital optimizada para atraer leads calificados en múltiples canales.
                     </p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Nombre de la Campaña *</label>
-                      <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Campaña Dpto Miraflores" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Nombre de la Campaña *</label>
+                      <input type="text" className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} placeholder="Campaña Dpto Miraflores" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Presupuesto Diario (S/) *</label>
-                      <input type="number" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="50" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Presupuesto Diario (S/) *</label>
+                      <input type="number" className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} placeholder="50" />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-3">Canales de Publicación *</label>
+                    <label className={`block text-sm font-semibold mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Canales de Publicación *</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {['Facebook', 'Instagram', 'Inmuebles24', 'Urbania', 'Properati', 'Google Ads'].map((canal) => (
-                        <label key={canal} className="flex items-center space-x-2 p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer">
-                          <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
-                          <span className="text-sm text-gray-700">{canal}</span>
+                        <label key={canal} className={`flex items-center space-x-2 p-3 border rounded-lg cursor-pointer ${darkMode ? 'border-[#3A3A3A] hover:bg-[#2A2A2A]' : 'border-gray-300 hover:bg-gray-50'}`}>
+                          <input type="checkbox" className={`w-4 h-4 text-emerald-500 rounded focus:ring-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A]' : 'bg-white border-gray-300'}`} />
+                          <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{canal}</span>
                         </label>
                       ))}
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Buyer Persona Objetivo</label>
-                    <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Buyer Persona Objetivo</label>
+                    <select className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`}>
                       <option>Familia joven profesional</option>
                       <option>Inversionista</option>
                       <option>Pareja sin hijos</option>
@@ -1959,20 +1959,20 @@ export default function AgentDashboardPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha Inicio</label>
-                      <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Fecha Inicio</label>
+                      <input type="date" className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`} />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha Fin</label>
-                      <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Fecha Fin</label>
+                      <input type="date" className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`} />
                     </div>
                   </div>
 
-                  <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                    <button onClick={closeModal} className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                  <div className={`flex justify-end space-x-3 pt-4 border-t ${darkMode ? 'border-[#2A2A2A]' : 'border-gray-200'}`}>
+                    <button onClick={closeModal} className={`px-6 py-2 border rounded-lg transition-colors font-medium ${darkMode ? 'border-[#3A3A3A] text-gray-300 hover:bg-[#2A2A2A] hover:text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
                       Cancelar
                     </button>
-                    <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
+                    <button className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition-colors font-medium shadow-lg shadow-emerald-600/20">
                       Crear Campaña
                     </button>
                   </div>
@@ -1990,41 +1990,41 @@ export default function AgentDashboardPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2`}>Nombre del Lead *</label>
-                      <input type="text" className={`w-full px-4 py-2 ${theme.bgInput} border ${theme.borderInput} rounded-lg ${theme.textPrimary} focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'placeholder:text-gray-500' : 'placeholder:text-gray-400'}`} placeholder="Ana López" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Nombre del Lead *</label>
+                      <input type="text" className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} placeholder="Ana López" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Teléfono *</label>
-                      <input type="tel" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent" placeholder="+51 999 888 777" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Teléfono *</label>
+                      <input type="tel" className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} placeholder="+51 999 888 777" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha de Visita *</label>
-                      <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Fecha de Visita *</label>
+                      <input type="date" className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`} />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Hora *</label>
-                      <input type="time" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent" />
+                      <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Hora *</label>
+                      <input type="time" className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`} />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Tipo de Visita</label>
-                    <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent">
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Tipo de Visita</label>
+                    <select className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`}>
                       <option>Presencial</option>
                       <option>Virtual (videollamada)</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Notas Adicionales</label>
-                    <textarea className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent" rows={3} placeholder="Información importante para la visita..."></textarea>
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Notas Adicionales</label>
+                    <textarea className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} rows={3} placeholder="Información importante para la visita..."></textarea>
                   </div>
 
-                  <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                    <button onClick={closeModal} className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                  <div className={`flex justify-end space-x-3 pt-4 border-t ${darkMode ? 'border-[#2A2A2A]' : 'border-gray-200'}`}>
+                    <button onClick={closeModal} className={`px-6 py-2 border rounded-lg transition-colors font-medium ${darkMode ? 'border-[#3A3A3A] text-gray-300 hover:bg-[#2A2A2A] hover:text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
                       Cancelar
                     </button>
-                    <button className="px-6 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition font-medium">
+                    <button className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition-colors font-medium shadow-lg shadow-emerald-600/20">
                       Confirmar Visita
                     </button>
                   </div>
@@ -2063,21 +2063,21 @@ export default function AgentDashboardPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Monto de Arras (S/) *</label>
-                    <input type="number" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="22250" />
-                    <p className="text-xs text-gray-500 mt-1">Recomendado: 5% del valor de la oferta</p>
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Monto de Arras (S/) *</label>
+                    <input type="number" className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} placeholder="22250" />
+                    <p className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Recomendado: 5% del valor de la oferta</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Comentarios</label>
-                    <textarea className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" rows={3} placeholder="Condiciones especiales, términos acordados..."></textarea>
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Comentarios</label>
+                    <textarea className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} rows={3} placeholder="Condiciones especiales, términos acordados..."></textarea>
                   </div>
 
-                  <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                    <button onClick={closeModal} className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                  <div className={`flex justify-end space-x-3 pt-4 border-t ${darkMode ? 'border-[#2A2A2A]' : 'border-gray-200'}`}>
+                    <button onClick={closeModal} className={`px-6 py-2 border rounded-lg transition-colors font-medium ${darkMode ? 'border-[#3A3A3A] text-gray-300 hover:bg-[#2A2A2A] hover:text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
                       Cancelar
                     </button>
-                    <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
+                    <button className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition-colors font-medium shadow-lg shadow-emerald-600/20">
                       Aceptar Oferta
                     </button>
                   </div>
@@ -2116,25 +2116,25 @@ export default function AgentDashboardPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Subir Contrato de Arras Firmado (PDF) *</label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-orange-500 transition cursor-pointer">
-                      <svg className="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Subir Contrato de Arras Firmado (PDF) *</label>
+                    <div className={`border-2 border-dashed rounded-lg p-8 text-center hover:border-emerald-500 transition cursor-pointer ${darkMode ? 'border-[#3A3A3A] bg-[#252525]/30' : 'border-gray-300 bg-gray-50'}`}>
+                      <svg className={`w-12 h-12 mx-auto mb-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                       </svg>
-                      <p className="text-sm text-gray-600">Haz clic para seleccionar el archivo PDF</p>
+                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Haz clic para seleccionar el archivo PDF</p>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha de Firma</label>
-                    <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" />
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Fecha de Firma</label>
+                    <input type="date" className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`} />
                   </div>
 
-                  <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                    <button onClick={closeModal} className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                  <div className={`flex justify-end space-x-3 pt-4 border-t ${darkMode ? 'border-[#2A2A2A]' : 'border-gray-200'}`}>
+                    <button onClick={closeModal} className={`px-6 py-2 border rounded-lg transition-colors font-medium ${darkMode ? 'border-[#3A3A3A] text-gray-300 hover:bg-[#2A2A2A] hover:text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
                       Cancelar
                     </button>
-                    <button className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition font-medium">
+                    <button className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition-colors font-medium shadow-lg shadow-emerald-600/20">
                       Registrar Arras
                     </button>
                   </div>
@@ -2151,60 +2151,60 @@ export default function AgentDashboardPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <div className="border border-gray-300 rounded-lg p-4">
+                    <div className={`border rounded-lg p-4 ${darkMode ? 'border-[#3A3A3A] bg-[#252525]/30' : 'border-gray-300 bg-gray-50'}`}>
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}">Tasación Bancaria</h4>
-                        <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+                        <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Tasación Bancaria</h4>
+                        <select className={`px-3 py-1 border rounded text-sm ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`}>
                           <option>Completado</option>
                           <option>En Proceso</option>
                           <option>Pendiente</option>
                         </select>
                       </div>
-                      <input type="date" className="w-full px-3 py-2 border border-gray-300 rounded text-sm" />
+                      <input type="date" className={`w-full px-3 py-2 border rounded text-sm ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`} />
                     </div>
 
-                    <div className="border border-gray-300 rounded-lg p-4">
+                    <div className={`border rounded-lg p-4 ${darkMode ? 'border-[#3A3A3A] bg-[#252525]/30' : 'border-gray-300 bg-gray-50'}`}>
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}">Coordinación Notaría</h4>
-                        <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+                        <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Coordinación Notaría</h4>
+                        <select className={`px-3 py-1 border rounded text-sm ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`}>
                           <option>Completado</option>
                           <option>En Proceso</option>
                           <option>Pendiente</option>
                         </select>
                       </div>
-                      <input type="date" className="w-full px-3 py-2 border border-gray-300 rounded text-sm" />
+                      <input type="date" className={`w-full px-3 py-2 border rounded text-sm ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`} />
                     </div>
 
-                    <div className="border border-gray-300 rounded-lg p-4">
+                    <div className={`border rounded-lg p-4 ${darkMode ? 'border-[#3A3A3A] bg-[#252525]/30' : 'border-gray-300 bg-gray-50'}`}>
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}">Firma Escritura Pública</h4>
-                        <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+                        <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Firma Escritura Pública</h4>
+                        <select className={`px-3 py-1 border rounded text-sm ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`}>
                           <option>Completado</option>
                           <option>En Proceso</option>
                           <option>Pendiente</option>
                         </select>
                       </div>
-                      <input type="date" className="w-full px-3 py-2 border border-gray-300 rounded text-sm" />
+                      <input type="date" className={`w-full px-3 py-2 border rounded text-sm ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`} />
                     </div>
 
-                    <div className="border border-gray-300 rounded-lg p-4">
+                    <div className={`border rounded-lg p-4 ${darkMode ? 'border-[#3A3A3A] bg-[#252525]/30' : 'border-gray-300 bg-gray-50'}`}>
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}">Entrega de Llaves</h4>
-                        <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+                        <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Entrega de Llaves</h4>
+                        <select className={`px-3 py-1 border rounded text-sm ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`}>
                           <option>Completado</option>
                           <option>En Proceso</option>
                           <option>Pendiente</option>
                         </select>
                       </div>
-                      <input type="date" className="w-full px-3 py-2 border border-gray-300 rounded text-sm" />
+                      <input type="date" className={`w-full px-3 py-2 border rounded text-sm ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`} />
                     </div>
                   </div>
 
-                  <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                    <button onClick={closeModal} className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                  <div className={`flex justify-end space-x-3 pt-4 border-t ${darkMode ? 'border-[#2A2A2A]' : 'border-gray-200'}`}>
+                    <button onClick={closeModal} className={`px-6 py-2 border rounded-lg transition-colors font-medium ${darkMode ? 'border-[#3A3A3A] text-gray-300 hover:bg-[#2A2A2A] hover:text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
                       Cancelar
                     </button>
-                    <button className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium">
+                    <button className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition-colors font-medium shadow-lg shadow-emerald-600/20">
                       Guardar Cambios
                     </button>
                   </div>
@@ -2214,38 +2214,38 @@ export default function AgentDashboardPage() {
               {/* Modal: Solicitar Referidos */}
               {activeModal === 'solicitarReferidos' && (
                 <div className="space-y-6">
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <p className="text-sm text-blue-800">
+                  <div className={`${darkMode ? 'bg-emerald-600/10 border-emerald-600/30' : 'bg-emerald-50 border-emerald-200'} border rounded-lg p-4`}>
+                    <p className={`text-sm ${darkMode ? 'text-emerald-300' : 'text-emerald-700'}`}>
                       Solicita referidos a clientes satisfechos para expandir tu cartera de contactos.
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Cliente Satisfecho</label>
-                    <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Familia Gutiérrez" disabled />
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Cliente Satisfecho</label>
+                    <input type="text" className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} placeholder="Familia Gutiérrez" disabled />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-3">Método de Contacto</label>
+                    <label className={`block text-sm font-semibold mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Método de Contacto</label>
                     <div className="space-y-2">
                       <label className="flex items-center space-x-2">
-                        <input type="radio" name="metodo" className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" defaultChecked />
-                        <span className="text-sm text-gray-700">Email</span>
+                        <input type="radio" name="metodo" className={`w-4 h-4 text-emerald-500 focus:ring-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A]' : 'bg-white border-gray-300'}`} defaultChecked />
+                        <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Email</span>
                       </label>
                       <label className="flex items-center space-x-2">
-                        <input type="radio" name="metodo" className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
-                        <span className="text-sm text-gray-700">WhatsApp</span>
+                        <input type="radio" name="metodo" className={`w-4 h-4 text-emerald-500 focus:ring-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A]' : 'bg-white border-gray-300'}`} />
+                        <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>WhatsApp</span>
                       </label>
                       <label className="flex items-center space-x-2">
-                        <input type="radio" name="metodo" className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
-                        <span className="text-sm text-gray-700">Llamada telefónica</span>
+                        <input type="radio" name="metodo" className={`w-4 h-4 text-emerald-500 focus:ring-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A]' : 'bg-white border-gray-300'}`} />
+                        <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Llamada telefónica</span>
                       </label>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Mensaje Personalizado</label>
-                    <textarea className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows={5} defaultValue="Estimada Familia Gutiérrez,
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Mensaje Personalizado</label>
+                    <textarea className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} rows={5} defaultValue="Estimada Familia Gutiérrez,
 
 Espero que estén disfrutando de su nuevo hogar. Ha sido un placer acompañarlos en este proceso.
 
@@ -2255,11 +2255,11 @@ Saludos cordiales,
 Juan Silva"></textarea>
                   </div>
 
-                  <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                    <button onClick={closeModal} className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                  <div className={`flex justify-end space-x-3 pt-4 border-t ${darkMode ? 'border-[#2A2A2A]' : 'border-gray-200'}`}>
+                    <button onClick={closeModal} className={`px-6 py-2 border rounded-lg transition-colors font-medium ${darkMode ? 'border-[#3A3A3A] text-gray-300 hover:bg-[#2A2A2A] hover:text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
                       Cancelar
                     </button>
-                    <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                    <button className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition-colors font-medium shadow-lg shadow-emerald-600/20">
                       Enviar Solicitud
                     </button>
                   </div>
