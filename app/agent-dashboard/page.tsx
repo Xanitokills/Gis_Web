@@ -1753,8 +1753,8 @@ export default function AgentDashboardPage() {
 
       {/* MODALES FUNCIONALES */}
       {activeModal && (
-        <div className={`fixed inset-0 ${darkMode ? 'bg-black/80' : 'bg-gray-900/50'} backdrop-blur-sm z-50 flex items-center justify-center p-4`}>
-          <div className={`${theme.bgCard} border ${theme.border} rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto`}>
+        <div onClick={closeModal} className={`fixed inset-0 ${darkMode ? 'bg-black/80' : 'bg-gray-900/50'} backdrop-blur-sm z-50 flex items-center justify-center p-4`}>
+          <div onClick={(e) => e.stopPropagation()} className={`${theme.bgCard} border ${theme.border} rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto`}>
             {/* Header del Modal */}
             <div className={`sticky top-0 ${theme.bgCard} border-b ${theme.border} px-6 py-4 flex items-center justify-between z-10`}>
               <h3 className={`text-lg font-semibold ${theme.textPrimary}`}>
@@ -1804,11 +1804,11 @@ export default function AgentDashboardPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Dirección Completa *</label>
-                      <input type="text" className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} placeholder="Av. Larco 1234, Miraflores" />
+                      <input type="text" className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} placeholder="Av. Larco 1234, Miraflores" />
                     </div>
                     <div>
                       <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Tipo de Propiedad *</label>
-                      <select className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-300 text-gray-900'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`}>
+                      <select className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white' : 'bg-white border-gray-400 text-gray-900'}`}>
                         <option>Casa</option>
                         <option>Departamento</option>
                         <option>Terreno</option>
@@ -1817,33 +1817,33 @@ export default function AgentDashboardPage() {
                     </div>
                     <div>
                       <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Nombre del Propietario *</label>
-                      <input type="text" className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} placeholder="Juan Pérez" />
+                      <input type="text" className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} placeholder="Juan Pérez" />
                     </div>
                     <div>
                       <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Teléfono de Contacto *</label>
-                      <input type="tel" className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} placeholder="+51 999 888 777" />
+                      <input type="tel" className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} placeholder="+51 999 888 777" />
                     </div>
                     <div>
                       <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Precio Esperado (S/) *</label>
-                      <input type="number" className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} placeholder="280000" />
+                      <input type="number" className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} placeholder="280000" />
                     </div>
                     <div>
                       <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Área (m²) *</label>
-                      <input type="number" className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} placeholder="120" />
+                      <input type="number" className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} placeholder="120" />
                     </div>
                     <div>
                       <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Dormitorios</label>
-                      <input type="number" className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} placeholder="3" />
+                      <input type="number" className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} placeholder="3" />
                     </div>
                     <div>
                       <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Baños</label>
-                      <input type="number" className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} placeholder="2" />
+                      <input type="number" className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} placeholder="2" />
                     </div>
                   </div>
 
                   <div>
                     <label className={`block text-sm font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Notas / Observaciones</label>
-                    <textarea className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500`} rows={3} placeholder="Información adicional relevante..."></textarea>
+                    <textarea className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${darkMode ? 'bg-[#252525] border-[#3A3A3A] text-white placeholder:text-gray-500' : 'bg-white border-gray-400 text-gray-900 placeholder:text-gray-400'}`} rows={3} placeholder="Información adicional relevante..."></textarea>
                   </div>
 
                   <div className="flex items-center space-x-4">
