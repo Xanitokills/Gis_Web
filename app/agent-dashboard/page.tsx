@@ -663,28 +663,54 @@ export default function AgentDashboardPage() {
                 <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Distribución de propiedades por fase del proceso de venta</p>
               </div>
               <div className="space-y-6">
-                {funnelData.map((item, index) => (
-                  <div key={index}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center space-x-3">
-                        <span className={`text-xs font-medium px-3 py-1 rounded-md border ${darkMode ? 'text-gray-400 bg-[#252525] border-[#2A2A2A]' : 'text-gray-700 bg-gray-100 border-gray-200'}`}>
-                          Fase {index + 1}
-                        </span>
-                        <span className={`font-medium text-base ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.fase}</span>
+                {funnelData.map((item, index) => {
+                  // Función para calcular el color dinámico según el porcentaje
+                  const getBarColor = (percentage: number) => {
+                    if (percentage <= 20) {
+                      // Rojo intenso para valores muy bajos
+                      return '#DC2626'; // red-600
+                    } else if (percentage <= 40) {
+                      // Naranja/Rojo para valores bajos
+                      return '#EA580C'; // orange-600
+                    } else if (percentage <= 60) {
+                      // Amarillo/Naranja para valores medios
+                      return '#D97706'; // amber-600
+                    } else if (percentage <= 80) {
+                      // Verde/Azul transición
+                      return '#059669'; // emerald-600
+                    } else {
+                      // Azul oscuro para valores altos (objetivo)
+                      return '#024059';
+                    }
+                  };
+
+                  return (
+                    <div key={index}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-3">
+                          <span className={`text-xs font-medium px-3 py-1 rounded-md border ${darkMode ? 'text-gray-400 bg-[#252525] border-[#2A2A2A]' : 'text-gray-700 bg-gray-100 border-gray-200'}`}>
+                            Fase {index + 1}
+                          </span>
+                          <span className={`font-medium text-base ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.fase}</span>
+                        </div>
+                        <div className="flex items-center space-x-6">
+                          <span className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{item.total} propiedades</span>
+                          <span className={`text-base font-semibold w-16 text-right ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.percentage}%</span>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-6">
-                        <span className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{item.total} propiedades</span>
-                        <span className={`text-base font-semibold w-16 text-right ${darkMode ? 'text-white' : 'text-gray-900'}`}>{item.percentage}%</span>
+                      <div className={`w-full rounded-full h-2 overflow-hidden ${darkMode ? 'bg-[#252525]' : 'bg-gray-200'}`}>
+                        <div 
+                          className="h-2 rounded-full transition-all duration-700"
+                          style={{ 
+                            width: `${item.percentage}%`, 
+                            backgroundColor: getBarColor(item.percentage),
+                            boxShadow: `0 0 8px ${getBarColor(item.percentage)}40`
+                          }}
+                        ></div>
                       </div>
                     </div>
-                    <div className={`w-full rounded-full h-2 overflow-hidden ${darkMode ? 'bg-[#252525]' : 'bg-gray-200'}`}>
-                      <div 
-                        className={`h-2 rounded-full transition-all duration-700 ${darkMode ? 'bg-emerald-600' : 'bg-emerald-500'}`}
-                        style={{ width: `${item.percentage}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
