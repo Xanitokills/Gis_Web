@@ -81,7 +81,7 @@ export default function AgentDashboardPage() {
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [selectedProperty, setSelectedProperty] = useState<any>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [darkMode, setDarkMode] = useState(true); // true = dark, false = light
+  const [darkMode, setDarkMode] = useState(false); // true = dark, false = light (Por defecto: Modo Claro)
 
   // Funnel de ventas - 7 Fases SmartCore BI
   const funnelData = [
@@ -393,7 +393,7 @@ export default function AgentDashboardPage() {
                   </div>
                   <div>
                     <h1 className={`text-base font-semibold ${theme.textPrimary}`}>SmartCore BI</h1>
-                    <p className={`text-xs ${theme.textTertiary}`}>Juan Silva</p>
+                    <p className={`text-xs ${theme.textTertiary}`}>Frankin Vasquez</p>
                   </div>
                 </div>
               )}
@@ -407,9 +407,9 @@ export default function AgentDashboardPage() {
               </button>
             </div>
             
-            {/* Toggle de Modo Oscuro/Claro */}
+            {/* Toggle de Modo Oscuro/Claro - OCULTO (funcionalidad mantenida) */}
             {!sidebarCollapsed && (
-              <div className="mt-4 pt-4 border-t border-[#2A2A2A]">
+              <div className="mt-4 pt-4 border-t border-[#2A2A2A] hidden">
                 <button
                   onClick={() => setDarkMode(!darkMode)}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-lg ${theme.bgHover} transition-colors group`}
@@ -946,41 +946,50 @@ export default function AgentDashboardPage() {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="flex flex-col gap-2">
-                            <div className="flex gap-2">
-                              <button 
-                                onClick={() => openModal('cargarDocumentos', prop)}
-                                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                                  darkMode 
-                                    ? 'bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-600/30' 
-                                    : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border border-emerald-300'
-                                }`}
-                                title="Cargar Documentos"
-                              >
-                                📄 Docs
-                              </button>
-                              <button 
-                                onClick={() => openModal('firmarContrato', prop)}
-                                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                                  darkMode 
-                                    ? 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border border-blue-600/30' 
-                                    : 'bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-300'
-                                }`}
-                                title="Firmar Contrato"
-                              >
-                                ✍️ Contrato
-                              </button>
-                            </div>
+                          <div className="flex items-center gap-2">
+                            <button 
+                              onClick={() => openModal('cargarDocumentos', prop)}
+                              className={`group relative px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                                darkMode 
+                                  ? 'bg-gradient-to-r from-emerald-600/20 to-emerald-500/20 text-emerald-300 hover:from-emerald-600/30 hover:to-emerald-500/30 border border-emerald-500/40 hover:border-emerald-400/60 hover:shadow-lg hover:shadow-emerald-500/20' 
+                                  : 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-md hover:shadow-lg hover:shadow-emerald-500/50'
+                              }`}
+                              title="Cargar Documentos"
+                            >
+                              <span className="flex items-center gap-1.5">
+                                <span className="text-sm">📄</span>
+                                Docs
+                              </span>
+                            </button>
+                            
+                            <button 
+                              onClick={() => openModal('firmarContrato', prop)}
+                              className={`group relative px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                                darkMode 
+                                  ? 'bg-gradient-to-r from-blue-600/20 to-blue-500/20 text-blue-300 hover:from-blue-600/30 hover:to-blue-500/30 border border-blue-500/40 hover:border-blue-400/60 hover:shadow-lg hover:shadow-blue-500/20' 
+                                  : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg hover:shadow-blue-500/50'
+                              }`}
+                              title="Firmar Contrato"
+                            >
+                              <span className="flex items-center gap-1.5">
+                                <span className="text-sm">✍️</span>
+                                Contrato
+                              </span>
+                            </button>
+                            
                             <button 
                               onClick={() => openModal('definirPVS', prop)}
-                              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                              className={`group relative px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
                                 darkMode 
-                                  ? 'bg-purple-600/20 text-purple-400 hover:bg-purple-600/30 border border-purple-600/30' 
-                                  : 'bg-purple-100 text-purple-700 hover:bg-purple-200 border border-purple-300'
+                                  ? 'bg-gradient-to-r from-purple-600/20 to-fuchsia-600/20 text-purple-300 hover:from-purple-600/30 hover:to-fuchsia-600/30 border border-purple-500/40 hover:border-purple-400/60 hover:shadow-lg hover:shadow-purple-500/20' 
+                                  : 'bg-gradient-to-r from-purple-500 to-fuchsia-600 text-white hover:from-purple-600 hover:to-fuchsia-700 shadow-md hover:shadow-lg hover:shadow-purple-500/50'
                               }`}
                               title="Definir Precio de Venta Sugerido"
                             >
-                              💰 Definir PVS
+                              <span className="flex items-center gap-1.5">
+                                <span className="text-sm">💰</span>
+                                Definir PVS
+                              </span>
                             </button>
                           </div>
                         </td>
@@ -1060,30 +1069,58 @@ export default function AgentDashboardPage() {
                       </div>
                     </div>
 
-                    <div className="mt-4 flex flex-wrap gap-3">
+                    <div className="mt-4 flex flex-wrap gap-2.5">
                       <button 
                         onClick={() => openModal('subirFotos', prop)}
-                        className={`px-4 py-2 rounded-lg transition text-sm font-medium ${darkMode ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-purple-100 text-purple-700 hover:bg-purple-200 border border-purple-200'}`}
+                        className={`group px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-semibold ${
+                          darkMode 
+                            ? 'bg-gradient-to-r from-pink-600/20 to-rose-600/20 text-pink-300 hover:from-pink-600/30 hover:to-rose-600/30 border border-pink-500/40 hover:border-pink-400/60 hover:shadow-lg hover:shadow-pink-500/20' 
+                            : 'bg-gradient-to-r from-pink-500 to-rose-600 text-white hover:from-pink-600 hover:to-rose-700 shadow-md hover:shadow-lg hover:shadow-pink-500/50'
+                        }`}
                       >
-                        📸 Subir Fotos
+                        <span className="flex items-center gap-2">
+                          <span>📸</span>
+                          Subir Fotos
+                        </span>
                       </button>
                       <button 
                         onClick={() => openModal('buyerPersona', prop)}
-                        className={`px-4 py-2 rounded-lg transition text-sm font-medium ${darkMode ? 'bg-purple-600 text-white hover:bg-purple-500' : 'bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-200'}`}
+                        className={`group px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-semibold ${
+                          darkMode 
+                            ? 'bg-gradient-to-r from-amber-600/20 to-orange-600/20 text-amber-300 hover:from-amber-600/30 hover:to-orange-600/30 border border-amber-500/40 hover:border-amber-400/60 hover:shadow-lg hover:shadow-amber-500/20' 
+                            : 'bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:from-amber-600 hover:to-orange-700 shadow-md hover:shadow-lg hover:shadow-amber-500/50'
+                        }`}
                       >
-                        👥 Buyer Persona
+                        <span className="flex items-center gap-2">
+                          <span>👥</span>
+                          Buyer Persona
+                        </span>
                       </button>
                       <button 
                         onClick={() => openModal('video360', prop)}
-                        className={`px-4 py-2 rounded-lg transition text-sm font-medium ${darkMode ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border border-emerald-200'}`}
+                        className={`group px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-semibold ${
+                          darkMode 
+                            ? 'bg-gradient-to-r from-cyan-600/20 to-blue-600/20 text-cyan-300 hover:from-cyan-600/30 hover:to-blue-600/30 border border-cyan-500/40 hover:border-cyan-400/60 hover:shadow-lg hover:shadow-cyan-500/20' 
+                            : 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700 shadow-md hover:shadow-lg hover:shadow-cyan-500/50'
+                        }`}
                       >
-                        🎥 Video 360°
+                        <span className="flex items-center gap-2">
+                          <span>🎥</span>
+                          Video 360°
+                        </span>
                       </button>
                       <button 
                         onClick={() => openModal('editarFicha', prop)}
-                        className={`px-4 py-2 rounded-lg transition text-sm font-medium ${darkMode ? 'bg-pink-600 text-white hover:bg-pink-500' : 'bg-pink-100 text-pink-700 hover:bg-pink-200 border border-pink-200'}`}
+                        className={`group px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-semibold ${
+                          darkMode 
+                            ? 'bg-gradient-to-r from-violet-600/20 to-purple-600/20 text-violet-300 hover:from-violet-600/30 hover:to-purple-600/30 border border-violet-500/40 hover:border-violet-400/60 hover:shadow-lg hover:shadow-violet-500/20' 
+                            : 'bg-gradient-to-r from-violet-500 to-purple-600 text-white hover:from-violet-600 hover:to-purple-700 shadow-md hover:shadow-lg hover:shadow-violet-500/50'
+                        }`}
                       >
-                        📝 Editar Ficha
+                        <span className="flex items-center gap-2">
+                          <span>📝</span>
+                          Editar Ficha
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -1177,24 +1214,45 @@ export default function AgentDashboardPage() {
                       </div>
                     </div>
 
-                    <div className="flex space-x-3">
+                    <div className="flex flex-wrap gap-2.5">
                       <button 
                         onClick={() => openModal('verCampañas', prop)}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+                        className={`group px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-semibold ${
+                          darkMode 
+                            ? 'bg-gradient-to-r from-sky-600/20 to-blue-600/20 text-sky-300 hover:from-sky-600/30 hover:to-blue-600/30 border border-sky-500/40 hover:border-sky-400/60 hover:shadow-lg hover:shadow-sky-500/20' 
+                            : 'bg-gradient-to-r from-sky-500 to-blue-600 text-white hover:from-sky-600 hover:to-blue-700 shadow-md hover:shadow-lg hover:shadow-sky-500/50'
+                        }`}
                       >
-                        Ver Campañas
+                        <span className="flex items-center gap-2">
+                          <span>📊</span>
+                          Ver Campañas
+                        </span>
                       </button>
                       <button 
                         onClick={() => openModal('nuevaCampana', prop)}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm font-medium"
+                        className={`group px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-semibold ${
+                          darkMode 
+                            ? 'bg-gradient-to-r from-emerald-600/20 to-green-600/20 text-emerald-300 hover:from-emerald-600/30 hover:to-green-600/30 border border-emerald-500/40 hover:border-emerald-400/60 hover:shadow-lg hover:shadow-emerald-500/20' 
+                            : 'bg-gradient-to-r from-emerald-500 to-green-600 text-white hover:from-emerald-600 hover:to-green-700 shadow-md hover:shadow-lg hover:shadow-emerald-500/50'
+                        }`}
                       >
-                        Nueva Campaña
+                        <span className="flex items-center gap-2">
+                          <span>🚀</span>
+                          Nueva Campaña
+                        </span>
                       </button>
                       <button 
                         onClick={() => openModal('openHouse', prop)}
-                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition text-sm font-medium"
+                        className={`group px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-semibold ${
+                          darkMode 
+                            ? 'bg-gradient-to-r from-indigo-600/20 to-purple-600/20 text-indigo-300 hover:from-indigo-600/30 hover:to-purple-600/30 border border-indigo-500/40 hover:border-indigo-400/60 hover:shadow-lg hover:shadow-indigo-500/20' 
+                            : 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 shadow-md hover:shadow-lg hover:shadow-indigo-500/50'
+                        }`}
                       >
-                        Open House
+                        <span className="flex items-center gap-2">
+                          <span>🏠</span>
+                          Open House
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -1281,14 +1339,17 @@ export default function AgentDashboardPage() {
                               <span className="text-sm text-gray-600">{lead.visitasProgramadas} visitas</span>
                               <button 
                                 onClick={() => openModal('calificarLead')}
-                                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                                className={`group px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
                                   darkMode 
-                                    ? 'bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-600/30' 
-                                    : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border border-emerald-300'
+                                    ? 'bg-gradient-to-r from-yellow-600/20 to-amber-600/20 text-yellow-300 hover:from-yellow-600/30 hover:to-amber-600/30 border border-yellow-500/40 hover:border-yellow-400/60 hover:shadow-lg hover:shadow-yellow-500/20' 
+                                    : 'bg-gradient-to-r from-yellow-500 to-amber-600 text-white hover:from-yellow-600 hover:to-amber-700 shadow-md hover:shadow-lg hover:shadow-yellow-500/50'
                                 }`}
                                 title="Calificar Lead"
                               >
-                                ⭐ Calificar
+                                <span className="flex items-center gap-1.5">
+                                  <span>⭐</span>
+                                  Calificar
+                                </span>
                               </button>
                               <button 
                                 onClick={() => openModal('programarVisita', { ...prop, lead })}
@@ -1308,18 +1369,32 @@ export default function AgentDashboardPage() {
                       <p className="text-sm text-blue-800">{prop.feedbackDueño}</p>
                     </div>
 
-                    <div className="mt-4 flex space-x-3">
+                    <div className="mt-4 flex flex-wrap gap-2.5">
                       <button 
                         onClick={() => openModal('enviarFeedback', prop)}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+                        className={`group px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-semibold ${
+                          darkMode 
+                            ? 'bg-gradient-to-r from-blue-600/20 to-cyan-600/20 text-blue-300 hover:from-blue-600/30 hover:to-cyan-600/30 border border-blue-500/40 hover:border-blue-400/60 hover:shadow-lg hover:shadow-blue-500/20' 
+                            : 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white hover:from-blue-600 hover:to-cyan-700 shadow-md hover:shadow-lg hover:shadow-blue-500/50'
+                        }`}
                       >
-                        Enviar Feedback
+                        <span className="flex items-center gap-2">
+                          <span>💬</span>
+                          Enviar Feedback
+                        </span>
                       </button>
                       <button 
                         onClick={() => openModal('calendarioVisitas', prop)}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm font-medium"
+                        className={`group px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-semibold ${
+                          darkMode 
+                            ? 'bg-gradient-to-r from-emerald-600/20 to-teal-600/20 text-emerald-300 hover:from-emerald-600/30 hover:to-teal-600/30 border border-emerald-500/40 hover:border-emerald-400/60 hover:shadow-lg hover:shadow-emerald-500/20' 
+                            : 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 shadow-md hover:shadow-lg hover:shadow-emerald-500/50'
+                        }`}
                       >
-                        Calendario de Visitas
+                        <span className="flex items-center gap-2">
+                          <span>📅</span>
+                          Calendario de Visitas
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -1404,24 +1479,45 @@ export default function AgentDashboardPage() {
                               }`}>
                                 {oferta.estado}
                               </span>
-                              <div className="flex space-x-2">
+                              <div className="flex flex-wrap gap-2">
                                 <button 
                                   onClick={() => openModal('aceptarOferta', { ...prop, oferta })}
-                                  className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm font-medium"
+                                  className={`group px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                                    darkMode 
+                                      ? 'bg-gradient-to-r from-emerald-600/20 to-green-600/20 text-emerald-300 hover:from-emerald-600/30 hover:to-green-600/30 border border-emerald-500/40 hover:border-emerald-400/60 hover:shadow-lg hover:shadow-emerald-500/20' 
+                                      : 'bg-gradient-to-r from-emerald-500 to-green-600 text-white hover:from-emerald-600 hover:to-green-700 shadow-md hover:shadow-lg hover:shadow-emerald-500/50'
+                                  }`}
                                 >
-                                  Aceptar
+                                  <span className="flex items-center gap-1.5">
+                                    <span>✓</span>
+                                    Aceptar
+                                  </span>
                                 </button>
                                 <button 
                                   onClick={() => openModal('contraoferta', { ...prop, oferta })}
-                                  className="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 text-sm font-medium"
+                                  className={`group px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                                    darkMode 
+                                      ? 'bg-gradient-to-r from-amber-600/20 to-orange-600/20 text-amber-300 hover:from-amber-600/30 hover:to-orange-600/30 border border-amber-500/40 hover:border-amber-400/60 hover:shadow-lg hover:shadow-amber-500/20' 
+                                      : 'bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:from-amber-600 hover:to-orange-700 shadow-md hover:shadow-lg hover:shadow-amber-500/50'
+                                  }`}
                                 >
-                                  Contraofertar
+                                  <span className="flex items-center gap-1.5">
+                                    <span>↔</span>
+                                    Contraofertar
+                                  </span>
                                 </button>
                                 <button 
                                   onClick={() => openModal('rechazarOferta', { ...prop, oferta })}
-                                  className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm font-medium"
+                                  className={`group px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                                    darkMode 
+                                      ? 'bg-gradient-to-r from-red-600/20 to-rose-600/20 text-red-300 hover:from-red-600/30 hover:to-rose-600/30 border border-red-500/40 hover:border-red-400/60 hover:shadow-lg hover:shadow-red-500/20' 
+                                      : 'bg-gradient-to-r from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700 shadow-md hover:shadow-lg hover:shadow-red-500/50'
+                                  }`}
                                 >
-                                  Rechazar
+                                  <span className="flex items-center gap-1.5">
+                                    <span>✕</span>
+                                    Rechazar
+                                  </span>
                                 </button>
                               </div>
                             </div>
