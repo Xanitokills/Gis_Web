@@ -1,217 +1,312 @@
 ﻿import Link from "next/link";
 
 export default function HomePage() {
-  const userRoles = [
-    { id: "client", icon: "👤", title: "Dashboard Cliente", desc: "Mi portal personal", href: "/client-dashboard" },
-    { id: "search", icon: "🔍", title: "Buscar Propiedades", desc: "Portal de búsqueda inteligente", href: "/search" },
-    { id: "agent", icon: "👨‍💼", title: "Dashboard Agente", desc: "CRM + Smart Capture", href: "/agent-dashboard" },
-    { id: "jefe", icon: "👔", title: "Dashboard Jefe", desc: "Gestión de equipos", href: "/jefe-dashboard" },
-    { id: "super", icon: "⚡", title: "Super Usuario", desc: "Control del ecosistema", href: "/super-dashboard" },
-    { id: "map", icon: "🗺️", title: "Mapa Inteligente", desc: "Análisis geográfico", href: "/map" }
+  const features = [
+    {
+      title: "Dashboard Inteligente",
+      description: "CRM potenciado con IA que captura y califica leads automáticamente. Visualiza tu pipeline completo y cierra más ventas.",
+      icon: "�",
+      color: "from-violet-500 to-purple-600"
+    },
+    {
+      title: "Mapa Geoespacial",
+      description: "Análisis de mercado en tiempo real. Identifica zonas de oportunidad, tendencias de precios y proyecta el crecimiento urbano.",
+      icon: "�️",
+      color: "from-blue-500 to-cyan-600"
+    },
+    {
+      title: "Ecosistema Financiero",
+      description: "Pre-aprobación crediticia instantánea con BBVA e Interbank. Cierra operaciones en 48 horas con transparencia total.",
+      icon: "�",
+      color: "from-emerald-500 to-teal-600"
+    }
   ];
 
-  const ecosystemServices = [
-    { icon: "🏦", title: "Crédito Pre-Aprobado", desc: "BBVA & Interbank" },
-    { icon: "💎", title: "Tasación Profesional", desc: "TasaPerú - 2 horas" },
-    { icon: "🚚", title: "Mudanza Confiable", desc: "Mudanzas Rápida" },
-    { icon: "🏠", title: "Seguro de Hogar", desc: "Mapfre & La Positiva" },
-    { icon: "📜", title: "Notaría Digital", desc: "Firma electrónica" },
-    { icon: "💰", title: "SMARTCORE Pay", desc: "Billetera integrada" }
+  const partners = [
+    "BBVA", "Interbank", "BCP", "Scotiabank", 
+    "Mapfre", "La Positiva", "TasaPerú"
+  ];
+
+  const stats = [
+    { value: "280K+", label: "Agentes en Perú" },
+    { value: "48hrs", label: "Tiempo de cierre" },
+    { value: "85%", label: "Tasa de éxito" },
+    { value: "$2.95M", label: "ARR proyectado" }
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200 px-6 py-4">
+    <div className="min-h-screen bg-black text-white">
+      {/* Navigation - Frame.io style */}
+      <nav className="fixed top-0 left-0 right-0 bg-black/80 backdrop-blur-xl border-b border-white/10 px-6 py-4 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-r from-slate-700 to-slate-800 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">S</span>
+          <div className="flex items-center space-x-12">
+            <div className="flex items-center space-x-3">
+              <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">S</span>
+              </div>
+              <span className="text-xl font-bold text-white">SMARTCORE</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">SMARTCORE BI</span>
+            
+            <div className="hidden lg:flex items-center space-x-8 text-sm">
+              <Link href="#features" className="text-gray-400 hover:text-white transition-colors">
+                Funciones
+              </Link>
+              <Link href="#ecosystem" className="text-gray-400 hover:text-white transition-colors">
+                Ecosistema
+              </Link>
+              <Link href="#partners" className="text-gray-400 hover:text-white transition-colors">
+                Aliados
+              </Link>
+            </div>
           </div>
           
-          <button className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-2 rounded-full font-medium transition-colors">
-            Solicitar Demo
-          </button>
+          <div className="flex items-center gap-4">
+            <Link href="/search" className="text-gray-400 hover:text-white text-sm transition-colors hidden md:inline-block">
+              Buscar Propiedades
+            </Link>
+            <button className="bg-white text-black px-5 py-2 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all">
+              Solicitar Demo
+            </button>
+          </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-slate-50 via-white to-slate-100 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 py-16">
-          <div className="text-center mb-12">
-           {/*  <span className="inline-block px-4 py-2 bg-slate-100 text-slate-800 rounded-full text-sm font-medium mb-4">
-              La Realización de la Visión de Franklin Vásquez
-            </span> */}
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              <span className="block">SMARTCORE BI</span>
-              <span className="block text-slate-700 text-3xl md:text-4xl mt-2">
-                El Ecosistema Inmobiliario Integral
+      {/* Hero Section - Frame.io inspired */}
+      <div className="relative pt-32 pb-20 px-6 overflow-hidden">
+        {/* Gradient Orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500 rounded-full filter blur-3xl opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-500 rounded-full filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
+        
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-sm mb-8 backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
+              <span className="text-gray-300">Alianzas con BBVA · Interbank · BCP · Scotiabank</span>
+            </div>
+            
+            <h1 className="text-6xl md:text-8xl font-bold mb-8 leading-none">
+              <span className="block">El ecosistema</span>
+              <span className="block bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
+                inmobiliario integral
               </span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-8 leading-relaxed">
-              Hace más de cinco años, Franklin Vásquez soñó con una herramienta que no solo ayudara a vender casas... 
-              sino que sanera la desconfianza en el mercado inmobiliario peruano. Hoy, SMARTCORE BI no solo cumple ese sueño. 
-              Lo expande.
+            
+            <p className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mb-12 leading-relaxed">
+              Conecta agentes, clientes, bancos y servicios en una sola plataforma. 
+              Cierra ventas en 48 horas con transparencia total.
             </p>
-            <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl max-w-2xl mx-auto shadow-lg border border-slate-200">
-              <p className="text-lg text-gray-800 font-medium">
-                No es un software. Es un ecosistema donde el cliente, el agente, el banco, el tasador, 
-                la mudanza y el Estado trabajan juntos bajo una misma regla: 
-                <span className="text-slate-700 font-bold"> transparencia, datos reales y experiencia humana.</span>
-              </p>
-            </div>
-          </div>
 
-          {/* Role Selection Cards */}
-          <div className="mb-16">
-            <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">Accede a tu Dashboard</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-              {userRoles.map((role) => (
-                <Link key={role.id} href={role.href}>
-                  <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer group">
-                    <div className="text-center">
-                      <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                        {role.icon}
-                      </div>
-                      <h3 className="text-lg font-bold text-gray-900 mb-2">{role.title}</h3>
-                      <p className="text-gray-600 text-sm">{role.desc}</p>
-                    </div>
+            {/* Main CTAs */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-20">
+              <Link href="/agent-dashboard" className="group bg-white text-black px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-all inline-flex items-center justify-center gap-2">
+                <span>Dashboard Agente</span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </Link>
+              <Link href="/map" className="group bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/20 transition-all border border-white/20 inline-flex items-center justify-center gap-2">
+                <span>Mapa Inteligente</span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </Link>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+              {stats.map((stat, index) => (
+                <div key={index} className="text-center">
+                  <div className="text-4xl font-bold mb-2 bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                    {stat.value}
                   </div>
-                </Link>
+                  <div className="text-sm text-gray-500">{stat.label}</div>
+                </div>
               ))}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Ecosystem Services */}
-      <div className="bg-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* Feature Cards - Highlighted CTAs */}
+      <div id="features" className="py-20 px-6 relative">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Todo lo que necesitas para
+              <span className="block text-gray-500">vender más rápido</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* Dashboard Agente - Featured Large */}
+            <Link href="/agent-dashboard" className="group relative bg-gradient-to-br from-emerald-500/10 to-teal-600/10 border border-white/10 rounded-3xl p-10 hover:border-emerald-500/50 transition-all overflow-hidden">
+              <div className="absolute top-4 right-4 text-xs font-semibold px-3 py-1 bg-emerald-500 rounded-full">
+                DESTACADO
+              </div>
+              <div className="relative z-10">
+                <div className="text-6xl mb-6">👨‍💼</div>
+                <h3 className="text-3xl font-bold mb-4 group-hover:text-emerald-400 transition-colors">
+                  Dashboard Agente
+                </h3>
+                <p className="text-gray-400 text-lg mb-6">
+                  CRM potenciado con IA que captura y califica leads automáticamente. 
+                  Visualiza tu pipeline completo y cierra más ventas en menos tiempo.
+                </p>
+                <div className="inline-flex items-center gap-2 text-emerald-400 font-semibold group-hover:gap-3 transition-all">
+                  <span>Acceder ahora</span>
+                  <span>→</span>
+                </div>
+              </div>
+              <div className="absolute bottom-0 right-0 w-64 h-64 bg-emerald-500 rounded-full filter blur-3xl opacity-10 group-hover:opacity-20 transition-opacity"></div>
+            </Link>
+
+            {/* Mapa Inteligente - Featured Large */}
+            <Link href="/map" className="group relative bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border border-white/10 rounded-3xl p-10 hover:border-cyan-500/50 transition-all overflow-hidden">
+              <div className="absolute top-4 right-4 text-xs font-semibold px-3 py-1 bg-cyan-500 rounded-full">
+                DESTACADO
+              </div>
+              <div className="relative z-10">
+                <div className="text-6xl mb-6">🗺️</div>
+                <h3 className="text-3xl font-bold mb-4 group-hover:text-cyan-400 transition-colors">
+                  Mapa Inteligente
+                </h3>
+                <p className="text-gray-400 text-lg mb-6">
+                  Análisis geoespacial en tiempo real. Identifica zonas de oportunidad, 
+                  tendencias de precios y proyecta el crecimiento urbano con datos precisos.
+                </p>
+                <div className="inline-flex items-center gap-2 text-cyan-400 font-semibold group-hover:gap-3 transition-all">
+                  <span>Explorar mapa</span>
+                  <span>→</span>
+                </div>
+              </div>
+              <div className="absolute bottom-0 right-0 w-64 h-64 bg-cyan-500 rounded-full filter blur-3xl opacity-10 group-hover:opacity-20 transition-opacity"></div>
+            </Link>
+          </div>
+
+          {/* Additional Feature */}
+          <div className="relative bg-gradient-to-br from-emerald-500/10 to-teal-600/10 border border-white/10 rounded-3xl p-10 hover:border-emerald-500/50 transition-all overflow-hidden group">
+            <div className="relative z-10">
+              <div className="text-5xl mb-4">💳</div>
+              <h3 className="text-2xl font-bold mb-3 group-hover:text-emerald-400 transition-colors">
+                Ecosistema Financiero Integrado
+              </h3>
+              <p className="text-gray-400 text-lg max-w-3xl">
+                Pre-aprobación crediticia instantánea con BBVA, Interbank y BCP. 
+                Cierra operaciones en 48 horas con total transparencia. Tu cliente obtiene financiamiento mientras tú cierras la venta.
+              </p>
+            </div>
+            <div className="absolute bottom-0 right-0 w-64 h-64 bg-emerald-500 rounded-full filter blur-3xl opacity-10 group-hover:opacity-20 transition-opacity"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Partners Section */}
+      <div id="partners" className="py-20 px-6 border-y border-white/10">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Servicios del Ecosistema</h2>
-            <p className="text-xl text-gray-600">Todo lo que necesitas en un solo lugar</p>
+            <p className="text-sm text-gray-500 uppercase tracking-wider mb-4">Respaldado por</p>
+            <h2 className="text-3xl font-bold mb-4">Las marcas más confiables del Perú</h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {ecosystemServices.map((service, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-                <div className="text-center">
-                  <div className="text-4xl mb-4">{service.icon}</div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">{service.title}</h3>
-                  <p className="text-gray-600 mb-4">{service.desc}</p>
-                  <button className="w-full py-2 px-4 rounded-lg font-semibold transition-colors bg-slate-700 hover:bg-slate-800 text-white">
-                    Solicitar
-                  </button>
-                </div>
+          <div className="flex flex-wrap justify-center items-center gap-12">
+            {partners.map((partner, index) => (
+              <div key={index} className="text-2xl font-bold text-gray-600 hover:text-white transition-colors cursor-pointer">
+                {partner}
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Stats Section */}
-      <div className="bg-white py-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">El Impacto del Ecosistema</h2>
-            <p className="text-xl text-gray-600">Datos reales de nuestro MVP</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-slate-700 mb-2">280,000+</div>
-              <div className="text-gray-600">Agentes en Perú</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-slate-600 mb-2">85%</div>
-              <div className="text-gray-600">Margen de Rentabilidad</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-slate-800 mb-2">90 días</div>
-              <div className="text-gray-600">Lanzamiento MVP</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-slate-700 mb-2">$2.95M</div>
-              <div className="text-gray-600">ARR Proyectado</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="bg-gradient-to-r from-slate-700 to-slate-800 py-16">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Únete al Futuro del Mercado Inmobiliario
+      {/* Ecosystem Section */}
+      <div id="ecosystem" className="py-32 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent"></div>
+        
+        <div className="max-w-5xl mx-auto relative z-10 text-center">
+          <h2 className="text-5xl md:text-6xl font-bold mb-8">
+            Un ecosistema diseñado para
+            <span className="block bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mt-2">
+              eliminar la fricción
+            </span>
           </h2>
-          <p className="text-xl text-slate-200 mb-8 max-w-2xl mx-auto">
-            SMARTCORE BI: Donde la visión de Franklin Vásquez se hace realidad para transformar 
-            la industria inmobiliaria peruana
+          <p className="text-xl text-gray-400 mb-12 max-w-3xl mx-auto">
+            Transparencia, datos reales y experiencia humana. 
+            Donde el cliente, el agente, el banco y los servicios trabajan bajo una misma regla.
           </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            {features.map((feature, index) => (
+              <div key={index} className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-white/10 to-white/5 rounded-2xl flex items-center justify-center text-3xl border border-white/10">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/search" className="bg-white text-slate-700 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-50 transition-colors shadow-lg">
-              Buscar Propiedades
+            <Link href="/agent-dashboard" className="bg-white text-black px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-all">
+              Comenzar ahora
             </Link>
-            <Link href="/agent-dashboard" className="bg-slate-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-slate-500 transition-colors shadow-lg border-2 border-slate-400">
-              Soy Agente
+            <Link href="/search" className="bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-full font-semibold hover:bg-white/20 transition-all border border-white/20">
+              Ver demo
             </Link>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-slate-600 to-slate-700 rounded-lg flex items-center justify-center">
+      <footer className="border-t border-white/10 py-12 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+            <div className="col-span-2">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold">S</span>
                 </div>
-                <span className="text-lg font-bold">SMARTCORE BI</span>
+                <span className="text-lg font-bold">SMARTCORE</span>
               </div>
-              <p className="text-gray-400 text-sm">
-                El ecosistema inmobiliario integral que Franklin Vásquez soñó hace más de 5 años.
+              <p className="text-gray-500 text-sm max-w-xs">
+                El ecosistema inmobiliario integral que transforma la industria peruana.
               </p>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Plataforma</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>Dashboard Cliente</li>
-                <li>Portal Agentes</li>
-                <li>CRM Empresarial</li>
-                <li>Super Admin</li>
+              <h4 className="font-semibold mb-3 text-sm">Producto</h4>
+              <ul className="space-y-2 text-sm text-gray-500">
+                <li className="hover:text-white cursor-pointer transition-colors">Dashboard</li>
+                <li className="hover:text-white cursor-pointer transition-colors">Mapa</li>
+                <li className="hover:text-white cursor-pointer transition-colors">CRM</li>
+                <li className="hover:text-white cursor-pointer transition-colors">Analytics</li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Servicios</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>Crédito Pre-Aprobado</li>
-                <li>Tasación Profesional</li>
-                <li>Mudanza Confiable</li>
-                <li>SMARTCORE Pay</li>
+              <h4 className="font-semibold mb-3 text-sm">Aliados</h4>
+              <ul className="space-y-2 text-sm text-gray-500">
+                <li className="hover:text-white cursor-pointer transition-colors">BBVA</li>
+                <li className="hover:text-white cursor-pointer transition-colors">Interbank</li>
+                <li className="hover:text-white cursor-pointer transition-colors">TasaPerú</li>
+                <li className="hover:text-white cursor-pointer transition-colors">Mapfre</li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Contacto</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>Lima, Perú</li>
-                <li>info@smartcore.bi</li>
-                <li>+51 999 123 456</li>
+              <h4 className="font-semibold mb-3 text-sm">Empresa</h4>
+              <ul className="space-y-2 text-sm text-gray-500">
+                <li className="hover:text-white cursor-pointer transition-colors">Acerca de</li>
+                <li className="hover:text-white cursor-pointer transition-colors">Contacto</li>
+                <li className="hover:text-white cursor-pointer transition-colors">Términos</li>
+                <li className="hover:text-white cursor-pointer transition-colors">Privacidad</li>
               </ul>
             </div>
           </div>
           
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-            <p className="text-gray-400 text-sm">
-              © 2025 SMARTCORE BI. Todos los derechos reservados. | 
-              Una realización de la visión de Franklin Vásquez
-            </p>
+          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+            <p>© 2025 SMARTCORE BI. Una visión de Franklin Vásquez.</p>
+            <div className="flex gap-6">
+              <span className="hover:text-white cursor-pointer transition-colors">Twitter</span>
+              <span className="hover:text-white cursor-pointer transition-colors">LinkedIn</span>
+              <span className="hover:text-white cursor-pointer transition-colors">Instagram</span>
+            </div>
           </div>
         </div>
       </footer>
